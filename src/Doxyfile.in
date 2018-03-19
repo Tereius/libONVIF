@@ -1,0 +1,13 @@
+INPUT = "@CMAKE_SOURCE_DIR@/src"
+PROJECT_NAME = "@PROJECT_NAME@"
+OUTPUT_DIRECTORY = "@CMAKE_BINARY_DIR@/doc"
+PROJECT_BRIEF = "A GUI application for interactive IMF Master Package creation."
+DOXYFILE_ENCODING = UTF-8
+RECURSIVE = YES
+OUTPUT_LANGUAGE = English
+# interactive navigation tree as sidebar using
+DISABLE_INDEX = YES
+GENERATE_TREEVIEW = YES
+# graphs
+CLASS_GRAPH = YES
+CALL_GRAPH = YES
