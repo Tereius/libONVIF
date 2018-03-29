@@ -1,34 +1,35 @@
-#include "OnvifDeviceClient.h"
-#include "OnvifEventClient.h"
+#include "OnvifDevice.h"
+#include "CmdLineParser.h"
+#include <QCoreApplication>
 #include <QRunnable>
 #include <QThreadPool>
 #include <QDebug>
 #include <QTimer>
 
 
-class Runner : public QRunnable {
+int main(int argc, char **argv) {
 
-public:
-	Runner(OnvifDeviceClient &rDevice) : QRunnable(), rmDevice(rDevice) {}
+	QCoreApplication app(argc, argv);
+	QCoreApplication::setApplicationName("ONVIFinfo");
+	QCoreApplication::setApplicationVersion("1.0.0");
+	QCoreApplication::setOrganizationName("");
+	QCoreApplication::setOrganizationDomain("com.github.Tereius.libONVIF");
 
-	virtual void run() {
-		Request<_tds__GetServices> request;
-		rmDevice.GetServices(request);
+	QCommandLineParser parser;
+	CmdLineParser::setup(parser);
+	parser.process(app);
+	//CmdLineParser::setup(parser);
+	auto response = CmdLineParser::parse(parser);
+	if(response) {
+		auto device = new OnvifDevice(response.GetResultObject().endpointUrl, &app);
+		device->SetAuth(response.GetResultObject().user, response.GetResultObject().pwd);
+		device->Initialize();
+	}
+	else {
+		qCritical() << response.GetCompleteFault();
 	}
 
-private:
-	OnvifDeviceClient &rmDevice;
-};
-
-int main(int _Argc, char ** _Argv) {
-
-	auto builder = SoapCtx::Builder();
-	auto ctx = builder
-#ifndef NDEBUG
-		.EnableOMode(SOAP_XML_INDENT)
-#endif
-		.Build();
-
+	/*
 	OnvifDeviceClient onvifDevice(QUrl("http://192.168.0.25:8080/onvif/device_service"), ctx);
 	onvifDevice.SetAuth("admin", "admin", AUTO);
 	auto pool = QThreadPool::globalInstance();
@@ -49,22 +50,22 @@ int main(int _Argc, char ** _Argv) {
 			}
 		}
 	}
-
-// 	Request<_tev__GetEventProperties> req;
-// 	auto res = onvifEvent->GetEventProperties(req);
-// 	if(auto resObj = res.getResultObject()) {
-// 		if(auto topicSet = resObj->wstop__TopicSet) {
-// 			for(auto it : topicSet->__any) {
-// 				if(auto topicAtt = soap_att_get(it, "http://docs.oasis-open.org/wsn/t-1", "topic")) {
-// 					for(auto itt = soap_elt_get(it, "http://www.onvif.org/ver10/schema", "MessageDescription"); itt; itt = soap_elt_get_next(itt)) {
-// 						auto node = (tt__MessageDescription*)soap_elt_get_node(itt, SOAP_TYPE_tt__MessageDescription);
-// 						bool property = node->IsProperty ? node->IsProperty : false;
-// 					}
-// 				}
-// 			}
-// 		}
-// 	}
-
+	*/
+	// 	Request<_tev__GetEventProperties> req;
+	// 	auto res = onvifEvent->GetEventProperties(req);
+	// 	if(auto resObj = res.getResultObject()) {
+	// 		if(auto topicSet = resObj->wstop__TopicSet) {
+	// 			for(auto it : topicSet->__any) {
+	// 				if(auto topicAtt = soap_att_get(it, "http://docs.oasis-open.org/wsn/t-1", "topic")) {
+	// 					for(auto itt = soap_elt_get(it, "http://www.onvif.org/ver10/schema", "MessageDescription"); itt; itt = soap_elt_get_next(itt)) {
+	// 						auto node = (tt__MessageDescription*)soap_elt_get_node(itt, SOAP_TYPE_tt__MessageDescription);
+	// 						bool property = node->IsProperty ? node->IsProperty : false;
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+/*
 	if(onvifEvent) {
 		Request<_tev__CreatePullPointSubscription> request;
 		request.InitialTerminationTime = new AbsoluteOrRelativeTime(60000);
@@ -76,5 +77,6 @@ int main(int _Argc, char ** _Argv) {
 			}
 		}
 	}
+	*/
 	return 0;
 }

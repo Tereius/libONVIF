@@ -15,6 +15,7 @@ public:
 	OnvifImagingClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
 	virtual ~OnvifImagingClient();
 
+	static QString GetServiceNamespace() { return "http://www.onvif.org/ver20/imaging/wsdl"; }
 	Response<_timg__GetServiceCapabilitiesResponse> GetServiceCapabilities(Request<_timg__GetServiceCapabilities> &rRequest);
 	Response<_timg__GetImagingSettingsResponse> GetImagingSettings(Request<_timg__GetImagingSettings> &rRequest);
 	Response<_timg__SetImagingSettingsResponse> SetImagingSettings(Request<_timg__SetImagingSettings> &rRequest);

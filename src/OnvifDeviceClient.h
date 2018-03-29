@@ -15,6 +15,7 @@ public:
 	OnvifDeviceClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
 	virtual ~OnvifDeviceClient();
 
+	static QString GetServiceNamespace() { return "http://www.onvif.org/ver10/device/wsdl"; }
 	Response<_tds__GetServicesResponse> GetServices(Request<_tds__GetServices> &rRequest);
 	Response<_tds__GetServiceCapabilitiesResponse> GetServiceCapabilities(Request<_tds__GetServiceCapabilities> &rRequest);
 	Response<_tds__GetDeviceInformationResponse> GetDeviceInformation(Request<_tds__GetDeviceInformation> &rRequest);

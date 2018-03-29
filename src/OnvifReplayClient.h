@@ -15,6 +15,7 @@ public:
 	OnvifReplayClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
 	virtual ~OnvifReplayClient();
 
+	static QString GetServiceNamespace() { return "http://www.onvif.org/ver10/replay/wsdl"; }
 	Response<_trp__GetServiceCapabilitiesResponse> GetServiceCapabilities(Request<_trp__GetServiceCapabilities> &rRequest);
 	Response<_trp__GetReplayUriResponse> GetReplayUri(Request<_trp__GetReplayUri> &rRequest);
 	Response<_trp__GetReplayConfigurationResponse> GetReplayConfiguration(Request<_trp__GetReplayConfiguration> &rRequest);

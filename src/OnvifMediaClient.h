@@ -15,6 +15,7 @@ public:
 	OnvifMediaClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
 	virtual ~OnvifMediaClient();
 
+	static QString GetServiceNamespace() { return "http://www.onvif.org/ver10/media/wsdl"; }
 	Response<_trt__GetServiceCapabilitiesResponse> GetServiceCapabilities(Request<_trt__GetServiceCapabilities> &rRequest);
 	Response<_trt__GetVideoSourcesResponse> GetVideoSources(Request<_trt__GetVideoSources> &rRequest);
 	Response<_trt__GetAudioSourcesResponse> GetAudioSources(Request<_trt__GetAudioSources> &rRequest);

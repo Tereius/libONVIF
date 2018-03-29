@@ -14,6 +14,7 @@ public:
 	OnvifRecordingClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
 	virtual ~OnvifRecordingClient();
 
+	static QString GetServiceNamespace() { return "http://www.onvif.org/ver10/recording/wsdl"; }
 	Response<_trc__GetServiceCapabilitiesResponse> GetServiceCapabilities(Request<_trc__GetServiceCapabilities> &rRequest);
 	Response<_trc__CreateRecordingResponse> CreateRecording(Request<_trc__CreateRecording> &rRequest);
 	Response<_trc__DeleteRecordingResponse> DeleteRecording(Request<_trc__DeleteRecording> &rRequest);

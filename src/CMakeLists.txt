@@ -62,18 +62,19 @@ set(public_header_files
 	Client.h
 	SafeBool.h
 	global.h
+	OnvifClients.h
 )
 
-add_library(OnvifCommon ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(OnvifCommon EXPORT_FILE_NAME OnvifCommonExport.h)
-target_link_libraries(OnvifCommon "${OpenSSLLib_ssl_PATH}" "${OpenSSLLib_cryptro_PATH}" Qt5::Core)
-set_target_properties(OnvifCommon PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifCommonExport.h")
+add_library(onvifcommon ${src_files} ${private_header_files} ${public_header_files})
+generate_export_header(onvifcommon EXPORT_FILE_NAME onvifcommonExport.h)
+target_link_libraries(onvifcommon "${OpenSSLLib_ssl_PATH}" "${OpenSSLLib_cryptro_PATH}" Qt5::Core)
+set_target_properties(onvifcommon PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifcommonExport.h")
 
 # -------------------------------ONVIF Analytics-------------------------------
 set(src_files 
 	generated/soapAnalyticsDeviceBindingProxy.cpp
 	#generated/soapAnalyticsDeviceBindingService.cpp
-	OnvifAnalyticsClient.cpp
+	onvifanalyticsClient.cpp
 )
 
 # private header
@@ -84,19 +85,19 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	OnvifAnalyticsClient.h
+	onvifanalyticsClient.h
 )
 
-add_library(OnvifAnalytics ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(OnvifAnalytics EXPORT_FILE_NAME OnvifAnalyticsExport.h)
-target_link_libraries(OnvifAnalytics OnvifCommon)
-set_target_properties(OnvifAnalytics PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifAnalyticsExport.h")
+add_library(onvifanalytics ${src_files} ${private_header_files} ${public_header_files})
+generate_export_header(onvifanalytics EXPORT_FILE_NAME onvifanalyticsExport.h)
+target_link_libraries(onvifanalytics onvifcommon)
+set_target_properties(onvifanalytics PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifanalyticsExport.h")
 
 # -------------------------------ONVIF Device-------------------------------
 set(src_files 
 	generated/soapDeviceBindingProxy.cpp
 	#generated/soapDeviceBindingService.cpp
-	OnvifDeviceClient.cpp
+	onvifdeviceClient.cpp
 )
 
 # private header
@@ -107,19 +108,19 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	OnvifDeviceClient.h
+	onvifdeviceClient.h
 )
 
-add_library(OnvifDevice ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(OnvifDevice EXPORT_FILE_NAME OnvifDeviceExport.h)
-target_link_libraries(OnvifDevice OnvifCommon)
-set_target_properties(OnvifDevice PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifDeviceExport.h")
+add_library(onvifdevice ${src_files} ${private_header_files} ${public_header_files})
+generate_export_header(onvifdevice EXPORT_FILE_NAME onvifdeviceExport.h)
+target_link_libraries(onvifdevice onvifcommon)
+set_target_properties(onvifdevice PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifdeviceExport.h")
 
 # -------------------------------ONVIF Display-------------------------------
 set(src_files 
 	generated/soapDisplayBindingProxy.cpp
 	#generated/soapDisplayBindingService.cpp
-	OnvifDisplayClient.cpp
+	onvifdisplayClient.cpp
 )
 
 # private header
@@ -130,19 +131,19 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	OnvifDisplayClient.h
+	onvifdisplayClient.h
 )
 
-add_library(OnvifDisplay ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(OnvifDisplay EXPORT_FILE_NAME OnvifDisplayExport.h)
-target_link_libraries(OnvifDisplay OnvifCommon)
-set_target_properties(OnvifDisplay PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifDisplayExport.h")
+add_library(onvifdisplay ${src_files} ${private_header_files} ${public_header_files})
+generate_export_header(onvifdisplay EXPORT_FILE_NAME onvifdisplayExport.h)
+target_link_libraries(onvifdisplay onvifcommon)
+set_target_properties(onvifdisplay PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifdisplayExport.h")
 
 # -------------------------------ONVIF Imaging-------------------------------
 set(src_files 
 	generated/soapImagingBindingProxy.cpp
 	#generated/soapImagingBindingService.cpp
-	OnvifImagingClient.cpp
+	onvifimagingClient.cpp
 )
 
 # private header
@@ -153,19 +154,19 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	OnvifImagingClient.h
+	onvifimagingClient.h
 )
 
-add_library(OnvifImaging ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(OnvifImaging EXPORT_FILE_NAME OnvifImagingExport.h)
-target_link_libraries(OnvifImaging OnvifCommon)
-#set_target_properties(OnvifImaging PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifImagingExport.h")
+add_library(onvifimaging ${src_files} ${private_header_files} ${public_header_files})
+generate_export_header(onvifimaging EXPORT_FILE_NAME onvifimagingExport.h)
+target_link_libraries(onvifimaging onvifcommon)
+#set_target_properties(onvifimaging PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifimagingExport.h")
 
 # -------------------------------ONVIF Media-------------------------------
 set(src_files 
 	generated/soapMediaBindingProxy.cpp
 	#generated/soapMediaBindingService.cpp
-	OnvifMediaClient.cpp
+	onvifmediaClient.cpp
 )
 
 # private header
@@ -176,19 +177,19 @@ set(private_header_files
 
 # public header
 set(public_header_files
-		OnvifMediaClient.h
+		onvifmediaClient.h
 )
 
-add_library(OnvifMedia ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(OnvifMedia EXPORT_FILE_NAME OnvifMediaExport.h)
-target_link_libraries(OnvifMedia OnvifCommon)
-#set_target_properties(OnvifMedia PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifMediaExport.h")
+add_library(onvifmedia ${src_files} ${private_header_files} ${public_header_files})
+generate_export_header(onvifmedia EXPORT_FILE_NAME onvifmediaExport.h)
+target_link_libraries(onvifmedia onvifcommon)
+#set_target_properties(onvifmedia PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifmediaExport.h")
 
 # -------------------------------ONVIF PTZ-------------------------------
 set(src_files 
 	generated/soapPTZBindingProxy.cpp
 	#generated/soapPTZBindingService.cpp
-	OnvifPtzClient.cpp
+	onvifptzClient.cpp
 )
 
 # private header
@@ -199,19 +200,19 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	OnvifPtzClient.h
+	onvifptzClient.h
 )
 
-add_library(OnvifPtz ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(OnvifPtz EXPORT_FILE_NAME OnvifPtzExport.h)
-target_link_libraries(OnvifPtz OnvifCommon)
-#set_target_properties(OnvifPtz PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifPtzExport.h")
+add_library(onvifptz ${src_files} ${private_header_files} ${public_header_files})
+generate_export_header(onvifptz EXPORT_FILE_NAME onvifptzExport.h)
+target_link_libraries(onvifptz onvifcommon)
+#set_target_properties(onvifptz PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifptzExport.h")
 
 # -------------------------------ONVIF Event-------------------------------
 set(src_files 
 	generated/soapPullPointSubscriptionBindingProxy.cpp
 	#generated/soapPullPointSubscriptionBindingService.cpp
-	OnvifEventClient.cpp
+	onvifeventClient.cpp
 	OnvifPullPoint.cpp
 )
 
@@ -223,20 +224,20 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	OnvifEventClient.h
+	onvifeventClient.h
 	OnvifPullPoint.h
 )
 
-add_library(OnvifEvent ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(OnvifEvent EXPORT_FILE_NAME OnvifEventExport.h)
-target_link_libraries(OnvifEvent OnvifCommon)
-set_target_properties(OnvifEvent PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifEventExport.h")
+add_library(onvifevent ${src_files} ${private_header_files} ${public_header_files})
+generate_export_header(onvifevent EXPORT_FILE_NAME onvifeventExport.h)
+target_link_libraries(onvifevent onvifcommon)
+set_target_properties(onvifevent PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifeventExport.h")
 
 # -------------------------------ONVIF Receiver-------------------------------
 set(src_files 
 	generated/soapReceiverBindingProxy.cpp
 	#generated/soapReceiverBindingService.cpp
-	OnvifReceiverClient.cpp
+	onvifreceiverClient.cpp
 )
 
 # private header
@@ -247,19 +248,19 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	OnvifReceiverClient.h
+	onvifreceiverClient.h
 )
 
-add_library(OnvifReceiver ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(OnvifReceiver EXPORT_FILE_NAME OnvifReceiverExport.h)
-target_link_libraries(OnvifReceiver OnvifCommon)
-#set_target_properties(OnvifReceiver PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifReceiverExport.h")
+add_library(onvifreceiver ${src_files} ${private_header_files} ${public_header_files})
+generate_export_header(onvifreceiver EXPORT_FILE_NAME onvifreceiverExport.h)
+target_link_libraries(onvifreceiver onvifcommon)
+#set_target_properties(onvifreceiver PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifreceiverExport.h")
 
 # -------------------------------ONVIF Recording-------------------------------
 set(src_files 
 	generated/soapRecordingBindingProxy.cpp
 	#generated/soapRecordingBindingService.cpp
-	OnvifRecordingClient.cpp
+	onvifrecordingClient.cpp
 )
 
 # private header
@@ -270,20 +271,20 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	OnvifRecordingClient.h
+	onvifrecordingClient.h
 )
 
-add_library(OnvifRecording ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(OnvifRecording EXPORT_FILE_NAME OnvifRecordingExport.h)
-target_link_libraries(OnvifRecording OnvifCommon)
-#set_target_properties(OnvifRecording PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifRecordingExport.h")
+add_library(onvifrecording ${src_files} ${private_header_files} ${public_header_files})
+generate_export_header(onvifrecording EXPORT_FILE_NAME onvifrecordingExport.h)
+target_link_libraries(onvifrecording onvifcommon)
+#set_target_properties(onvifrecording PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifrecordingExport.h")
 
 # -------------------------------ONVIF Discovery-------------------------------
 set(src_files 
 	generated/soapRemoteDiscoveryBindingProxy.cpp
 	#generated/soapRemoteDiscoveryBindingService.cpp
 	#gsoap/wsddapi.c
-	OnvifDiscoveryClient.cpp
+	onvifdiscoveryClient.cpp
 )
 
 set_source_files_properties(${src_files} PROPERTIES LANGUAGE CXX)
@@ -297,19 +298,19 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	OnvifDiscoveryClient.h
+	onvifdiscoveryClient.h
 )
 
-add_library(OnvifDiscovery ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(OnvifDiscovery EXPORT_FILE_NAME OnvifDiscoveryExport.h)
-target_link_libraries(OnvifDiscovery OnvifCommon)
-set_target_properties(OnvifDiscovery PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifDiscoveryExport.h")
+add_library(onvifdiscovery ${src_files} ${private_header_files} ${public_header_files})
+generate_export_header(onvifdiscovery EXPORT_FILE_NAME onvifdiscoveryExport.h)
+target_link_libraries(onvifdiscovery onvifcommon)
+set_target_properties(onvifdiscovery PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifdiscoveryExport.h")
 
 # -------------------------------ONVIF Replay-------------------------------
 set(src_files 
 	generated/soapReplayBindingProxy.cpp
 	#generated/soapReplayBindingService.cpp
-	OnvifReplayClient.cpp
+	onvifreplayClient.cpp
 )
 
 # private header
@@ -320,31 +321,34 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	OnvifReplayClient.h
+	onvifreplayClient.h
 )
 
-add_library(OnvifReplay ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(OnvifReplay EXPORT_FILE_NAME OnvifReplayExport.h)
-target_link_libraries(OnvifReplay OnvifCommon)
-#set_target_properties(OnvifReplay PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifReplayExport.h")
+add_library(onvifreplay ${src_files} ${private_header_files} ${public_header_files})
+generate_export_header(onvifreplay EXPORT_FILE_NAME onvifreplayExport.h)
+target_link_libraries(onvifreplay onvifcommon)
+#set_target_properties(onvifreplay PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifreplayExport.h")
 
 # -------------------------------------------------------------------------
 
-# Testsuite
+# info tool
 set(src_files
 	main.cpp
+	CmdLineParser.cpp
+	onvifdevice.cpp
 )
 
 # private header
 set(private_header_files
-
+	CmdLineParser.h
+	onvifdevice.h
 )
 
-add_executable(Testsuite ${src_files} ${private_header_files})
-target_link_libraries(Testsuite OnvifDevice OnvifEvent)
+add_executable(onvifinfo ${src_files} ${private_header_files})
+target_link_libraries(onvifinfo onvifcommon onvifdevice onvifdiscovery onvifreplay onvifrecording onvifreceiver onvifptz onvifmedia onvifimaging onvifevent onvifdisplay onvifanalytics)
 
 if(MSVC)
-	set_target_properties(Testsuite OnvifCommon OnvifDevice OnvifDiscovery OnvifReplay OnvifRecording OnvifReceiver OnvifPtz OnvifMedia OnvifImaging OnvifEvent OnvifDisplay OnvifAnalytics PROPERTIES COMPILE_FLAGS "/bigobj")
+	set_target_properties(onvifinfo onvifcommon onvifdevice onvifdiscovery onvifreplay onvifrecording onvifreceiver onvifptz onvifmedia onvifimaging onvifevent onvifdisplay onvifanalytics PROPERTIES COMPILE_FLAGS "/bigobj")
 endif()
 
 set(install_root "${CMAKE_INSTALL_PREFIX}")
@@ -364,19 +368,19 @@ write_basic_package_version_file("${CMAKE_BINARY_DIR}/libONVIFVersion.cmake" VER
 							  
 # add the install target
 install(TARGETS 
-	Testsuite
-	OnvifCommon
-	OnvifDevice
-	OnvifDiscovery
-	OnvifReplay
-	OnvifRecording
-	OnvifReceiver
-	OnvifPtz
-	OnvifMedia
-	OnvifImaging
-	OnvifEvent
-	OnvifDisplay
-	OnvifAnalytics
+	onvifinfo
+	onvifcommon
+	onvifdevice
+	onvifdiscovery
+	onvifreplay
+	onvifrecording
+	onvifreceiver
+	onvifptz
+	onvifmedia
+	onvifimaging
+	onvifevent
+	onvifdisplay
+	onvifanalytics
 	EXPORT libONVIFTargets RUNTIME DESTINATION bin ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION include
 )
 install(EXPORT libONVIFTargets DESTINATION cmake)

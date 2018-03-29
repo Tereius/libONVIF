@@ -23,6 +23,8 @@ public:
 	void EnableOModeFlags(soap_mode omode);
 	void DisableIModeFlags(soap_mode imode);
 	void DisableOModeFlags(soap_mode omode);
+	void EnablePrintRawSoap();
+	void DisablePrintRawSoap();
 	QString GetFaultString();
 	QString GetFaultDetail();
 	bool EnableSsl();
@@ -54,6 +56,7 @@ public:
 		Builder& SetReceiveTimeout(int timeoutMs) { mpResult->SetReceiveTimeout(timeoutMs); return *this; }
 		Builder& EnableIMode(soap_mode timeoutMs) { mpResult->EnableIModeFlags(timeoutMs); return *this; }
 		Builder& EnableOMode(soap_mode timeoutMs) { mpResult->EnableOModeFlags(timeoutMs); return *this; }
+		Builder& EnablePrintRawSoap() { mpResult->EnablePrintRawSoap(); return *this; }
 #ifdef WITH_OPENSSL
 		Builder& EnableSsl() { mpResult->EnableSsl(); return *this; }
 #endif // WITH_OPENSSL

@@ -16,6 +16,7 @@ public:
 	OnvifEventClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
 	virtual ~OnvifEventClient();
 
+	static QString GetServiceNamespace() { return "http://www.onvif.org/ver10/events/wsdl"; }
 	ArbitraryResponse<QSharedPointer<OnvifPullPoint>> CreatePullPointSubscription(Request<_tev__CreatePullPointSubscription> &rRequest);
 	Response<_tev__PullMessagesResponse> PullMessages(Request<_tev__PullMessages> &rRequest);
 	Response<_wsnt__RenewResponse> Renew(Request<_wsnt__Renew> &rRequest);

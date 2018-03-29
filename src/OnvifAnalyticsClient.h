@@ -1,8 +1,8 @@
 #pragma once
 #include "Response.h"
 #include "Request.h"
-#include "OnvifAnalyticsExport.h"
 #include "Client.h"
+#include "OnvifAnalyticsExport.h"
 
 
 struct OnvifAnalyticsClientPrivate;
@@ -15,6 +15,7 @@ public:
 	OnvifAnalyticsClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
 	virtual ~OnvifAnalyticsClient();
 
+	static QString GetServiceNamespace() { return "http://www.onvif.org/ver20/analytics/wsdl"; }
 	Response<_tad__GetServiceCapabilitiesResponse> GetServiceCapabilities(Request<_tad__GetServiceCapabilities> &rRequest);
 	Response<_tad__DeleteAnalyticsEngineControlResponse> DeleteAnalyticsEngineControl(Request<_tad__DeleteAnalyticsEngineControl> &rRequest);
 	Response<_tad__CreateAnalyticsEngineControlResponse> CreateAnalyticsEngineControl(Request<_tad__CreateAnalyticsEngineControl> &rRequest);

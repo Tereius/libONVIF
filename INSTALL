@@ -1,14 +1,7 @@
-How to build and install Archivist binaries
+How to build and install libONVIF binaries
 ===========================================
 
-To help CMake find dependencies add a system variable with the name "CMAKE_HINT" which points to a directory where the libraries are located.
-CMake will automatically search for the subdirectories "asdcpmodlib" and "xercescpp". Also you can add the directory of a library directly to "CMAKE_HINT".
+You may want to use CommonLibs (https://github.com/Tereius/CommonLibs) to build the dependencies.
 
-Windows
--------
 
-Using cmake (see www.cmake.org). A out-out-source build is strongly recommended!
-
-Type:
-cd <project_root>/build
-cmake ../
+This projects uses CMake (see www.cmake.org).

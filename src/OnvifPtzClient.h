@@ -14,6 +14,7 @@ public:
 	OnvifPtzClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
 	virtual ~OnvifPtzClient();
 
+	static QString GetServiceNamespace() { return "http://www.onvif.org/ver20/ptz/wsdl"; }
 	Response<_tptz__GetServiceCapabilitiesResponse> GetServiceCapabilities(Request<_tptz__GetServiceCapabilities> &rRequest);
 	Response<_tptz__GetConfigurationsResponse> GetConfigurations(Request<_tptz__GetConfigurations> &rRequest);
 	Response<_tptz__GetPresetsResponse> GetPresets(Request<_tptz__GetPresets> &rRequest);

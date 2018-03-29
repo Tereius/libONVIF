@@ -14,6 +14,7 @@ public:
 	OnvifReceiverClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
 	virtual ~OnvifReceiverClient();
 
+	static QString GetServiceNamespace() { return "http://www.onvif.org/ver10/receiver/wsdl"; }
 	Response<_trv__GetServiceCapabilitiesResponse> GetServiceCapabilities(Request<_trv__GetServiceCapabilities> &rRequest);
 	Response<_trv__GetReceiversResponse> GetReceivers(Request<_trv__GetReceivers> &rRequest);
 	Response<_trv__GetReceiverResponse> GetReceiver(Request<_trv__GetReceiver> &rRequest);

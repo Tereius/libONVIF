@@ -9,6 +9,7 @@
 
 struct arbData {
 
+	bool enableDebug = false;
 	int(*fsend)(struct soap*, const char*, size_t);
 	size_t(*frecv)(struct soap*, char*, size_t);
 };
@@ -16,14 +17,14 @@ struct arbData {
 int fsend(struct soap *soap, const char *s, size_t n) {
 
 	auto ret = ((arbData*)soap->user)->fsend(soap, s, n);
-	qDebug().noquote() << QString::fromUtf8(s, n);
+	if(((arbData*)soap->user)->enableDebug) qDebug().noquote() << QString::fromUtf8(s, n);
 	return ret;
 }
 
 size_t frecv(struct soap *soap, char *s, size_t n) {
 
 	auto length = ((arbData*)soap->user)->frecv(soap, s, n);
-	qDebug().noquote() << QString::fromUtf8(s, length);
+	if(((arbData*)soap->user)->enableDebug) qDebug().noquote() << QString::fromUtf8(s, length);
 	return length;
 }
 
@@ -241,4 +242,16 @@ QString SoapCtx::GetFaultDetail() {
 		if(*soap_faultdetail(mpSoap)) return QString::fromLocal8Bit(*soap_faultdetail(mpSoap));
 	}
 	return QString();
+}
+
+void SoapCtx::EnablePrintRawSoap() {
+
+	QMutexLocker locker(&mMutex);
+	((arbData*)mpSoap->user)->enableDebug = true;
+}
+
+void SoapCtx::DisablePrintRawSoap() {
+
+	QMutexLocker locker(&mMutex);
+	((arbData*)mpSoap->user)->enableDebug = false;
 }
