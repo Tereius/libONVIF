@@ -311,11 +311,11 @@ if(USE_PRECOMPILED_HEADERS)
 endif()
 
 # -------------------------------ONVIF Discovery-------------------------------
-set(src_files 
+set(src_files
 	generated/soapRemoteDiscoveryBindingProxy.cpp
 	#generated/soapRemoteDiscoveryBindingService.cpp
 	#gsoap/wsddapi.c
-	onvifdiscoveryClient.cpp
+	OnvifdiscoveryClient.cpp
 )
 
 set_source_files_properties(${src_files} PROPERTIES LANGUAGE CXX)
@@ -329,7 +329,8 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	onvifdiscoveryClient.h
+	OnvifdiscoveryClient.h
+	DeleterDuplicator.h
 )
 
 add_library(onvifdiscovery ${src_files} ${private_header_files} ${public_header_files})

@@ -7,7 +7,6 @@ template <class T> struct SoapDeleterReq {
 
 	void operator()(T* p) {
 		if(p) p->soap_del();
-		delete p;
 	}
 };
 
