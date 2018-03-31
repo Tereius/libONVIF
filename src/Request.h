@@ -3,16 +3,26 @@
 #include <QUrl>
 
 
-template <class T> class Request : public T {
+template <class T> struct SoapDeleterReq {
+
+	void operator()(T* p) {
+		if(p) p->soap_del();
+		delete p;
+	}
+};
+
+template <class T, class Deleter = SoapDeleterReq<T>> class Request : public T {
 
 public:
 	Request() : 
 		T(),
-		mSoapAction() {
+		mSoapAction(),
+		mDeleter() {
 	
 	}
 	virtual ~Request() {
-		soap_del();
+
+		mDeleter(this);
 	}
 	//! If you want to overwrite the SOAP action of the request.
 	void SetSoapAction(const QString &rAction) { mSoapAction = rAction; }
@@ -23,4 +33,5 @@ private:
 	Request & operator=(const Request &);
 
 	QString mSoapAction;
+	Deleter mDeleter;
 };

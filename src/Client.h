@@ -23,14 +23,14 @@ public:
 	// The Soap context this client is working with.
 	QSharedPointer<SoapCtx> GetCtx() const;
 	// Returns the fault string of the last service call.
-	QString GetFaultString();
+	virtual QString GetFaultString();
 	// Returns the fault detail string of the last service call.
-	QString GetFaultDetail();
-	const QUrl& GetEndpoint() const;
-	const QString GetEndpointString() const;
+	virtual QString GetFaultDetail();
+	virtual const QUrl& GetEndpoint() const;
+	virtual const QString GetEndpointString() const;
 	//! Releases old auth data and sets the new one.
-	void SetAuth(const QString &rUserName, const QString &rPassword, AuthMode mode = AUTO);
-	void DisableAuth();
+	virtual void SetAuth(const QString &rUserName, const QString &rPassword, AuthMode mode = AUTO);
+	virtual void DisableAuth();
 
 protected:
 	soap* ackquireCtx();

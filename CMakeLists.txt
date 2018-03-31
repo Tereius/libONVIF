@@ -8,6 +8,7 @@ set(VERSION_PATCH 0)
 set(VERSION_STRING ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "Default Targets")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
 # use, i.e. don't skip the full RPATH for the build tree
 set(CMAKE_SKIP_BUILD_RPATH  OFF)
 # when building, don't use the install RPATH already
@@ -22,6 +23,14 @@ list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib"
 if("${isSystemDir}" STREQUAL "-1")
 	set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 endif("${isSystemDir}" STREQUAL "-1")
+
+set(USE_PRECOMPILED_HEADERS false CACHE BOOL "Use precompiled headers?")
+if(USE_PRECOMPILED_HEADERS)
+	include(cotire)
+	if(MSVC)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251")
+	endif()
+endif()
 
 add_subdirectory(src)
 

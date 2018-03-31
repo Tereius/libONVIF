@@ -48,13 +48,19 @@ ArbitraryResponse<CmdOptions> CmdLineParser::parse(const QCommandLineParser &par
 		options.discover = false;
 		options.host = parser.value("host");
 		if(options.host.endsWith('/')) options.host = options.host.remove(options.host.length() - 2, 1);
-		if(options.host.startsWith("http:")) {
-			options.scheme = "http";
+		auto url = QUrl::fromUserInput(options.host);
+		options.host = url.host();
+		if(url.scheme().startsWith("https:")) {
+			options.scheme = "https://";
+			options.port = 443;
+		}
+		else if(url.scheme().startsWith("http:")) {
+			options.scheme = "http://";
 			options.port = 80;
 		}
-		else if(options.host.startsWith("https:")) {
-			options.scheme = "https";
-			options.port = 443;
+		else {
+			options.scheme = "http://";
+			options.port = 8080;
 		}
 	}
 	else {
@@ -99,7 +105,7 @@ ArbitraryResponse<CmdOptions> CmdLineParser::parse(const QCommandLineParser &par
 			options.pwd = parser.value("pwd");
 		}
 
-		options.endpointUrl = QUrl::fromUserInput(options.host + ":" + QString::number(options.port) + options.path);
+		options.endpointUrl = QUrl::fromUserInput(options.scheme + options.host + ":" + QString::number(options.port) + options.path);
 		if(!options.endpointUrl.isValid()) {
 			return ArbitraryResponse<CmdOptions>(GENERIC_FAULT, QCoreApplication::translate("main", "The endpoint is invalid: %1").arg(options.endpointUrl.errorString()));
 		}

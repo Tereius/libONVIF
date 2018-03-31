@@ -139,39 +139,60 @@ private:
 	SOAP_ENV__Detail* mpFaultResultObject;
 };
 
-template <class T> class Response : public DetailedResponse {
+template <class T> struct SoapDeleter {
+
+	void operator()(T* p) {
+		if(p) p->soap_del();
+		delete p;
+	}
+};
+
+template <class T> struct SoapDuplicator {
+
+	T* operator()(const T *p) {
+		return p->soap_dup();
+	}
+};
+
+template <class T, class Deleter = SoapDeleter<T>, class Duplicator = SoapDuplicator<T>> 
+class Response : public DetailedResponse {
 
 public:
 
 	Response() :
 		DetailedResponse(),
+		mDeleter(),
+		mDuplicator(),
 		mpResultObject(nullptr) {
 
 	}
 
 	Response(int errorCode, const QString &rFault = QString(), const QString &rFaultDetail = QString(), const T *pResultObject = nullptr, const SOAP_ENV__Detail *pFaultObject = nullptr) :
 		DetailedResponse(errorCode, rFault, rFaultDetail, pFaultObject),
-		mpResultObject(pResultObject ? pResultObject->soap_dup() : nullptr) {
+		mDeleter(),
+		mDuplicator(),
+		mpResultObject(pResultObject ? mDuplicator(pResultObject) : nullptr) {
 
 	}
 
 	Response(const T *pResultObject) :
 		DetailedResponse(),
-		mpResultObject(pResultObject ? pResultObject->soap_dup() : nullptr) {
+		mDeleter(),
+		mDuplicator(),
+		mpResultObject(pResultObject ? mDuplicator(pResultObject) : nullptr) {
 
 	}
 
 	virtual ~Response() {
 
-		if(mpResultObject) {
-			mpResultObject->soap_del();
-		}
-		delete mpResultObject;
+		mDeleter(mpResultObject);
 	}
 
 	Response(const Response &rOther) :
 		DetailedResponse(rOther),
-		mpResultObject(rOther.mpResultObject ? rOther.mpResultObject->soap_dup() : nullptr) {
+		mDeleter(rOther.mDeleter),
+		mDuplicator(rOther.mDuplicator),
+		mpResultObject(rOther.mpResultObject ? mDuplicator(rOther.mpResultObject) : nullptr) {
 
 	}
 
@@ -181,11 +202,8 @@ public:
 			return *this;
 		}
 		DetailedResponse::operator=(rOther);
-		if(this->mpResultObject) {
-			this->mpResultObject->soap_del();
-		}
-		delete mpResultObject;
-		this->mpResultObject = rOther.mpResultObject ? rOther.mpResultObject->soap_dup() : nullptr;
+		this->mDeleter(this->mpResultObject);
+		this->mpResultObject = rOther.mpResultObject ? mDuplicator(pResultObject) : nullptr;
 		return *this;
 	}
 
@@ -195,6 +213,8 @@ public:
 
 private:
 
+	Deleter mDeleter;
+	Duplicator mDuplicator;
 	T* mpResultObject;
 };
 

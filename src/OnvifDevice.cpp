@@ -1,7 +1,21 @@
 #include "OnvifDevice.h"
+#include "OnvifAnalyticsClient.h"
+#include "OnvifDeviceClient.h"
+#include "OnvifDiscoveryClient.h"
+#include "OnvifDisplayClient.h"
+#include "OnvifEventClient.h"
+#include "OnvifImagingClient.h"
+#include "OnvifMediaClient.h"
+#include "OnvifEventClient.h"
+#include "OnvifImagingClient.h"
+#include "OnvifMediaClient.h"
+#include "OnvifPtzClient.h"
+#include "OnvifReceiverClient.h"
+#include "OnvifRecordingClient.h"
+#include "OnvifReplayClient.h"
 #include "SoapCtx.h"
 #include "OnvifDeviceClient.h"
-#include "OnvifClients.h"
+#include "JsonHelper.h"
 #include <QUrl>
 
 
@@ -75,12 +89,30 @@ SimpleResponse OnvifDevice::Initialize() {
 		for(auto service : servicesResponse.getResultObject()->Service) {
 			if(service->Namespace == OnvifAnalyticsClient::GetServiceNamespace()) {
 				qDebug() << "ONVIF analytics service" << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
-			}
-			if(service->Namespace == OnvifDeviceClient::GetServiceNamespace()) {
-				qDebug() << "ONVIF device service" << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
 				mpD->mpOnvifAnalyticsClient = new OnvifAnalyticsClient(QUrl(qPrintable(service->XAddr)), ctx, this);
 				if(!mpD->mUserName.isNull() || !mpD->mPassword.isNull()) {
 					mpD->mpOnvifAnalyticsClient->SetAuth(mpD->mUserName, mpD->mPassword, AUTO);
+				}
+			}
+			if(service->Namespace == OnvifDeviceClient::GetServiceNamespace()) {
+				qDebug() << "ONVIF device service" << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
+				mpD->mpOnvifDeviceClient = new OnvifDeviceClient(QUrl(qPrintable(service->XAddr)), ctx, this);
+				if(!mpD->mUserName.isNull() || !mpD->mPassword.isNull()) {
+					mpD->mpOnvifDeviceClient->SetAuth(mpD->mUserName, mpD->mPassword, AUTO);
+				}
+				Request<_tds__GetServiceCapabilities> capReq;
+				auto capResp = mpD->mpOnvifDeviceClient->GetServiceCapabilities(capReq);
+				if(capResp) {
+
+					auto soap = soap_new1(SOAP_C_UTFSTRING | SOAP_XML_INDENT | SOAP_DOM_NODE);
+					auto dom = soap_dom_element(soap, nullptr, "root", (void*)capResp.getResultObject()->Capabilities, capResp.getResultObject()->Capabilities->soap_type());
+					auto jsonRes = JsonHelper::Parse(&dom);
+					dom.set((void*)capResp.getResultObject()->Capabilities, capResp.getResultObject()->Capabilities->soap_type());
+					qDebug() << jsonRes;
+					soap_destroy(dom.soap);
+					soap_end(dom.soap);
+					soap_done(dom.soap);
+					free(dom.soap);
 				}
 			}
 			else if(service->Namespace == OnvifDisplayClient::GetServiceNamespace()) {

@@ -15,7 +15,7 @@ ECHO.
 :START
 set CURRENT_DIR=%~dp0
 
-%CURRENT_DIR%\%REL_PATH_TO_GSOAP_INSTALL_DIR%\bin\wsdl2h -c++11 -d -j -t typemap.dat -o rcx.h^
+%CURRENT_DIR%\%REL_PATH_TO_GSOAP_INSTALL_DIR%\bin\wsdl2h -c++11 -d -p -j -t typemap.dat -o rcx.h^
  http://www.onvif.org/onvif/ver10/network/wsdl/remotediscovery.wsdl^
  http://www.onvif.org/onvif/ver10/analyticsdevice.wsdl^
  http://www.onvif.org/onvif/ver10/replay.wsdl^

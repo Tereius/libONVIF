@@ -1,15 +1,61 @@
 #include "OnvifDiscoveryClient.h"
+#include "soapRemoteDiscoveryBindingProxy.h"
 
 
-ArbitraryResponse<QVector<QUrl>> OnvifDiscoveryClient::Probe(wsdd__ProbeType &rRequest) {
+struct OnvifDiscoveryClientPrivate {
 
-	wsdd__ProbeMatchesType responseObject;
+	OnvifDiscoveryClientPrivate(OnvifDiscoveryClient *pQ) : mpQ(pQ),
+		mProxy(mpQ->GetCtx()->Acquire()) {
+		mpQ->GetCtx()->Release();
+	}
+	OnvifDiscoveryClient *mpQ;
+	RemoteDiscoveryBindingProxy mProxy;
+};
+
+OnvifDiscoveryClient::OnvifDiscoveryClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx /*= QSharedPointer<SoapCtx>::create()*/, QObject *pParent /*= nullptr*/) :
+Client(rEndpoint, sharedCtx, pParent),
+mpD(new OnvifDiscoveryClientPrivate(this)) {
+
+}
+
+OnvifDiscoveryClient::~OnvifDiscoveryClient() {
+
+	delete mpD;
+}
+
+
+Response<wsdd__ResolveType, ResolveTypeDeleter<wsdd__ResolveType>, ResolveTypeDuplicator<wsdd__ResolveType>> OnvifDiscoveryClient::Hello(Request<wsdd__HelloType, ResolveTypeDeleterReq<wsdd__HelloType>> &rRequest) {
+
+	wsdd__ResolveType responseObject;
+	auto ret = SOAP_OK;
 	auto pSoap = ackquireCtx();
-	auto ret = mProxy.Probe(qPrintable(GetEndpointString()), nullptr, rRequest, responseObject);
-	ArbitraryResponse<QVector<QUrl>> response(ret, GetFaultString(), GetFaultDetail(), ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	do {
+		ret = mpD->mProxy.Hello(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, rRequest, responseObject);
+	} while(retry(pSoap));
+	Response<wsdd__ResolveType, ResolveTypeDeleter<wsdd__ResolveType>, ResolveTypeDuplicator<wsdd__ResolveType>> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
 	releaseCtx(pSoap);
 	return response;
 }
+/*
+Response<wsdd__ResolveType> OnvifDiscoveryClient::Bye(Request<wsdd__ByeType> &rRequest) {
+
+}
+
+Response<wsdd__ProbeMatchesType> OnvifDiscoveryClient::Probe(Request<wsdd__ProbeType> &rRequest) {
+
+}
+*/
+
+void OnvifDiscoveryClient::SetAuth(const QString &rUserName, const QString &rPassword, AuthMode mode /*= AUTO*/) {
+	
+	// Ignored
+}
+
+void OnvifDiscoveryClient::DisableAuth() {
+
+	// Ignored
+}
+
 
 /*
 void wsdd_event_Hello(struct soap *  	soap,
