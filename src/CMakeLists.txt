@@ -312,25 +312,28 @@ endif()
 
 # -------------------------------ONVIF Discovery-------------------------------
 set(src_files
-	generated/soapRemoteDiscoveryBindingProxy.cpp
-	#generated/soapRemoteDiscoveryBindingService.cpp
-	#gsoap/wsddapi.c
+	# generated/soapRemoteDiscoveryBindingProxy.cpp
+	# generated/soapRemoteDiscoveryBindingService.cpp
+	# gsoap/wsddapi.c
 	OnvifdiscoveryClient.cpp
+	# OnvifDiscover.cpp
+	generated/soapwsddProxy.cpp
 )
 
 set_source_files_properties(${src_files} PROPERTIES LANGUAGE CXX)
 
 # private header
 set(private_header_files
-	generated/soapRemoteDiscoveryBindingProxy.h
-	#generated/soapRemoteDiscoveryBindingService.h
-	#gsoap/wsddapi.h
+	# generated/soapRemoteDiscoveryBindingProxy.h
+	# generated/soapRemoteDiscoveryBindingService.h
 )
 
 # public header
 set(public_header_files
 	OnvifdiscoveryClient.h
 	DeleterDuplicator.h
+	# OnvifDiscover.h
+	generated/soapwsddProxy.h
 )
 
 add_library(onvifdiscovery ${src_files} ${private_header_files} ${public_header_files})

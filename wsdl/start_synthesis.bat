@@ -16,7 +16,6 @@ ECHO.
 set CURRENT_DIR=%~dp0
 
 %CURRENT_DIR%\%REL_PATH_TO_GSOAP_INSTALL_DIR%\bin\wsdl2h -c++11 -d -p -j -t typemap.dat -o rcx.h^
- http://www.onvif.org/onvif/ver10/network/wsdl/remotediscovery.wsdl^
  http://www.onvif.org/onvif/ver10/analyticsdevice.wsdl^
  http://www.onvif.org/onvif/ver10/replay.wsdl^
  http://www.onvif.org/onvif/ver10/search.wsdl^
@@ -30,7 +29,7 @@ set CURRENT_DIR=%~dp0
  http://www.onvif.org/onvif/ver10/device/wsdl/devicemgmt.wsdl^
  http://www.onvif.org/onvif/ver20/analytics/wsdl/analytics.wsdl
 IF %errorlevel% neq 0 GOTO :ERROR
-%CURRENT_DIR%\%REL_PATH_TO_GSOAP_INSTALL_DIR%\bin\soapcpp2 -Ed -Ec -c++11 -a -j -L -x -d %CURRENT_DIR%\..\src\generated -I %CURRENT_DIR%\%REL_PATH_TO_GSOAP_INSTALL_DIR%\share\gsoap;%CURRENT_DIR%\%REL_PATH_TO_GSOAP_INSTALL_DIR%\share\gsoap\import;%CURRENT_DIR%\..\src\gsoap rcx.h
+%CURRENT_DIR%\%REL_PATH_TO_GSOAP_INSTALL_DIR%\bin\soapcpp2 -Ed -Ec -c++11 -a -j -L -x -n -d %CURRENT_DIR%\..\src\generated -I %CURRENT_DIR%\%REL_PATH_TO_GSOAP_INSTALL_DIR%\share\gsoap;%CURRENT_DIR%\%REL_PATH_TO_GSOAP_INSTALL_DIR%\share\gsoap\import;%CURRENT_DIR%\..\src\gsoap rcx.h
 IF %errorlevel% neq 0 GOTO :ERROR
 GOTO :SUCCESS
 

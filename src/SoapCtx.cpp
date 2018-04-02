@@ -2,9 +2,10 @@
 #include "QMutexLocker"
 #include "httpda.h"
 #include "wsaapi.h"
-#include "DeviceBinding.nsmap"
+#include "namespaces.nsmap"
 #include <QString>
 #include <QDebug>
+#include <QPointer>
 
 
 struct arbData {
@@ -12,6 +13,7 @@ struct arbData {
 	bool enableDebug = false;
 	int(*fsend)(struct soap*, const char*, size_t);
 	size_t(*frecv)(struct soap*, char*, size_t);
+	QPointer<QObject> pObject = nullptr;
 };
 
 int fsend(struct soap *soap, const char *s, size_t n) {
@@ -140,6 +142,7 @@ void SoapCtx::InitCtx() {
 	mpSoap->connect_timeout = SOAP_DEFAULT_CONNECT_TIMEOUT * -1000;
 	mpSoap->recv_timeout = SOAP_DEFAULT_RECEIVE_TIMEOUT * -1000;
 	mpSoap->send_timeout = SOAP_DEFAULT_SEND_TIMEOUT * -1000;
+	soap_set_namespaces(mpSoap, namespaces);
 
 	int(*pFsend)(struct soap *, const char *, size_t);
 	pFsend = &fsend;
@@ -185,6 +188,10 @@ void SoapCtx::Save() {
 	mConnectTimeoutSaved = mpSoap->connect_timeout;
 	mReceiveTimeout = mpSoap->recv_timeout;
 	mSendTimeout = mpSoap->send_timeout;
+	mSoFlags = mpSoap->socket_flags;
+	mConFlags = mpSoap->connect_flags;
+	mBindFlags = mpSoap->bind_flags;
+	mAcceptFlags = mpSoap->accept_flags;
 	mIsSaved = true;
 }
 
@@ -197,6 +204,10 @@ void SoapCtx::Restore() {
 		mpSoap->connect_timeout = mConnectTimeoutSaved;
 		mpSoap->recv_timeout = mReceiveTimeout;
 		mpSoap->send_timeout = mSendTimeout;
+		mpSoap->socket_flags = mSoFlags;
+		mpSoap->connect_flags = mConFlags;
+		mpSoap->bind_flags = mBindFlags;
+		mpSoap->accept_flags = mAcceptFlags;
 		mIsSaved = false;
 	}
 }
@@ -254,4 +265,28 @@ void SoapCtx::DisablePrintRawSoap() {
 
 	QMutexLocker locker(&mMutex);
 	((arbData*)mpSoap->user)->enableDebug = false;
+}
+
+void SoapCtx::SetSocketFlags(int soFlags) {
+
+	QMutexLocker locker(&mMutex);
+	mpSoap->socket_flags = soFlags;
+}
+
+void SoapCtx::SetConnectFlags(int conFlags) {
+
+	QMutexLocker locker(&mMutex);
+	mpSoap->connect_flags = conFlags;
+}
+
+void SoapCtx::SetBindFlags(int bindFlags) {
+
+	QMutexLocker locker(&mMutex);
+	mpSoap->bind_flags = bindFlags;
+}
+
+void SoapCtx::SetAcceptFlags(int acceptFlags) {
+
+	QMutexLocker locker(&mMutex);
+	mpSoap->accept_flags = acceptFlags;
 }

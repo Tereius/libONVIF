@@ -1,11 +1,13 @@
 #include "OnvifAnalyticsClient.h"
 #include "soapAnalyticsDeviceBindingProxy.h"
+#include "namespaces.nsmap"
 
 
 struct OnvifAnalyticsClientPrivate {
 
 	OnvifAnalyticsClientPrivate(OnvifAnalyticsClient *pQ) : mpQ(pQ),
 		mProxy(mpQ->GetCtx()->Acquire()) {
+		soap_set_namespaces(mProxy.soap, namespaces);
 		mpQ->GetCtx()->Release();
 	}
 	OnvifAnalyticsClient *mpQ;

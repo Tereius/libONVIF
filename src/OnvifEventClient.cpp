@@ -1,12 +1,14 @@
 #include "OnvifEventClient.h"
 #include "soapPullPointSubscriptionBindingProxy.h"
 #include "wsaapi.h"
+#include "namespaces.nsmap"
 
 
 struct OnvifEventClientPrivate {
 
 	OnvifEventClientPrivate(OnvifEventClient *pQ) : mpQ(pQ),
 		mProxy(mpQ->GetCtx()->Acquire()) {
+		soap_set_namespaces(mProxy.soap, namespaces);
 		mpQ->GetCtx()->Release();
 	}
 	OnvifEventClient *mpQ;

@@ -1,10 +1,12 @@
 #include "OnvifMediaClient.h"
 #include "soapMediaBindingProxy.h"
+#include "namespaces.nsmap"
 
 
 struct OnvifMediaClientPrivate {
 	OnvifMediaClientPrivate(OnvifMediaClient *pQ) : mpQ(pQ),
 		mProxy(mpQ->GetCtx()->Acquire()) {
+		soap_set_namespaces(mProxy.soap, namespaces);
 		mpQ->GetCtx()->Release();
 	}
 

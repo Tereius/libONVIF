@@ -1,11 +1,13 @@
 #include "OnvifDeviceClient.h"
 #include "soapDeviceBindingProxy.h"
+#include "namespaces.nsmap"
 
 
 struct OnvifDeviceClientPrivate {
 
 	OnvifDeviceClientPrivate(OnvifDeviceClient *pQ) : mpQ(pQ),
 		mProxy(mpQ->GetCtx()->Acquire()) {
+		soap_set_namespaces(mProxy.soap, namespaces);
 		mpQ->GetCtx()->Release();
 	}
 	OnvifDeviceClient *mpQ;

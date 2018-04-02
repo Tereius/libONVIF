@@ -1,10 +1,12 @@
 #include "OnvifReceiverClient.h"
 #include "soapReceiverBindingProxy.h"
+#include "namespaces.nsmap"
 
 
 struct OnvifReceiverClientPrivate {
 	OnvifReceiverClientPrivate(OnvifReceiverClient *pQ) : mpQ(pQ),
 		mProxy(mpQ->GetCtx()->Acquire()) {
+		soap_set_namespaces(mProxy.soap, namespaces);
 		mpQ->GetCtx()->Release();
 	}
 

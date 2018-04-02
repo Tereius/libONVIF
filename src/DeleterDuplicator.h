@@ -48,7 +48,7 @@ template <class T> struct ProbeMatchTypeDuplicator {
 template <class T> struct ProbeTypeDeleterReq {
 
 	void operator()(T* p) {
-		if(p) soap_del_wsdd__ProbeType(p);
+		//if(p) soap_del_wsdd__ProbeType(p);
 	}
 };
 
@@ -70,5 +70,20 @@ template <class T> struct ByeTypeDuplicator {
 
 	T* operator()(const T *p) {
 		return soap_dup_wsdd__ByeType(nullptr, nullptr, p);
+	}
+};
+
+template <class T> struct ProbeMatchesDeleter {
+
+	void operator()(T* p) {
+		if(p) soap_del___wsdd__ProbeMatches(p);
+		delete p;
+	}
+};
+
+template <class T> struct ProbeMatchesDuplicator {
+
+	T* operator()(const T *p) {
+		return soap_dup___wsdd__ProbeMatches(nullptr, nullptr, p);
 	}
 };

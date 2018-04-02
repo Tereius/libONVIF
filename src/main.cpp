@@ -1,10 +1,13 @@
 #include "OnvifDevice.h"
 #include "CmdLineParser.h"
+#include "OnvifDiscoveryClient.h"
+#include "OnvifDiscover.h"
 #include <QCoreApplication>
 #include <QRunnable>
 #include <QThreadPool>
 #include <QDebug>
 #include <QTimer>
+#include <QDateTime>
 
 
 int main(int argc, char **argv) {
@@ -18,12 +21,61 @@ int main(int argc, char **argv) {
 	QCommandLineParser parser;
 	CmdLineParser::setup(parser);
 	parser.process(app);
-	//CmdLineParser::setup(parser);
 	auto response = CmdLineParser::parse(parser);
 	if(response) {
-		auto device = new OnvifDevice(response.GetResultObject().endpointUrl, &app);
-		device->SetAuth(response.GetResultObject().user, response.GetResultObject().pwd);
-		device->Initialize();
+		auto options = response.GetResultObject();
+			if(options.discover) {
+			auto discovery = new OnvifDiscoveryClient(QUrl("soap.udp://239.255.255.250:3702"), QSharedPointer<SoapCtx>::create(), &app);
+			ProbeTypeRequest request;
+			request.Types = "tdn:NetworkVideoTransmitter";
+			auto probeResponseOne = discovery->Probe(request);
+			ProbeTypeRequest requestt;
+			requestt.Types = "tds:Device";
+			auto probeResponseTwo = discovery->Probe(requestt);
+			if(probeResponseOne && probeResponseTwo) {
+				qDebug() << "Searching ONVIF devices for" << options.discoverTime / 1000 << "seconds";
+				auto foundMatches = 0;
+				auto beginTs = QDateTime::currentMSecsSinceEpoch();
+				while(QDateTime::currentMSecsSinceEpoch() < beginTs + options.discoverTime) {
+					auto matchResp = discovery->ReceiveProbeMatches();
+					if(auto matchs = matchResp.getResultObject()) {
+						if(matchs->wsdd__ProbeMatches) {
+							for(auto i = 0; i < matchs->wsdd__ProbeMatches->__sizeProbeMatch; ++i) {
+								wsdd__ProbeMatchesType match = matchs->wsdd__ProbeMatches[i];
+								for(auto ii = 0; ii < match.__sizeProbeMatch; ++ii) {
+									foundMatches++;
+									auto probe = match.ProbeMatch[ii];
+									qDebug() << "Found match:";
+									qDebug() << "    Type:" << probe.Types;
+									qDebug() << "    Endpoint:" << probe.XAddrs;
+									if(probe.Scopes) {
+										auto scopeList = QString::fromLocal8Bit(probe.Scopes->__item).split(' ');
+										auto matchBy = QString::fromLocal8Bit(probe.Scopes->MatchBy);
+										if(!matchBy.isEmpty()) {
+											qDebug() << "    Match:" << matchBy;
+										}
+										qDebug() << "    Scope:";
+										for(auto scope : scopeList) {
+											qDebug() << "        " << scope;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				qDebug() << "Found" << foundMatches << (foundMatches > 1 ? "matches" : "match");
+			}
+			else {
+				if(!probeResponseOne) qDebug() << probeResponseOne.GetCompleteFault();
+				else qDebug() << probeResponseTwo.GetCompleteFault();
+			}
+		}
+		else {
+			auto device = new OnvifDevice(response.GetResultObject().endpointUrl, &app);
+			device->SetAuth(response.GetResultObject().user, response.GetResultObject().pwd);
+			device->Initialize();
+		}
 	}
 	else {
 		qCritical() << response.GetCompleteFault();

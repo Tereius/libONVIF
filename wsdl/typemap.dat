@@ -153,6 +153,7 @@
 
 [
 #import "wsse.h"
+#import "wsdd5.h"
 ]
 
 

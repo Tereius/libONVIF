@@ -1,11 +1,13 @@
 #include "OnvifImagingClient.h"
 #include "soapImagingBindingProxy.h"
+#include "namespaces.nsmap"
 
 
 struct OnvifImagingClientPrivate {
 
 	OnvifImagingClientPrivate(OnvifImagingClient *pQ) : mpQ(pQ),
 		mProxy(mpQ->GetCtx()->Acquire()) {
+		soap_set_namespaces(mProxy.soap, namespaces);
 		mpQ->GetCtx()->Release();
 	}
 	OnvifImagingClient *mpQ;

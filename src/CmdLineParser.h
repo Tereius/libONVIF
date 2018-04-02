@@ -9,6 +9,7 @@ struct CmdOptions {
 	bool verbose = false;
 	bool discover = false;
 	bool capabilities = false;
+	int discoverTime = 10000;
 	QString host = "";
 	QString scheme = "";
 	QString path = "";

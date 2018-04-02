@@ -35,6 +35,10 @@ public:
 	void SetConnectTimeout(int timeoutMs);
 	void SetSendTimeout(int timeoutMs);
 	void SetReceiveTimeout(int timeoutMs);
+	void SetSocketFlags(int soFlags); // soap::socket_flags
+	void SetConnectFlags(int conFlags); // soap::connect_flags
+	void SetBindFlags(int bindFlags); // soap::bind_flags
+	void SetAcceptFlags(int acceptFlags); // soap::accept_flags
 	//! Non blocking.
 	void ForceSocketClose();
 	void Save();
@@ -79,4 +83,8 @@ private:
 	int mConnectTimeoutSaved;
 	int mSendTimeout;
 	int mReceiveTimeout;
+	int mSoFlags;
+	int mConFlags;
+	int mBindFlags;
+	int mAcceptFlags;
 };

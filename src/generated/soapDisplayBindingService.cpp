@@ -74,7 +74,6 @@ void DisplayBindingService::DisplayBindingService_init(soap_mode imode, soap_mod
         {"wstop", "http://docs.oasis-open.org/wsn/t-1", NULL, NULL},
         {"tad", "http://www.onvif.org/ver10/analyticsdevice/wsdl", NULL, NULL},
         {"tan", "http://www.onvif.org/ver20/analytics/wsdl", NULL, NULL},
-        {"tdn", "http://www.onvif.org/ver10/network/wsdl", NULL, NULL},
         {"tds", "http://www.onvif.org/ver10/device/wsdl", NULL, NULL},
         {"tev", "http://www.onvif.org/ver10/events/wsdl", NULL, NULL},
         {"wsnt", "http://docs.oasis-open.org/wsn/b-2", NULL, NULL},

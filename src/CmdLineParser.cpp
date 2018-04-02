@@ -9,11 +9,16 @@ void CmdLineParser::setup(QCommandLineParser &parser) {
 
 	parser.addOptions({
 		{{"d", "discover"},
-		QCoreApplication::translate("main", "Search for ONVIF hosts. Ignores the host if specified.")
+		QCoreApplication::translate("main", "Search ONVIF devices for 10 seconds (change timespan via --discover-timespan option). Ignores the host if specified.")
+		},
+		{"discover-timespan",
+		QCoreApplication::translate("main", "Set discover timespan in seconds for ONVIF devices."),
+		QCoreApplication::translate("main", "timespan"),
+		"10"
 		},
 		{"host",
 		QCoreApplication::translate("main", "The ONVIF <host>: e.g.: http://localhost. Leave empty if you want to search for ONVIF hosts."),
-		QCoreApplication::translate("main", "host"),
+		QCoreApplication::translate("main", "host")
 		},
 		{"verbose",
 		QCoreApplication::translate("main", "Prints all the raw SOAP messages. Very noisy.")
@@ -73,6 +78,17 @@ ArbitraryResponse<CmdOptions> CmdLineParser::parse(const QCommandLineParser &par
 		options.capabilities = false;
 	}
 
+	if(options.discover) {
+		bool success = false;
+		options.discoverTime = 1000 * parser.value("discover-timespan").toInt(&success);
+		if(!success) {
+			return ArbitraryResponse<CmdOptions>(GENERIC_FAULT, QCoreApplication::translate("main", "Couldn't parse discovery time span: %1").arg(parser.value("discover-timespan")));
+		}
+		if(options.discoverTime < 0) {
+			return ArbitraryResponse<CmdOptions>(GENERIC_FAULT, QCoreApplication::translate("main", "Discovery time span must be positive"));
+		}
+	}
+
 	if(!options.discover) {
 		if(parser.isSet("path")) {
 			options.path = parser.value("path");
@@ -109,9 +125,6 @@ ArbitraryResponse<CmdOptions> CmdLineParser::parse(const QCommandLineParser &par
 		if(!options.endpointUrl.isValid()) {
 			return ArbitraryResponse<CmdOptions>(GENERIC_FAULT, QCoreApplication::translate("main", "The endpoint is invalid: %1").arg(options.endpointUrl.errorString()));
 		}
-	}
-	else {
-		return ArbitraryResponse<CmdOptions>(GENERIC_FAULT, QCoreApplication::translate("main", "ONVIF device discover not yet implemented."));
 	}
 
 	response.SetResultObject(options);
