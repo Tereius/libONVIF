@@ -25,13 +25,15 @@ int main(int argc, char **argv) {
 	if(response) {
 		auto options = response.GetResultObject();
 			if(options.discover) {
-			auto discovery = new OnvifDiscoveryClient(QUrl("soap.udp://239.255.255.250:3702"), QSharedPointer<SoapCtx>::create(), &app);
-			ProbeTypeRequest request;
-			request.Types = "tdn:NetworkVideoTransmitter";
-			auto probeResponseOne = discovery->Probe(request);
+			auto ctxBuilder = SoapCtx::Builder();
+			if(options.verbose) ctxBuilder.EnablePrintRawSoap();
+			auto discovery = new OnvifDiscoveryClient(QUrl("soap.udp://239.255.255.250:3702"), ctxBuilder.Build(), &app);
 			ProbeTypeRequest requestt;
 			requestt.Types = "tds:Device";
 			auto probeResponseTwo = discovery->Probe(requestt);
+			ProbeTypeRequest request;
+			request.Types = "tdn:NetworkVideoTransmitter";
+			auto probeResponseOne = discovery->Probe(request);
 			if(probeResponseOne && probeResponseTwo) {
 				qDebug() << "Searching ONVIF devices for" << options.discoverTime / 1000 << "seconds";
 				auto foundMatches = 0;

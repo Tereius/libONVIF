@@ -19,14 +19,20 @@ struct arbData {
 int fsend(struct soap *soap, const char *s, size_t n) {
 
 	auto ret = ((arbData*)soap->user)->fsend(soap, s, n);
-	if(((arbData*)soap->user)->enableDebug) qDebug().noquote() << QString::fromUtf8(s, n);
+	if(((arbData*)soap->user)->enableDebug) {
+		auto out = QString::fromUtf8(s, n).trimmed();
+		if(!out.isEmpty()) qDebug().noquote() << out;
+	}
 	return ret;
 }
 
 size_t frecv(struct soap *soap, char *s, size_t n) {
 
 	auto length = ((arbData*)soap->user)->frecv(soap, s, n);
-	if(((arbData*)soap->user)->enableDebug) qDebug().noquote() << QString::fromUtf8(s, length);
+	if(((arbData*)soap->user)->enableDebug) {
+		auto out = QString::fromUtf8(s, length).trimmed();
+		if(!out.isEmpty()) qDebug().noquote() << out;
+	}
 	return length;
 }
 

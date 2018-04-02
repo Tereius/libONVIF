@@ -78,6 +78,13 @@ ArbitraryResponse<CmdOptions> CmdLineParser::parse(const QCommandLineParser &par
 		options.capabilities = false;
 	}
 
+	if(parser.isSet("verbose")) {
+		options.verbose = true;
+	}
+	else {
+		options.verbose = false;
+	}
+
 	if(options.discover) {
 		bool success = false;
 		options.discoverTime = 1000 * parser.value("discover-timespan").toInt(&success);
@@ -96,13 +103,6 @@ ArbitraryResponse<CmdOptions> CmdLineParser::parse(const QCommandLineParser &par
 		}
 		else {
 			options.path = "/onvif/device_service";
-		}
-
-		if(parser.isSet("verbose")) {
-			options.verbose = true;
-		}
-		else {
-			options.verbose = false;
 		}
 
 		if(parser.isSet("port")) {

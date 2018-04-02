@@ -67,7 +67,7 @@ DetailedResponse OnvifDiscoveryClient::Probe(ProbeTypeRequest &rRequest) {
 	auto pSoap = ackquireCtx();
 	QString uuid = QString("uuid:%1").arg(QUuid::createUuid().toString().mid(1, 36));
 	soap_header(pSoap);
-	pSoap->header->wsa5__MessageID = uuid.toLocal8Bit().data();
+	pSoap->header->wsa5__MessageID = soap_strdup(pSoap, uuid.toLocal8Bit().constData());
 	pSoap->header->wsa5__To = "urn:schemas-xmlsoap-org:ws:2005:04:discovery";
 	pSoap->header->wsa5__Action = "http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe";
 	do {
