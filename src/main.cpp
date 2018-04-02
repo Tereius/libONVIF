@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
 										}
 										qDebug() << "    Scope:";
 										for(auto scope : scopeList) {
-											qDebug() << "        " << scope;
+											if(!scope.isEmpty()) qDebug() << "        " << scope;
 										}
 									}
 								}
