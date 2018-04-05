@@ -27,7 +27,7 @@ public:
 
 	DetailedResponse Hello(HelloTypeRequest &rRequest);
 	DetailedResponse Bye(ByeTypeRequest &rRequest);
-	DetailedResponse Probe(ProbeTypeRequest &rRequest);
+	DetailedResponse Probe(ProbeTypeRequest &rRequest, const QString &rMessageId);
 	ProbeMatchesResponse ReceiveProbeMatches();
 
 	virtual void SetAuth(const QString &rUserName, const QString &rPassword, AuthMode mode = AUTO) final;

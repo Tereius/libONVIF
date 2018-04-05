@@ -3,7 +3,6 @@
 #include "wsaapi.h"
 #include "namespaces.nsmap"
 
-
 struct OnvifEventClientPrivate {
 
 	OnvifEventClientPrivate(OnvifEventClient *pQ) : mpQ(pQ),
@@ -15,10 +14,8 @@ struct OnvifEventClientPrivate {
 	PullPointSubscriptionBindingProxy mProxy;
 };
 
-OnvifEventClient::OnvifEventClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx /*= QSharedPointer<SoapCtx>::create()*/, QObject *pParent /*= nullptr*/) :
-Client(rEndpoint, sharedCtx, pParent),
+OnvifEventClient::OnvifEventClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx /*= QSharedPointer<SoapCtx>::create()*/, QObject *pParent /*= nullptr*/) : Client(rEndpoint, sharedCtx, pParent),
 mpD(new OnvifEventClientPrivate(this)) {
-
 }
 
 OnvifEventClient::~OnvifEventClient() {
@@ -36,8 +33,10 @@ ArbitraryResponse<QSharedPointer<OnvifPullPoint>> OnvifEventClient::CreatePullPo
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		auto ret = mpD->mProxy.CreatePullPointSubscription(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tev__CreatePullPointSubscriptionResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto responseBuilder = Response<_tev__CreatePullPointSubscriptionResponse>::Builder();
+	responseBuilder.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
+	auto response = responseBuilder.Build();
 	ArbitraryResponse<QSharedPointer<OnvifPullPoint>> finalResponse(response);
 	if(response && response.getResultObject()) {
 		auto pullPointEndpoint = QUrl(response.getResultObject()->SubscriptionReference.Address);
@@ -62,9 +61,10 @@ Response<_tev__PullMessagesResponse> OnvifEventClient::PullMessages(Request<_tev
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.PullMessages(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tev__PullMessagesResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tev__PullMessagesResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tev__SeekResponse> OnvifEventClient::Seek(Request<_tev__Seek> &rRequest, const QUrl &rEndpoint) {
@@ -77,9 +77,10 @@ Response<_tev__SeekResponse> OnvifEventClient::Seek(Request<_tev__Seek> &rReques
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.Seek(rEndpoint.toString().toStdString().c_str(), action, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tev__SeekResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tev__SeekResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_wsnt__RenewResponse> OnvifEventClient::Renew(Request<_wsnt__Renew> &rRequest) {
@@ -92,9 +93,10 @@ Response<_wsnt__RenewResponse> OnvifEventClient::Renew(Request<_wsnt__Renew> &rR
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.Renew(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_wsnt__RenewResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_wsnt__RenewResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_wsnt__UnsubscribeResponse> OnvifEventClient::Unsubscribe(Request<_wsnt__Unsubscribe> &rRequest) {
@@ -107,9 +109,10 @@ Response<_wsnt__UnsubscribeResponse> OnvifEventClient::Unsubscribe(Request<_wsnt
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.Unsubscribe(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_wsnt__UnsubscribeResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_wsnt__UnsubscribeResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tev__SetSynchronizationPointResponse> OnvifEventClient::SetSynchronizationPoint(Request<_tev__SetSynchronizationPoint> &rRequest) {
@@ -122,9 +125,10 @@ Response<_tev__SetSynchronizationPointResponse> OnvifEventClient::SetSynchroniza
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.SetSynchronizationPoint(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tev__SetSynchronizationPointResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tev__SetSynchronizationPointResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tev__GetServiceCapabilitiesResponse> OnvifEventClient::GetServiceCapabilities(Request<_tev__GetServiceCapabilities> &rRequest) {
@@ -137,9 +141,10 @@ Response<_tev__GetServiceCapabilitiesResponse> OnvifEventClient::GetServiceCapab
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.GetServiceCapabilities(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tev__GetServiceCapabilitiesResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tev__GetServiceCapabilitiesResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tev__GetEventPropertiesResponse> OnvifEventClient::GetEventProperties(Request<_tev__GetEventProperties> &rRequest) {
@@ -152,9 +157,10 @@ Response<_tev__GetEventPropertiesResponse> OnvifEventClient::GetEventProperties(
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.GetEventProperties(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tev__GetEventPropertiesResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tev__GetEventPropertiesResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_wsnt__SubscribeResponse> OnvifEventClient::Subscribe(Request<_wsnt__Subscribe> &rRequest) {
@@ -167,9 +173,10 @@ Response<_wsnt__SubscribeResponse> OnvifEventClient::Subscribe(Request<_wsnt__Su
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.Subscribe(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_wsnt__SubscribeResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_wsnt__SubscribeResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_wsnt__GetCurrentMessageResponse> OnvifEventClient::GetCurrentMessage(Request<_wsnt__GetCurrentMessage> &rRequest) {
@@ -182,9 +189,10 @@ Response<_wsnt__GetCurrentMessageResponse> OnvifEventClient::GetCurrentMessage(R
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.GetCurrentMessage(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_wsnt__GetCurrentMessageResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_wsnt__GetCurrentMessageResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 SimpleResponse OnvifEventClient::send_Notify(Request<_wsnt__Notify> &rRequest) {
@@ -250,9 +258,10 @@ Response<_wsnt__GetMessagesResponse> OnvifEventClient::GetMessages(Request<_wsnt
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.GetMessages(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_wsnt__GetMessagesResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_wsnt__GetMessagesResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_wsnt__DestroyPullPointResponse> OnvifEventClient::DestroyPullPoint(Request<_wsnt__DestroyPullPoint> &rRequest) {
@@ -265,9 +274,10 @@ Response<_wsnt__DestroyPullPointResponse> OnvifEventClient::DestroyPullPoint(Req
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.DestroyPullPoint(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_wsnt__DestroyPullPointResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_wsnt__DestroyPullPointResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_wsnt__PauseSubscriptionResponse> OnvifEventClient::PauseSubscription(Request<_wsnt__PauseSubscription> &rRequest) {
@@ -280,9 +290,10 @@ Response<_wsnt__PauseSubscriptionResponse> OnvifEventClient::PauseSubscription(R
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.PauseSubscription(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_wsnt__PauseSubscriptionResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_wsnt__PauseSubscriptionResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_wsnt__ResumeSubscriptionResponse> OnvifEventClient::ResumeSubscription(Request<_wsnt__ResumeSubscription> &rRequest) {
@@ -295,25 +306,8 @@ Response<_wsnt__ResumeSubscriptionResponse> OnvifEventClient::ResumeSubscription
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.ResumeSubscription(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_wsnt__ResumeSubscriptionResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_wsnt__ResumeSubscriptionResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
-}
-
-QSharedPointer<OnvifPullPoint> OnvifEventClient::CreatePullPoint(Request<_wsnt__CreatePullPoint> &rRequest) {
-
-	_wsnt__CreatePullPointResponse responseObject;
-	auto action = "http://docs.oasis-open.org/wsn/bw-2/CreatePullPoint/CreatePullPointRequest";
-	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
-	do {
-		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
-		ret = mpD->mProxy.CreatePullPoint(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
-	Response<_wsnt__CreatePullPointResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
-	releaseCtx(pSoap);
-	if(response && response.getResultObject()) {
-		auto pullPoint = QSharedPointer<OnvifPullPoint>::create(QUrl(response.getResultObject()->PullPoint.Address));
-	}
-	return nullptr;
+	return response.Build();
 }

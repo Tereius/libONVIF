@@ -2,7 +2,6 @@
 #include "soapPTZBindingProxy.h"
 #include "namespaces.nsmap"
 
-
 struct OnvifPtzClientPrivate {
 
 	OnvifPtzClientPrivate(OnvifPtzClient *pQ) : mpQ(pQ),
@@ -14,10 +13,8 @@ struct OnvifPtzClientPrivate {
 	PTZBindingProxy mProxy;
 };
 
-OnvifPtzClient::OnvifPtzClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx /*= QSharedPointer<SoapCtx>::create()*/, QObject *pParent /*= nullptr*/) :
-Client(rEndpoint, sharedCtx, pParent),
+OnvifPtzClient::OnvifPtzClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx /*= QSharedPointer<SoapCtx>::create()*/, QObject *pParent /*= nullptr*/) : Client(rEndpoint, sharedCtx, pParent),
 mpD(new OnvifPtzClientPrivate(this)) {
-
 }
 
 OnvifPtzClient::~OnvifPtzClient() {
@@ -33,9 +30,10 @@ Response<_tptz__GetServiceCapabilitiesResponse> OnvifPtzClient::GetServiceCapabi
 	do {
 		ret = mpD->mProxy.GetServiceCapabilities(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__GetServiceCapabilitiesResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__GetServiceCapabilitiesResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__GetConfigurationsResponse> OnvifPtzClient::GetConfigurations(Request<_tptz__GetConfigurations> &rRequest) {
@@ -46,9 +44,10 @@ Response<_tptz__GetConfigurationsResponse> OnvifPtzClient::GetConfigurations(Req
 	do {
 		ret = mpD->mProxy.GetConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__GetConfigurationsResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__GetConfigurationsResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__GetPresetsResponse> OnvifPtzClient::GetPresets(Request<_tptz__GetPresets> &rRequest) {
@@ -59,9 +58,10 @@ Response<_tptz__GetPresetsResponse> OnvifPtzClient::GetPresets(Request<_tptz__Ge
 	do {
 		ret = mpD->mProxy.GetPresets(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__GetPresetsResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__GetPresetsResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__SetPresetResponse> OnvifPtzClient::SetPreset(Request<_tptz__SetPreset> &rRequest) {
@@ -72,9 +72,10 @@ Response<_tptz__SetPresetResponse> OnvifPtzClient::SetPreset(Request<_tptz__SetP
 	do {
 		ret = mpD->mProxy.SetPreset(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__SetPresetResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__SetPresetResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__RemovePresetResponse> OnvifPtzClient::RemovePreset(Request<_tptz__RemovePreset> &rRequest) {
@@ -85,9 +86,10 @@ Response<_tptz__RemovePresetResponse> OnvifPtzClient::RemovePreset(Request<_tptz
 	do {
 		ret = mpD->mProxy.RemovePreset(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__RemovePresetResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__RemovePresetResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__GotoPresetResponse> OnvifPtzClient::GotoPreset(Request<_tptz__GotoPreset> &rRequest) {
@@ -98,9 +100,10 @@ Response<_tptz__GotoPresetResponse> OnvifPtzClient::GotoPreset(Request<_tptz__Go
 	do {
 		ret = mpD->mProxy.GotoPreset(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__GotoPresetResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__GotoPresetResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__GetStatusResponse> OnvifPtzClient::GetStatus(Request<_tptz__GetStatus> &rRequest) {
@@ -111,9 +114,10 @@ Response<_tptz__GetStatusResponse> OnvifPtzClient::GetStatus(Request<_tptz__GetS
 	do {
 		ret = mpD->mProxy.GetStatus(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__GetStatusResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__GetStatusResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__GetConfigurationResponse> OnvifPtzClient::GetConfiguration(Request<_tptz__GetConfiguration> &rRequest) {
@@ -124,9 +128,10 @@ Response<_tptz__GetConfigurationResponse> OnvifPtzClient::GetConfiguration(Reque
 	do {
 		ret = mpD->mProxy.GetConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__GetConfigurationResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__GetConfigurationResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__GetNodesResponse> OnvifPtzClient::GetNodes(Request<_tptz__GetNodes> &rRequest) {
@@ -137,9 +142,10 @@ Response<_tptz__GetNodesResponse> OnvifPtzClient::GetNodes(Request<_tptz__GetNod
 	do {
 		ret = mpD->mProxy.GetNodes(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__GetNodesResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__GetNodesResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__GetNodeResponse> OnvifPtzClient::GetNode(Request<_tptz__GetNode> &rRequest) {
@@ -150,9 +156,10 @@ Response<_tptz__GetNodeResponse> OnvifPtzClient::GetNode(Request<_tptz__GetNode>
 	do {
 		ret = mpD->mProxy.GetNode(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__GetNodeResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__GetNodeResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__SetConfigurationResponse> OnvifPtzClient::SetConfiguration(Request<_tptz__SetConfiguration> &rRequest) {
@@ -163,9 +170,10 @@ Response<_tptz__SetConfigurationResponse> OnvifPtzClient::SetConfiguration(Reque
 	do {
 		ret = mpD->mProxy.SetConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__SetConfigurationResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__SetConfigurationResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__GetConfigurationOptionsResponse> OnvifPtzClient::GetConfigurationOptions(Request<_tptz__GetConfigurationOptions> &rRequest) {
@@ -176,9 +184,10 @@ Response<_tptz__GetConfigurationOptionsResponse> OnvifPtzClient::GetConfiguratio
 	do {
 		ret = mpD->mProxy.GetConfigurationOptions(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__GetConfigurationOptionsResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__GetConfigurationOptionsResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__GotoHomePositionResponse> OnvifPtzClient::GotoHomePosition(Request<_tptz__GotoHomePosition> &rRequest) {
@@ -189,9 +198,10 @@ Response<_tptz__GotoHomePositionResponse> OnvifPtzClient::GotoHomePosition(Reque
 	do {
 		ret = mpD->mProxy.GotoHomePosition(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__GotoHomePositionResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__GotoHomePositionResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__SetHomePositionResponse> OnvifPtzClient::SetHomePosition(Request<_tptz__SetHomePosition> &rRequest) {
@@ -202,9 +212,10 @@ Response<_tptz__SetHomePositionResponse> OnvifPtzClient::SetHomePosition(Request
 	do {
 		ret = mpD->mProxy.SetHomePosition(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__SetHomePositionResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__SetHomePositionResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__ContinuousMoveResponse> OnvifPtzClient::ContinuousMove(Request<_tptz__ContinuousMove> &rRequest) {
@@ -215,9 +226,10 @@ Response<_tptz__ContinuousMoveResponse> OnvifPtzClient::ContinuousMove(Request<_
 	do {
 		ret = mpD->mProxy.ContinuousMove(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__ContinuousMoveResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__ContinuousMoveResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__RelativeMoveResponse> OnvifPtzClient::RelativeMove(Request<_tptz__RelativeMove> &rRequest) {
@@ -228,9 +240,10 @@ Response<_tptz__RelativeMoveResponse> OnvifPtzClient::RelativeMove(Request<_tptz
 	do {
 		ret = mpD->mProxy.RelativeMove(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__RelativeMoveResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__RelativeMoveResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__SendAuxiliaryCommandResponse> OnvifPtzClient::SendAuxiliaryCommand(Request<_tptz__SendAuxiliaryCommand> &rRequest) {
@@ -241,9 +254,10 @@ Response<_tptz__SendAuxiliaryCommandResponse> OnvifPtzClient::SendAuxiliaryComma
 	do {
 		ret = mpD->mProxy.SendAuxiliaryCommand(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__SendAuxiliaryCommandResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__SendAuxiliaryCommandResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__AbsoluteMoveResponse> OnvifPtzClient::AbsoluteMove(Request<_tptz__AbsoluteMove> &rRequest) {
@@ -254,9 +268,10 @@ Response<_tptz__AbsoluteMoveResponse> OnvifPtzClient::AbsoluteMove(Request<_tptz
 	do {
 		ret = mpD->mProxy.AbsoluteMove(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__AbsoluteMoveResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__AbsoluteMoveResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__GeoMoveResponse> OnvifPtzClient::GeoMove(Request<_tptz__GeoMove> &rRequest) {
@@ -267,9 +282,10 @@ Response<_tptz__GeoMoveResponse> OnvifPtzClient::GeoMove(Request<_tptz__GeoMove>
 	do {
 		ret = mpD->mProxy.GeoMove(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__GeoMoveResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__GeoMoveResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__StopResponse> OnvifPtzClient::Stop(Request<_tptz__Stop> &rRequest) {
@@ -280,9 +296,10 @@ Response<_tptz__StopResponse> OnvifPtzClient::Stop(Request<_tptz__Stop> &rReques
 	do {
 		ret = mpD->mProxy.Stop(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__StopResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__StopResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__GetPresetToursResponse> OnvifPtzClient::GetPresetTours(Request<_tptz__GetPresetTours> &rRequest) {
@@ -293,9 +310,10 @@ Response<_tptz__GetPresetToursResponse> OnvifPtzClient::GetPresetTours(Request<_
 	do {
 		ret = mpD->mProxy.GetPresetTours(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__GetPresetToursResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__GetPresetToursResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__GetPresetTourResponse> OnvifPtzClient::GetPresetTour(Request<_tptz__GetPresetTour> &rRequest) {
@@ -306,9 +324,10 @@ Response<_tptz__GetPresetTourResponse> OnvifPtzClient::GetPresetTour(Request<_tp
 	do {
 		ret = mpD->mProxy.GetPresetTour(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__GetPresetTourResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__GetPresetTourResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__GetPresetTourOptionsResponse> OnvifPtzClient::GetPresetTourOptions(Request<_tptz__GetPresetTourOptions> &rRequest) {
@@ -319,9 +338,10 @@ Response<_tptz__GetPresetTourOptionsResponse> OnvifPtzClient::GetPresetTourOptio
 	do {
 		ret = mpD->mProxy.GetPresetTourOptions(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__GetPresetTourOptionsResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__GetPresetTourOptionsResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__CreatePresetTourResponse> OnvifPtzClient::CreatePresetTour(Request<_tptz__CreatePresetTour> &rRequest) {
@@ -332,9 +352,10 @@ Response<_tptz__CreatePresetTourResponse> OnvifPtzClient::CreatePresetTour(Reque
 	do {
 		ret = mpD->mProxy.CreatePresetTour(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__CreatePresetTourResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__CreatePresetTourResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__ModifyPresetTourResponse> OnvifPtzClient::ModifyPresetTour(Request<_tptz__ModifyPresetTour> &rRequest) {
@@ -345,9 +366,10 @@ Response<_tptz__ModifyPresetTourResponse> OnvifPtzClient::ModifyPresetTour(Reque
 	do {
 		ret = mpD->mProxy.ModifyPresetTour(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__ModifyPresetTourResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__ModifyPresetTourResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__OperatePresetTourResponse> OnvifPtzClient::OperatePresetTour(Request<_tptz__OperatePresetTour> &rRequest) {
@@ -358,9 +380,10 @@ Response<_tptz__OperatePresetTourResponse> OnvifPtzClient::OperatePresetTour(Req
 	do {
 		ret = mpD->mProxy.OperatePresetTour(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__OperatePresetTourResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__OperatePresetTourResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__RemovePresetTourResponse> OnvifPtzClient::RemovePresetTour(Request<_tptz__RemovePresetTour> &rRequest) {
@@ -371,9 +394,10 @@ Response<_tptz__RemovePresetTourResponse> OnvifPtzClient::RemovePresetTour(Reque
 	do {
 		ret = mpD->mProxy.RemovePresetTour(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__RemovePresetTourResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__RemovePresetTourResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tptz__GetCompatibleConfigurationsResponse> OnvifPtzClient::GetCompatibleConfigurations(Request<_tptz__GetCompatibleConfigurations> &rRequest) {
@@ -384,7 +408,8 @@ Response<_tptz__GetCompatibleConfigurationsResponse> OnvifPtzClient::GetCompatib
 	do {
 		ret = mpD->mProxy.GetCompatibleConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tptz__GetCompatibleConfigurationsResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tptz__GetCompatibleConfigurationsResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }

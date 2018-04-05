@@ -2,7 +2,6 @@
 #include "soapDisplayBindingProxy.h"
 #include "namespaces.nsmap"
 
-
 struct OnvifDisplayClientPrivate {
 
 	OnvifDisplayClientPrivate(OnvifDisplayClient *pQ) : mpQ(pQ),
@@ -14,10 +13,8 @@ struct OnvifDisplayClientPrivate {
 	DisplayBindingProxy mProxy;
 };
 
-OnvifDisplayClient::OnvifDisplayClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx /*= QSharedPointer<SoapCtx>::create()*/, QObject *pParent /*= nullptr*/) :
-Client(rEndpoint, sharedCtx, pParent),
+OnvifDisplayClient::OnvifDisplayClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx /*= QSharedPointer<SoapCtx>::create()*/, QObject *pParent /*= nullptr*/) : Client(rEndpoint, sharedCtx, pParent),
 mpD(new OnvifDisplayClientPrivate(this)) {
-
 }
 
 OnvifDisplayClient::~OnvifDisplayClient() {
@@ -33,9 +30,10 @@ Response<_tls__GetServiceCapabilitiesResponse> OnvifDisplayClient::GetServiceCap
 	do {
 		ret = mpD->mProxy.GetServiceCapabilities(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tls__GetServiceCapabilitiesResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tls__GetServiceCapabilitiesResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tls__GetLayoutResponse> OnvifDisplayClient::GetLayout(Request<_tls__GetLayout> &rRequest) {
@@ -46,9 +44,10 @@ Response<_tls__GetLayoutResponse> OnvifDisplayClient::GetLayout(Request<_tls__Ge
 	do {
 		ret = mpD->mProxy.GetLayout(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tls__GetLayoutResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tls__GetLayoutResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tls__SetLayoutResponse> OnvifDisplayClient::SetLayout(Request<_tls__SetLayout> &rRequest) {
@@ -59,9 +58,10 @@ Response<_tls__SetLayoutResponse> OnvifDisplayClient::SetLayout(Request<_tls__Se
 	do {
 		ret = mpD->mProxy.SetLayout(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tls__SetLayoutResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tls__SetLayoutResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tls__GetDisplayOptionsResponse> OnvifDisplayClient::GetDisplayOptions(Request<_tls__GetDisplayOptions> &rRequest) {
@@ -72,9 +72,10 @@ Response<_tls__GetDisplayOptionsResponse> OnvifDisplayClient::GetDisplayOptions(
 	do {
 		ret = mpD->mProxy.GetDisplayOptions(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tls__GetDisplayOptionsResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tls__GetDisplayOptionsResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tls__GetPaneConfigurationsResponse> OnvifDisplayClient::GetPaneConfigurations(Request<_tls__GetPaneConfigurations> &rRequest) {
@@ -85,9 +86,10 @@ Response<_tls__GetPaneConfigurationsResponse> OnvifDisplayClient::GetPaneConfigu
 	do {
 		ret = mpD->mProxy.GetPaneConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tls__GetPaneConfigurationsResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tls__GetPaneConfigurationsResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tls__GetPaneConfigurationResponse> OnvifDisplayClient::GetPaneConfiguration(Request<_tls__GetPaneConfiguration> &rRequest) {
@@ -98,9 +100,10 @@ Response<_tls__GetPaneConfigurationResponse> OnvifDisplayClient::GetPaneConfigur
 	do {
 		ret = mpD->mProxy.GetPaneConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tls__GetPaneConfigurationResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tls__GetPaneConfigurationResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tls__SetPaneConfigurationsResponse> OnvifDisplayClient::SetPaneConfigurations(Request<_tls__SetPaneConfigurations> &rRequest) {
@@ -111,9 +114,10 @@ Response<_tls__SetPaneConfigurationsResponse> OnvifDisplayClient::SetPaneConfigu
 	do {
 		ret = mpD->mProxy.SetPaneConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tls__SetPaneConfigurationsResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tls__SetPaneConfigurationsResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tls__SetPaneConfigurationResponse> OnvifDisplayClient::SetPaneConfiguration(Request<_tls__SetPaneConfiguration> &rRequest) {
@@ -124,9 +128,10 @@ Response<_tls__SetPaneConfigurationResponse> OnvifDisplayClient::SetPaneConfigur
 	do {
 		ret = mpD->mProxy.SetPaneConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tls__SetPaneConfigurationResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tls__SetPaneConfigurationResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tls__CreatePaneConfigurationResponse> OnvifDisplayClient::CreatePaneConfiguration(Request<_tls__CreatePaneConfiguration> &rRequest) {
@@ -137,9 +142,10 @@ Response<_tls__CreatePaneConfigurationResponse> OnvifDisplayClient::CreatePaneCo
 	do {
 		ret = mpD->mProxy.CreatePaneConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tls__CreatePaneConfigurationResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tls__CreatePaneConfigurationResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_tls__DeletePaneConfigurationResponse> OnvifDisplayClient::DeletePaneConfiguration(Request<_tls__DeletePaneConfiguration> &rRequest) {
@@ -150,7 +156,8 @@ Response<_tls__DeletePaneConfigurationResponse> OnvifDisplayClient::DeletePaneCo
 	do {
 		ret = mpD->mProxy.DeletePaneConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_tls__DeletePaneConfigurationResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_tls__DeletePaneConfigurationResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }

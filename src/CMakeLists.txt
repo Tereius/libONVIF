@@ -37,6 +37,7 @@ set(src_files
 	Client.cpp
 	Response.cpp
 	JsonHelper.cpp
+	SoapHelper.cpp
 )
 
 set_source_files_properties(${src_files} PROPERTIES LANGUAGE CXX)
@@ -64,6 +65,7 @@ set(public_header_files
 	SafeBool.h
 	global.h
 	JsonHelper.h
+	SoapHelper.h
 )
 
 add_library(onvifcommon ${src_files} ${private_header_files} ${public_header_files})

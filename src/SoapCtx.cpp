@@ -296,3 +296,9 @@ void SoapCtx::SetAcceptFlags(int acceptFlags) {
 	QMutexLocker locker(&mMutex);
 	mpSoap->accept_flags = acceptFlags;
 }
+
+int SoapCtx::GetFaultCode() {
+
+	QMutexLocker locker(&mMutex);
+	return mpSoap->error;
+}

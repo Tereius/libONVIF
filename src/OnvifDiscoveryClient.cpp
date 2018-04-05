@@ -1,5 +1,6 @@
 #include "OnvifDiscoveryClient.h"
 #include "soapwsddProxy.h"
+#include "wsaapi.h"
 #include "namespaces.nsmap"
 #include <QUuid>
 
@@ -20,15 +21,8 @@ OnvifDiscoveryClient::OnvifDiscoveryClient(const QUrl &rEndpoint /*= QUrl("soap.
 Client(rEndpoint, sharedCtx, pParent),
 mpD(new OnvifDiscoveryClientPrivate(this)) {
 
-	GetCtx()->EnableIModeFlags(SOAP_IO_UDP | SO_BROADCAST);
-	GetCtx()->EnableOModeFlags(SOAP_IO_UDP | SO_BROADCAST);
-	GetCtx()->SetConnectFlags(SO_BROADCAST);
-	GetCtx()->SetSendTimeout(1);
-	GetCtx()->SetReceiveTimeout(1);
-	//GetCtx()->EnablePrintRawSoap();
 	auto soap = GetCtx()->Acquire();
-	//soap->ipv4_multicast_if = "192.168.0.10"; // see setsockopt IPPROTO_IP IP_MULTICAST_IF
-	soap->ipv4_multicast_ttl = 1; // see setsockopt IPPROTO_IP,
+	//soap->ipv4_multicast_ttl = 1; // see setsockopt IPPROTO_IP,
 	GetCtx()->Release();
 }
 
@@ -61,15 +55,11 @@ DetailedResponse OnvifDiscoveryClient::Bye(ByeTypeRequest &rRequest) {
 	return response;
 }
 
-DetailedResponse OnvifDiscoveryClient::Probe(ProbeTypeRequest &rRequest) {
+DetailedResponse OnvifDiscoveryClient::Probe(ProbeTypeRequest &rRequest, const QString &rMessageId) {
 
 	auto ret = SOAP_OK;
 	auto pSoap = ackquireCtx();
-	QString uuid = QString("uuid:%1").arg(QUuid::createUuid().toString().mid(1, 36));
-	soap_header(pSoap);
-	pSoap->header->wsa5__MessageID = soap_strdup(pSoap, uuid.toLocal8Bit().constData());
-	pSoap->header->wsa5__To = "urn:schemas-xmlsoap-org:ws:2005:04:discovery";
-	pSoap->header->wsa5__Action = "http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe";
+	soap_wsa_request(pSoap, qUtf8Printable(rMessageId), "urn:schemas-xmlsoap-org:ws:2005:04:discovery", "http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe");
 	do {
 		auto ret = mpD->mProxy.Probe(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest);
 	} while(retry(pSoap));
@@ -86,9 +76,10 @@ ProbeMatchesResponse OnvifDiscoveryClient::ReceiveProbeMatches() {
 	do {
 		auto ret = mpD->mProxy.recv_ProbeMatches(responseObject);
 	} while(retry(pSoap));
-	ProbeMatchesResponse response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto builder = ProbeMatchesResponse::Builder();
+	builder.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return builder.Build();
 }
 
 void OnvifDiscoveryClient::SetAuth(const QString &rUserName, const QString &rPassword, AuthMode mode /*= AUTO*/) {

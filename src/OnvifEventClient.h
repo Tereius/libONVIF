@@ -33,7 +33,6 @@ public:
 	SimpleResponse Notify(Request<_wsnt__Notify> &rRequest);
 	Response<_wsnt__GetMessagesResponse> GetMessages(Request<_wsnt__GetMessages> &rRequest);
 	Response<_wsnt__DestroyPullPointResponse> DestroyPullPoint(Request<_wsnt__DestroyPullPoint> &rRequest);
-	QSharedPointer<OnvifPullPoint> CreatePullPoint(Request<_wsnt__CreatePullPoint> &rRequest);
 	Response<_wsnt__PauseSubscriptionResponse> PauseSubscription(Request<_wsnt__PauseSubscription> &rRequest);
 	Response<_wsnt__ResumeSubscriptionResponse> ResumeSubscription(Request<_wsnt__ResumeSubscription> &rRequest);
 

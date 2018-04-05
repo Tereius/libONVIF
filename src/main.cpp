@@ -1,7 +1,7 @@
 #include "OnvifDevice.h"
 #include "CmdLineParser.h"
 #include "OnvifDiscoveryClient.h"
-#include "OnvifDiscover.h"
+#include "SoapHelper.h"
 #include <QCoreApplication>
 #include <QRunnable>
 #include <QThreadPool>
@@ -27,46 +27,57 @@ int main(int argc, char **argv) {
 			if(options.discover) {
 			auto ctxBuilder = SoapCtx::Builder();
 			if(options.verbose) ctxBuilder.EnablePrintRawSoap();
+			ctxBuilder.SetSendTimeout(1000);
+			ctxBuilder.SetReceiveTimeout(1000);
 			auto discovery = new OnvifDiscoveryClient(QUrl("soap.udp://239.255.255.250:3702"), ctxBuilder.Build(), &app);
-			ProbeTypeRequest requestt;
-			requestt.Types = "tds:Device";
-			auto probeResponseTwo = discovery->Probe(requestt);
 			ProbeTypeRequest request;
+			request.Types = "tds:Device";
+			auto uuidOne = QString("uuid:%1").arg(SoapHelper::GenerateUuid());
+			auto probeResponseTwo = discovery->Probe(request, uuidOne);
 			request.Types = "tdn:NetworkVideoTransmitter";
-			auto probeResponseOne = discovery->Probe(request);
+			auto uuidTwo = QString("uuid:%1").arg(SoapHelper::GenerateUuid());
+			auto probeResponseOne = discovery->Probe(request, uuidTwo);
 			if(probeResponseOne && probeResponseTwo) {
 				qDebug() << "Searching ONVIF devices for" << options.discoverTime / 1000 << "seconds";
 				auto foundMatches = 0;
 				auto beginTs = QDateTime::currentMSecsSinceEpoch();
 				while(QDateTime::currentMSecsSinceEpoch() < beginTs + options.discoverTime) {
 					auto matchResp = discovery->ReceiveProbeMatches();
-					if(auto matchs = matchResp.getResultObject()) {
-						if(matchs->wsdd__ProbeMatches) {
-							for(auto i = 0; i < matchs->wsdd__ProbeMatches->__sizeProbeMatch; ++i) {
-								wsdd__ProbeMatchesType match = matchs->wsdd__ProbeMatches[i];
-								for(auto ii = 0; ii < match.__sizeProbeMatch; ++ii) {
-									foundMatches++;
-									auto probe = match.ProbeMatch[ii];
-									qDebug() << "Found match:";
-									qDebug() << "    Type:" << probe.Types;
-									qDebug() << "    Endpoint:" << probe.XAddrs;
-									if(probe.Scopes) {
-										auto scopeList = QString::fromLocal8Bit(probe.Scopes->__item).split(' ');
-										auto matchBy = QString::fromLocal8Bit(probe.Scopes->MatchBy);
-										if(!matchBy.isEmpty()) {
-											qDebug() << "    Match:" << matchBy;
-										}
-										qDebug() << "    Scope:";
-										for(auto scope : scopeList) {
-											if(!scope.isEmpty()) qDebug() << "        " << scope;
+					if(matchResp && matchResp.getResultObject()) {
+						auto relatesTo = matchResp.GetSoapHeaderRelatesTo();
+						if(!relatesTo.isNull() && (uuidOne.compare(relatesTo) == 0 || uuidTwo.compare(relatesTo) == 0)) {
+							if(auto matchs = matchResp.getResultObject()) {
+								if(matchs->wsdd__ProbeMatches) {
+									for(auto i = 0; i < matchs->wsdd__ProbeMatches->__sizeProbeMatch; ++i) {
+										wsdd__ProbeMatchesType match = matchs->wsdd__ProbeMatches[i];
+										for(auto ii = 0; ii < match.__sizeProbeMatch; ++ii) {
+											foundMatches++;
+											auto probe = match.ProbeMatch[ii];
+											qDebug() << "Found match:";
+											qDebug() << "    Type:" << probe.Types;
+											qDebug() << "    Endpoint:" << probe.XAddrs;
+											if(probe.Scopes) {
+												auto scopeList = QString::fromLocal8Bit(probe.Scopes->__item).split(' ');
+												auto matchBy = QString::fromLocal8Bit(probe.Scopes->MatchBy);
+												if(!matchBy.isEmpty()) {
+													qDebug() << "    Match:" << matchBy;
+												}
+												qDebug() << "    Scope:";
+												for(auto scope : scopeList) {
+													if(!scope.isEmpty()) qDebug() << "        " << scope;
+												}
+											}
 										}
 									}
 								}
 							}
 						}
+						else {
+							qDebug() << "Skipping non related message with id:" << relatesTo;
+						}
 					}
 				}
-				qDebug() << "Found" << foundMatches << (foundMatches > 1 ? "matches" : "match");
+				qDebug() << "Found" << (foundMatches == 0 ? "no" : QString::number(foundMatches)) << (foundMatches > 1 ? "matches" : "match");
 			}
 			else {
 				if(!probeResponseOne) qDebug() << probeResponseOne.GetCompleteFault();

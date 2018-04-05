@@ -5,7 +5,7 @@
 #include <QSharedPointer>
 
 
-#define SOAP_NEW_IO_DEFAULT (SOAP_IO_DEFAULT | SOAP_DOM_NODE | SOAP_XML_TREE)
+#define SOAP_NEW_IO_DEFAULT (SOAP_IO_DEFAULT | SOAP_C_UTFSTRING | SOAP_DOM_NODE | SOAP_XML_TREE)
 #define SOAP_NEW_SSL_DEFAULT (SOAP_SSL_REQUIRE_SERVER_AUTHENTICATION | SOAP_TLSv1 | SOAP_SSL_CLIENT)
 #define SOAP_DEFAULT_CONNECT_TIMEOUT 10000
 #define SOAP_DEFAULT_RECEIVE_TIMEOUT 10000
@@ -27,6 +27,7 @@ public:
 	void DisablePrintRawSoap();
 	QString GetFaultString();
 	QString GetFaultDetail();
+	int GetFaultCode();
 	bool EnableSsl();
 	void SoapDelete(void *p);
 	void SoapDealloc(void *p);

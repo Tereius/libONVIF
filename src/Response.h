@@ -1,11 +1,27 @@
 #pragma once
 #include "soapH.h"
 #include "SafeBool.h"
+#include "SoapCtx.h"
 #include <QString>
 #include <QDebug>
 
 
 #define GENERIC_FAULT 600
+
+template <class T> struct SoapDeleter {
+
+	void operator()(T* p) {
+		if(p) p->soap_del();
+		delete p;
+	}
+};
+
+template <class T> struct SoapDuplicator {
+
+	T* operator()(const T *p) {
+		return p->soap_dup();
+	}
+};
 
 class SimpleResponse : public SafeBool<void> {
 
@@ -52,20 +68,21 @@ public:
 	QString GetCompleteFault() const {
 		auto whatFault = QString("No Fault");
 		if(IsFault()) {
-			whatFault = "Generic Fault";
-			if(IsTcpFault())whatFault = "TCP Fault";
-			else if(IsSoapFault()) whatFault = "SOAP Fault";
-			else if(IsXmlValidationFault()) whatFault = "XML Val Fault";
-			else if(IsSslFault()) whatFault = "SSL Fault";
-			else if(IsZlibFault()) whatFault = "Zlib Fault";
-			else if(IsHttpFault()) whatFault = "HTTP Fault";
-			else whatFault = "Generic Fault";
+			whatFault = "Generic Fault: ";
+			if(IsTcpFault())whatFault = "TCP Fault: ";
+			else if(IsSoapFault()) whatFault = "SOAP Fault: ";
+			else if(IsXmlValidationFault()) whatFault = "XML Val Fault: ";
+			else if(IsSslFault()) whatFault = "SSL Fault: ";
+			else if(IsZlibFault()) whatFault = "Zlib Fault: ";
+			else if(IsHttpFault()) whatFault = "HTTP Fault:";
+			else whatFault = "Generic Fault: ";
 			whatFault += GetSoapFault();
 			whatFault += GetSoapFaultDetail();
 		}
 		return whatFault;
 	}
 	int GetErrorCode() const { return mErrorCode; }
+	void SetErrorCode(int errorCode) { mErrorCode = errorCode; }
 
 	virtual bool IsSuccess() const { return !IsFault(); }
 	virtual bool IsFault() const { return mErrorCode != SOAP_OK; }
@@ -90,26 +107,30 @@ public:
 
 	DetailedResponse() :
 		SimpleResponse(),
-		mpFaultResultObject(nullptr) {
+		mpFaultResultObject(nullptr),
+		mpSoapHeader(nullptr) {
 
 	}
 
 	DetailedResponse(int errorCode, const QString &rFault = QString(), const QString &rFaultDetail = QString(), const SOAP_ENV__Detail *pFaultObject = nullptr) :
 		SimpleResponse(errorCode, rFault, rFaultDetail),
-		mpFaultResultObject(pFaultObject ? soap_dup_SOAP_ENV__Detail(nullptr, nullptr, pFaultObject) : nullptr) {
+		mpFaultResultObject(pFaultObject ? soap_dup_SOAP_ENV__Detail(nullptr, nullptr, pFaultObject) : nullptr),
+		mpSoapHeader(nullptr) {
+
 	}
 
 	virtual ~DetailedResponse() {
 
-		if(mpFaultResultObject) {
-			soap_del_SOAP_ENV__Detail(mpFaultResultObject);
-		}
+		if(mpFaultResultObject) soap_del_SOAP_ENV__Detail(mpFaultResultObject);
 		delete mpFaultResultObject;
+		if(mpFaultResultObject) soap_del_SOAP_ENV__Header(mpSoapHeader);
+		delete mpSoapHeader;
 	}
 
 	DetailedResponse(const DetailedResponse &rOther) :
 		SimpleResponse(rOther),
-		mpFaultResultObject(rOther.mpFaultResultObject ? soap_dup_SOAP_ENV__Detail(nullptr, nullptr, rOther.mpFaultResultObject) : nullptr) {
+		mpFaultResultObject(rOther.mpFaultResultObject ? soap_dup_SOAP_ENV__Detail(nullptr, nullptr, rOther.mpFaultResultObject) : nullptr),
+		mpSoapHeader(rOther.mpSoapHeader ? soap_dup_SOAP_ENV__Header(nullptr, nullptr, rOther.mpSoapHeader) : nullptr) {
 
 	}
 
@@ -119,11 +140,12 @@ public:
 			return *this;
 		}
 		SimpleResponse::operator=(rOther);
-		if(mpFaultResultObject) {
-			soap_del_SOAP_ENV__Detail(mpFaultResultObject);
-		}
+		if(mpFaultResultObject) soap_del_SOAP_ENV__Detail(mpFaultResultObject);
 		delete mpFaultResultObject;
 		this->mpFaultResultObject = rOther.mpFaultResultObject ? soap_dup_SOAP_ENV__Detail(nullptr, nullptr, rOther.mpFaultResultObject) : nullptr;
+		if(mpFaultResultObject) soap_del_SOAP_ENV__Header(mpSoapHeader);
+		delete mpSoapHeader;
+		this->mpSoapHeader = rOther.mpSoapHeader ? soap_dup_SOAP_ENV__Header(nullptr, nullptr, rOther.mpSoapHeader) : nullptr;
 		return *this;
 	}
 
@@ -134,27 +156,60 @@ public:
 		return nullptr;
 	}
 
+	void SetEnvDetail(const SOAP_ENV__Detail *pFaultObject) {
+
+		if(mpFaultResultObject) soap_del_SOAP_ENV__Detail(mpFaultResultObject);
+		delete mpFaultResultObject;
+		mpFaultResultObject = pFaultObject ? soap_dup_SOAP_ENV__Detail(nullptr, nullptr, pFaultObject) : nullptr;
+	}
+
+	const SOAP_ENV__Header* const GetSoapHeader() { return mpSoapHeader; }
+	void SetSoapHeader(const SOAP_ENV__Header *pSoapHeader) {
+
+		if(mpFaultResultObject) soap_del_SOAP_ENV__Header(mpSoapHeader);
+		delete mpSoapHeader;
+		this->mpSoapHeader = pSoapHeader ? soap_dup_SOAP_ENV__Header(nullptr, nullptr, pSoapHeader) : nullptr;
+	}
+
+	QString GetSoapHeaderMessageId() const {
+
+		if(mpSoapHeader) {
+			return QString::fromUtf8(mpSoapHeader->wsa5__MessageID);
+		}
+		return QString();
+	}
+
+	QString GetSoapHeaderRelatesTo() const {
+
+		if(mpSoapHeader && mpSoapHeader->wsa5__RelatesTo && mpSoapHeader->wsa5__RelatesTo->__item) {
+			return QString::fromUtf8(mpSoapHeader->wsa5__RelatesTo->__item);
+		}
+		return QString();
+	}
+
+	QString GetSoapHeaderAction() const {
+
+		if(mpSoapHeader && mpSoapHeader->wsa5__Action) {
+			return QString::fromUtf8(mpSoapHeader->wsa5__Action);
+		}
+		return QString();
+	}
+
+	QString GetSoapHeaderTo() const {
+
+		if(mpSoapHeader && mpSoapHeader->wsa5__To) {
+			return QString::fromUtf8(mpSoapHeader->wsa5__To);
+		}
+		return QString();
+	}
+
 private:
 
 	SOAP_ENV__Detail* mpFaultResultObject;
+	SOAP_ENV__Header* mpSoapHeader;
 };
 
-template <class T> struct SoapDeleter {
-
-	void operator()(T* p) {
-		if(p) p->soap_del();
-		delete p;
-	}
-};
-
-template <class T> struct SoapDuplicator {
-
-	T* operator()(const T *p) {
-		return p->soap_dup();
-	}
-};
-
-template <class T, class Deleter = SoapDeleter<T>, class Duplicator = SoapDuplicator<T>> 
+template <class T, class Deleter = SoapDeleter<T>, class Duplicator = SoapDuplicator<T>>
 class Response : public DetailedResponse {
 
 public:
@@ -208,8 +263,45 @@ public:
 	}
 
 	const T* getResultObject() const { return mpResultObject; }
+	void SetResultObject(const T *pResultObject) {
+
+		this->mDeleter(this->mpResultObject);
+		this->mpResultObject = pResultObject ? mDuplicator(pResultObject) : nullptr;
+	}
 
 	virtual bool IsFault() const { return DetailedResponse::IsFault() || !getResultObject(); }
+
+	static class Builder {
+
+	public:
+		Builder() :
+			mpResult() {}
+
+		Builder& From(const QSharedPointer<SoapCtx> &rSoapCtx, const T *pResultObject = nullptr) {
+			auto errorCode = rSoapCtx->GetFaultCode();
+			if(errorCode != SOAP_OK) {
+				mpResult.SetErrorCode(errorCode);
+				mpResult.SetFault(rSoapCtx->GetFaultString());
+				mpResult.SetFaultDetail(rSoapCtx->GetFaultDetail());
+				auto pSoap = rSoapCtx->Acquire();
+				if(pSoap->fault) mpResult.SetEnvDetail(pSoap->fault->SOAP_ENV__Detail);
+				rSoapCtx->Release();
+			}
+			else {
+				auto pSoap = rSoapCtx->Acquire();
+				mpResult.SetSoapHeader(pSoap->header);
+				rSoapCtx->Release();
+				mpResult.SetResultObject(pResultObject);
+			}
+			return *this;
+		}
+
+		Response<T, Deleter, Duplicator> Build() const { return mpResult; }
+
+	private:
+
+		Response<T, Deleter, Duplicator> mpResult;
+	};
 
 private:
 

@@ -25,7 +25,7 @@ public:
 	}
 	//! If you want to overwrite the SOAP action of the request.
 	void SetSoapAction(const QString &rAction) { mSoapAction = rAction; }
-	const QString& GetSoapAction() const { return mSoapAction; }
+	QString GetSoapAction() const { return mSoapAction; }
 
 private:
 	Request(const Request &);

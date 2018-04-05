@@ -2,7 +2,6 @@
 #include "soapReplayBindingProxy.h"
 #include "namespaces.nsmap"
 
-
 struct OnvifReplayClientPrivate {
 	OnvifReplayClientPrivate(OnvifReplayClient *pQ) : mpQ(pQ),
 		mProxy(mpQ->GetCtx()->Acquire()) {
@@ -14,10 +13,8 @@ struct OnvifReplayClientPrivate {
 	ReplayBindingProxy mProxy;
 };
 
-OnvifReplayClient::OnvifReplayClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx /*= QSharedPointer<SoapCtx>::create()*/, QObject *pParent /*= nullptr*/) :
-Client(rEndpoint, sharedCtx, pParent),
+OnvifReplayClient::OnvifReplayClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx /*= QSharedPointer<SoapCtx>::create()*/, QObject *pParent /*= nullptr*/) : Client(rEndpoint, sharedCtx, pParent),
 mpD(new OnvifReplayClientPrivate(this)) {
-
 }
 
 OnvifReplayClient::~OnvifReplayClient() {
@@ -33,9 +30,10 @@ Response<_trp__GetServiceCapabilitiesResponse> OnvifReplayClient::GetServiceCapa
 	do {
 		ret = mpD->mProxy.GetServiceCapabilities(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_trp__GetServiceCapabilitiesResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_trp__GetServiceCapabilitiesResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_trp__GetReplayUriResponse> OnvifReplayClient::GetReplayUri(Request<_trp__GetReplayUri> &rRequest) {
@@ -46,9 +44,10 @@ Response<_trp__GetReplayUriResponse> OnvifReplayClient::GetReplayUri(Request<_tr
 	do {
 		ret = mpD->mProxy.GetReplayUri(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_trp__GetReplayUriResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_trp__GetReplayUriResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_trp__GetReplayConfigurationResponse> OnvifReplayClient::GetReplayConfiguration(Request<_trp__GetReplayConfiguration> &rRequest) {
@@ -59,9 +58,10 @@ Response<_trp__GetReplayConfigurationResponse> OnvifReplayClient::GetReplayConfi
 	do {
 		ret = mpD->mProxy.GetReplayConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_trp__GetReplayConfigurationResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_trp__GetReplayConfigurationResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
 
 Response<_trp__SetReplayConfigurationResponse> OnvifReplayClient::SetReplayConfiguration(Request<_trp__SetReplayConfiguration> &rRequest) {
@@ -72,7 +72,8 @@ Response<_trp__SetReplayConfigurationResponse> OnvifReplayClient::SetReplayConfi
 	do {
 		ret = mpD->mProxy.SetReplayConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	Response<_trp__SetReplayConfigurationResponse> response(ret, GetFaultString(), GetFaultDetail(), ret == SOAP_OK ? &responseObject : nullptr, ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
+	auto response = Response<_trp__SetReplayConfigurationResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	return response;
+	return response.Build();
 }
