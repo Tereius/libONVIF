@@ -271,7 +271,7 @@ public:
 
 	virtual bool IsFault() const { return DetailedResponse::IsFault() || !getResultObject(); }
 
-	static class Builder {
+	class Builder {
 
 	public:
 		Builder() :

@@ -50,7 +50,7 @@ public:
 	//! Release the raw soap ctx after Acquire().
 	void Release();
 
-	static class Builder {
+	class Builder {
 
 	public:
 		Builder() :
