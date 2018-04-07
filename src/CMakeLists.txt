@@ -319,6 +319,7 @@ set(src_files
 	# gsoap/wsddapi.c
 	OnvifdiscoveryClient.cpp
 	# OnvifDiscover.cpp
+	OnvifDiscovery.cpp
 	generated/soapwsddProxy.cpp
 )
 
@@ -336,6 +337,7 @@ set(public_header_files
 	DeleterDuplicator.h
 	# OnvifDiscover.h
 	generated/soapwsddProxy.h
+	OnvifDiscovery.h
 )
 
 add_library(onvifdiscovery ${src_files} ${private_header_files} ${public_header_files})
