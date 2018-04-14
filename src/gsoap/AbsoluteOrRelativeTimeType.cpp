@@ -30,7 +30,8 @@ SOAP_FMAC1 int SOAP_FMAC2 soap_out_wsnt__AbsoluteOrRelativeTimeType(struct soap 
 		return soap_out_xsd__dateTime(soap, tag, id, &aorTime->GetDateTime(), type);
 	}
 	else {
-		return soap_out_xsd__duration(soap, tag, id, &aorTime->GetDuration(), type);
+		auto val = (LONG64)aorTime->GetDuration();
+		return soap_out_xsd__duration(soap, tag, id, &val, type);
 	}
 	return SOAP_TYPE;
 }

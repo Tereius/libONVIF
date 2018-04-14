@@ -28,7 +28,7 @@ void JsonHelper::Parse(QJsonObject &rJson, struct soap_dom_element *pDomElement)
 				rJson.insert(tag, QJsonValue::fromVariant(*(xsd__dateTime*)pDomElement->node));
 				break;
 			case SOAP_TYPE_xsd__duration:
-				rJson.insert(tag, QJsonValue::fromVariant(*(xsd__duration*)pDomElement->node));
+				rJson.insert(tag, QJsonValue::fromVariant(*(qint64*)pDomElement->node));
 				break;
 			case SOAP_TYPE_xsd__double:
 				rJson.insert(tag, QJsonValue::fromVariant(QString(*(xsd__double*)pDomElement->node).toDouble()));

@@ -2,8 +2,8 @@ include(GenerateExportHeader)
 include(CMakePackageConfigHelpers)
 find_package(CommonLibs_DIR NAMES CommonLibs)
 find_package(Qt5Core)
-find_library(OpenSSLLib_cryptro_PATH NAMES libeay libeay32 libcrypto libcrypto32 PATH_SUFFIXES "lib")
-find_library(OpenSSLLib_ssl_PATH NAMES ssleay ssleay32 libssl libssl32 PATH_SUFFIXES "lib")
+find_library(OpenSSLLib_cryptro_PATH NAMES libeay libeay32 libcrypto libcrypto32 eay crypto PATH_SUFFIXES "lib")
+find_library(OpenSSLLib_ssl_PATH NAMES ssleay ssleay32 libssl libssl32 eay ssl PATH_SUFFIXES "lib")
 find_path(OpenSSLLib_include_DIR NAMES openssl/ssl.h PATH_SUFFIXES "include")
 
 set(CMAKE_AUTOMOC ON)
@@ -69,9 +69,10 @@ set(public_header_files
 )
 
 add_library(onvifcommon ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(onvifcommon EXPORT_FILE_NAME onvifcommonExport.h)
+generate_export_header(onvifcommon EXPORT_FILE_NAME OnvifCommonExport.h)
 target_link_libraries(onvifcommon "${OpenSSLLib_ssl_PATH}" "${OpenSSLLib_cryptro_PATH}" Qt5::Core)
-set_target_properties(onvifcommon PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifcommonExport.h")
+target_compile_features(onvifcommon PUBLIC cxx_strong_enums cxx_auto_type cxx_nullptr cxx_long_long_type)
+set_target_properties(onvifcommon PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifCommonExport.h")
 if(USE_PRECOMPILED_HEADERS)
 	cotire(onvifcommon)
 endif()
@@ -80,7 +81,7 @@ endif()
 set(src_files 
 	generated/soapAnalyticsDeviceBindingProxy.cpp
 	#generated/soapAnalyticsDeviceBindingService.cpp
-	onvifanalyticsClient.cpp
+	OnvifAnalyticsClient.cpp
 )
 
 # private header
@@ -91,13 +92,13 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	onvifanalyticsClient.h
+	OnvifAnalyticsClient.h
 )
 
 add_library(onvifanalytics ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(onvifanalytics EXPORT_FILE_NAME onvifanalyticsExport.h)
+generate_export_header(onvifanalytics EXPORT_FILE_NAME OnvifAnalyticsExport.h)
 target_link_libraries(onvifanalytics onvifcommon)
-set_target_properties(onvifanalytics PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifanalyticsExport.h")
+set_target_properties(onvifanalytics PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifAnalyticsExport.h")
 if(USE_PRECOMPILED_HEADERS)
 	cotire(onvifanalytics)
 endif()
@@ -106,7 +107,7 @@ endif()
 set(src_files 
 	generated/soapDeviceBindingProxy.cpp
 	#generated/soapDeviceBindingService.cpp
-	onvifdeviceClient.cpp
+	OnvifDeviceClient.cpp
 )
 
 # private header
@@ -117,13 +118,13 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	onvifdeviceClient.h
+	OnvifDeviceClient.h
 )
 
 add_library(onvifdevice ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(onvifdevice EXPORT_FILE_NAME onvifdeviceExport.h)
+generate_export_header(onvifdevice EXPORT_FILE_NAME OnvifDeviceExport.h)
 target_link_libraries(onvifdevice onvifcommon)
-set_target_properties(onvifdevice PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifdeviceExport.h")
+set_target_properties(onvifdevice PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifDeviceExport.h")
 if(USE_PRECOMPILED_HEADERS)
 	cotire(onvifdevice)
 endif()
@@ -132,7 +133,7 @@ endif()
 set(src_files 
 	generated/soapDisplayBindingProxy.cpp
 	#generated/soapDisplayBindingService.cpp
-	onvifdisplayClient.cpp
+	OnvifDisplayClient.cpp
 )
 
 # private header
@@ -143,13 +144,13 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	onvifdisplayClient.h
+	OnvifDisplayClient.h
 )
 
 add_library(onvifdisplay ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(onvifdisplay EXPORT_FILE_NAME onvifdisplayExport.h)
+generate_export_header(onvifdisplay EXPORT_FILE_NAME OnvifDisplayExport.h)
 target_link_libraries(onvifdisplay onvifcommon)
-set_target_properties(onvifdisplay PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifdisplayExport.h")
+set_target_properties(onvifdisplay PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifDisplayExport.h")
 if(USE_PRECOMPILED_HEADERS)
 	cotire(onvifdisplay)
 endif()
@@ -158,7 +159,7 @@ endif()
 set(src_files 
 	generated/soapImagingBindingProxy.cpp
 	#generated/soapImagingBindingService.cpp
-	onvifimagingClient.cpp
+	OnvifImagingClient.cpp
 )
 
 # private header
@@ -169,13 +170,13 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	onvifimagingClient.h
+	OnvifImagingClient.h
 )
 
 add_library(onvifimaging ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(onvifimaging EXPORT_FILE_NAME onvifimagingExport.h)
+generate_export_header(onvifimaging EXPORT_FILE_NAME OnvifImagingExport.h)
 target_link_libraries(onvifimaging onvifcommon)
-#set_target_properties(onvifimaging PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifimagingExport.h")
+set_target_properties(onvifimaging PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifImagingExport.h")
 if(USE_PRECOMPILED_HEADERS)
 	cotire(onvifimaging)
 endif()
@@ -184,7 +185,7 @@ endif()
 set(src_files 
 	generated/soapMediaBindingProxy.cpp
 	#generated/soapMediaBindingService.cpp
-	onvifmediaClient.cpp
+	OnvifMediaClient.cpp
 )
 
 # private header
@@ -195,13 +196,13 @@ set(private_header_files
 
 # public header
 set(public_header_files
-		onvifmediaClient.h
+	OnvifMediaClient.h
 )
 
 add_library(onvifmedia ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(onvifmedia EXPORT_FILE_NAME onvifmediaExport.h)
+generate_export_header(onvifmedia EXPORT_FILE_NAME OnvifMediaExport.h)
 target_link_libraries(onvifmedia onvifcommon)
-#set_target_properties(onvifmedia PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifmediaExport.h")
+set_target_properties(onvifmedia PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifMediaExport.h")
 if(USE_PRECOMPILED_HEADERS)
 	cotire(onvifmedia)
 endif()
@@ -210,7 +211,7 @@ endif()
 set(src_files 
 	generated/soapPTZBindingProxy.cpp
 	#generated/soapPTZBindingService.cpp
-	onvifptzClient.cpp
+	OnvifPtzClient.cpp
 )
 
 # private header
@@ -221,13 +222,13 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	onvifptzClient.h
+	OnvifPtzClient.h
 )
 
 add_library(onvifptz ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(onvifptz EXPORT_FILE_NAME onvifptzExport.h)
+generate_export_header(onvifptz EXPORT_FILE_NAME OnvifPtzExport.h)
 target_link_libraries(onvifptz onvifcommon)
-#set_target_properties(onvifptz PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifptzExport.h")
+set_target_properties(onvifptz PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifPtzExport.h")
 if(USE_PRECOMPILED_HEADERS)
 	cotire(onvifptz)
 endif()
@@ -236,7 +237,7 @@ endif()
 set(src_files 
 	generated/soapPullPointSubscriptionBindingProxy.cpp
 	#generated/soapPullPointSubscriptionBindingService.cpp
-	onvifeventClient.cpp
+	OnvifEventClient.cpp
 	OnvifPullPoint.cpp
 )
 
@@ -248,14 +249,14 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	onvifeventClient.h
+	OnvifEventClient.h
 	OnvifPullPoint.h
 )
 
 add_library(onvifevent ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(onvifevent EXPORT_FILE_NAME onvifeventExport.h)
+generate_export_header(onvifevent EXPORT_FILE_NAME OnvifEventExport.h)
 target_link_libraries(onvifevent onvifcommon)
-set_target_properties(onvifevent PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifeventExport.h")
+set_target_properties(onvifevent PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifEventExport.h")
 if(USE_PRECOMPILED_HEADERS)
 	cotire(onvifevent)
 endif()
@@ -264,7 +265,7 @@ endif()
 set(src_files 
 	generated/soapReceiverBindingProxy.cpp
 	#generated/soapReceiverBindingService.cpp
-	onvifreceiverClient.cpp
+	OnvifReceiverClient.cpp
 )
 
 # private header
@@ -275,13 +276,13 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	onvifreceiverClient.h
+	OnvifReceiverClient.h
 )
 
 add_library(onvifreceiver ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(onvifreceiver EXPORT_FILE_NAME onvifreceiverExport.h)
+generate_export_header(onvifreceiver EXPORT_FILE_NAME OnvifReceiverExport.h)
 target_link_libraries(onvifreceiver onvifcommon)
-#set_target_properties(onvifreceiver PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifreceiverExport.h")
+set_target_properties(onvifreceiver PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifReceiverExport.h")
 if(USE_PRECOMPILED_HEADERS)
 	cotire(onvifreceiver)
 endif()
@@ -290,7 +291,7 @@ endif()
 set(src_files 
 	generated/soapRecordingBindingProxy.cpp
 	#generated/soapRecordingBindingService.cpp
-	onvifrecordingClient.cpp
+	OnvifRecordingClient.cpp
 )
 
 # private header
@@ -301,13 +302,13 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	onvifrecordingClient.h
+	OnvifRecordingClient.h
 )
 
 add_library(onvifrecording ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(onvifrecording EXPORT_FILE_NAME onvifrecordingExport.h)
+generate_export_header(onvifrecording EXPORT_FILE_NAME OnvifRecordingExport.h)
 target_link_libraries(onvifrecording onvifcommon)
-#set_target_properties(onvifrecording PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifrecordingExport.h")
+set_target_properties(onvifrecording PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifRecordingExport.h")
 if(USE_PRECOMPILED_HEADERS)
 	cotire(onvifrecording)
 endif()
@@ -317,7 +318,7 @@ set(src_files
 	# generated/soapRemoteDiscoveryBindingProxy.cpp
 	# generated/soapRemoteDiscoveryBindingService.cpp
 	# gsoap/wsddapi.c
-	OnvifdiscoveryClient.cpp
+	OnvifDiscoveryClient.cpp
 	# OnvifDiscover.cpp
 	OnvifDiscovery.cpp
 	generated/soapwsddProxy.cpp
@@ -333,7 +334,7 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	OnvifdiscoveryClient.h
+	OnvifDiscoveryClient.h
 	DeleterDuplicator.h
 	# OnvifDiscover.h
 	generated/soapwsddProxy.h
@@ -341,9 +342,9 @@ set(public_header_files
 )
 
 add_library(onvifdiscovery ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(onvifdiscovery EXPORT_FILE_NAME onvifdiscoveryExport.h)
+generate_export_header(onvifdiscovery EXPORT_FILE_NAME OnvifDiscoveryExport.h)
 target_link_libraries(onvifdiscovery onvifcommon)
-set_target_properties(onvifdiscovery PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifdiscoveryExport.h")
+set_target_properties(onvifdiscovery PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifDiscoveryExport.h")
 if(USE_PRECOMPILED_HEADERS)
 	cotire(onvifdiscovery)
 endif()
@@ -352,7 +353,7 @@ endif()
 set(src_files 
 	generated/soapReplayBindingProxy.cpp
 	#generated/soapReplayBindingService.cpp
-	onvifreplayClient.cpp
+	OnvifReplayClient.cpp
 )
 
 # private header
@@ -363,13 +364,13 @@ set(private_header_files
 
 # public header
 set(public_header_files
-	onvifreplayClient.h
+	OnvifReplayClient.h
 )
 
 add_library(onvifreplay ${src_files} ${private_header_files} ${public_header_files})
-generate_export_header(onvifreplay EXPORT_FILE_NAME onvifreplayExport.h)
+generate_export_header(onvifreplay EXPORT_FILE_NAME OnvifReplayExport.h)
 target_link_libraries(onvifreplay onvifcommon)
-#set_target_properties(onvifreplay PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/onvifreplayExport.h")
+set_target_properties(onvifreplay PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifReplayExport.h")
 if(USE_PRECOMPILED_HEADERS)
 	cotire(onvifreplay)
 endif()
@@ -429,7 +430,7 @@ install(TARGETS
 	onvifevent
 	onvifdisplay
 	onvifanalytics
-	EXPORT libONVIFTargets RUNTIME DESTINATION bin ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION include
+	EXPORT libONVIFTargets RUNTIME DESTINATION bin ARCHIVE DESTINATION lib LIBRARY DESTINATION lib PUBLIC_HEADER DESTINATION include
 )
 install(EXPORT libONVIFTargets DESTINATION cmake)
 

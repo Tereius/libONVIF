@@ -258,7 +258,7 @@ public:
 		}
 		DetailedResponse::operator=(rOther);
 		this->mDeleter(this->mpResultObject);
-		this->mpResultObject = rOther.mpResultObject ? mDuplicator(pResultObject) : nullptr;
+		this->mpResultObject = rOther.mpResultObject ? mDuplicator(rOther.mpResultObject) : nullptr;
 		return *this;
 	}
 

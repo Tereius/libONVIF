@@ -47,7 +47,7 @@ public:
 		mDateTime = QDateTime();
 	}
 
-	const qint64& GetDuration() const {
+	qint64 GetDuration() const {
 
 		return mDuration;
 	}

@@ -76,7 +76,8 @@ void OnvifPullPointWorker::run() {
 	}
 	mpClient->GetCtx()->Restore();
 	emit Unsubscribed();
-	auto resp = mpClient->Unsubscribe(Request<_wsnt__Unsubscribe>());
+	Request<_wsnt__Unsubscribe> req;
+	auto resp = mpClient->Unsubscribe(req);
 	if(!resp) {
 		qWarning() << "Couldn't unsubscribe from Pull Point:" << mpClient->GetEndpointString();
 	}
