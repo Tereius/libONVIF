@@ -72,12 +72,8 @@ A commercial use license is available from Genivia, Inc., contact@genivia.com
 */
 
 #include <QString>
+#include "qstringCompare.h"
 
 extern class QString;
 
 extern typedef QString xsd__string;
-
-bool operator>(const QString &s1, int length) {return s1.size() > length;}
-bool operator>=(const QString &s1, int length) {return s1.size() >= length;}
-bool operator<(const QString &s1, int length) {return s1.size() < length;}
-bool operator<=(const QString &s1, int length) {return s1.size() <= length;}

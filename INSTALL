@@ -1,7 +1,34 @@
 How to build and install libONVIF binaries
 ===========================================
 
-You may want to use CommonLibs (https://github.com/Tereius/CommonLibs) to build the dependencies.
-
-
 This projects uses CMake (see www.cmake.org).
+
+You may want to use "CommonLibs" (https://github.com/Tereius/CommonLibs) to build the dependencies (OpenSSL, Qt5).
+This is especially useful for Windows hosts which lack a package manager like "apt". "CommonLibs" is an optional
+dependency and CMake won't fail if "CommonLibs" is missing.
+
+The minimal project setup for "Unix Makefiles" would be:
+
+    cd /opt
+    git clone https://github.com/Tereius/libONVIF.git
+    mkdir /opt/build_libonvif
+    cd /opt/build_libonvif
+    cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE:STRING=Debug /opt/libONVIF
+    make
+    make install
+
+If CMake is missing a dependency you have to set the variable (pointing to a path) manually e.g. for OpenSSL:
+
+    cmake -G "Unix Makefiles" -DOpenSSL_cryptro_PATH:PATH="/usr/lib/x86_64-linux-gnu/libcrypto.so" -DOpenSSL_ssl_PATH:PATH="usr/lib/x86_64-linux-gnu/libssl.so" -DOpenSSL_include_DIR:PATH="/usr/include" /opt/libONVIF
+
+To print the relevant variables you may want to change use:
+
+    cd <src_path>
+    cmake -LH
+
+For Windows use a CMake generator like "NMake Makefiles" or "Visual Studio [...]" e.g.:
+
+    cd <build_path>
+    cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE:STRING=Debug <src_path>
+    cmake --build ./
+    cmake --build ./ --target install

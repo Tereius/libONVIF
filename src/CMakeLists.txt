@@ -1,16 +1,22 @@
 include(GenerateExportHeader)
 include(CMakePackageConfigHelpers)
-find_package(CommonLibs_DIR NAMES CommonLibs)
+find_package(CommonLibs)
 find_package(Qt5Core)
-find_library(OpenSSLLib_cryptro_PATH NAMES libeay libeay32 libcrypto libcrypto32 eay crypto PATH_SUFFIXES "lib")
-find_library(OpenSSLLib_ssl_PATH NAMES ssleay ssleay32 libssl libssl32 eay ssl PATH_SUFFIXES "lib")
-find_path(OpenSSLLib_include_DIR NAMES openssl/ssl.h PATH_SUFFIXES "include")
+find_library(OpenSSL_cryptro_PATH NAMES libeay libeay32 libcrypto libcrypto32 eay crypto PATH_SUFFIXES "lib")
+find_library(OpenSSL_ssl_PATH NAMES ssleay ssleay32 libssl libssl32 eay ssl PATH_SUFFIXES "lib")
+find_path(OpenSSL_include_DIR NAMES openssl/ssl.h PATH_SUFFIXES "include")
+if(ENABLE_CODESYNTHESIS)
+	find_program(Gsoap_wsdl2h_PATH NAMES wsdl2h PATH_SUFFIXES "bin")
+	find_program(Gsoap_soapcpp2_PATH NAMES soapcpp2 PATH_SUFFIXES "bin")
+	find_path(Gsoap_import_DIR NAMES wsdd5.h PATH_SUFFIXES "share/gsoap/import" "share/gsoap" "share")
+endif()
 
 set(CMAKE_AUTOMOC ON)
 set(BUILD_SHARED_LIBS true CACHE BOOL "Build shared or static lib?")
+set(ENABLE_CODESYNTHESIS false CACHE BOOL "Run wsdl2h and soapcpp2?")
 set(CMAKE_DEBUG_POSTFIX d) # Append "d" if debug lib.
 
-include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" "${OpenSSLLib_include_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/generated" "${CMAKE_CURRENT_SOURCE_DIR}/gsoap")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" "${OpenSSL_include_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/generated" "${CMAKE_CURRENT_SOURCE_DIR}/gsoap")
 
 add_definitions(-DWITH_OPENSSL)
 if(MSVC)
@@ -18,6 +24,28 @@ if(MSVC)
 endif()
 if(WIN32 AND BUILD_SHARED_LIBS)
 	add_definitions(-DSOAP_STD_EXPORTS)
+endif()
+
+# -------------------------------GSOAP synthesis-------------------------------
+
+set(GSOAP_DIRS "${Gsoap_import_DIR}$<SEMICOLON>${Gsoap_import_DIR}/import$<SEMICOLON>${CMAKE_SOURCE_DIR}/src/gsoap")
+if(ENABLE_CODESYNTHESIS)
+	add_custom_target(Synthesis
+	COMMAND ${Gsoap_wsdl2h_PATH} -c++11 -d -p -j -t typemap.dat -o generated.h 
+	http://www.onvif.org/onvif/ver10/analyticsdevice.wsdl
+	http://www.onvif.org/onvif/ver10/replay.wsdl
+	http://www.onvif.org/onvif/ver10/search.wsdl
+	http://www.onvif.org/onvif/ver10/recording.wsdl
+	http://www.onvif.org/onvif/ver10/receiver.wsdl
+	http://www.onvif.org/onvif/ver20/ptz/wsdl/ptz.wsdl
+	http://www.onvif.org/onvif/ver10/media/wsdl/media.wsdl
+	http://www.onvif.org/onvif/ver20/imaging/wsdl/imaging.wsdl
+	http://www.onvif.org/onvif/ver10/display.wsdl
+	http://www.onvif.org/onvif/ver10/events/wsdl/event.wsdl
+	http://www.onvif.org/onvif/ver10/device/wsdl/devicemgmt.wsdl
+	http://www.onvif.org/onvif/ver20/analytics/wsdl/analytics.wsdl
+	COMMAND ${Gsoap_soapcpp2_PATH} -Ed -Ec -c++11 -a -j -L -x -n -d ${CMAKE_SOURCE_DIR}/src/generated -I ${GSOAP_DIRS} generated.h
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/wsdl VERBATIM)
 endif()
 
 # -------------------------------ONVIF Common-------------------------------
@@ -33,6 +61,7 @@ set(src_files
 	gsoap/smdevp.c
 	gsoap/wsaapi.c
 	gsoap/wsseapi-lite.c
+	gsoap/qstringCompare.cpp
 	SoapCtx.cpp
 	Client.cpp
 	Response.cpp
@@ -58,6 +87,7 @@ set(public_header_files
 	gsoap/wsseapi-lite.h
 	gsoap/threads.h
 	gsoap/AbsoluteOrRelativeTime.h
+	gsoap/qstringCompare.h
 	SoapCtx.h
 	Request.h
 	Response.h
@@ -70,7 +100,7 @@ set(public_header_files
 
 add_library(onvifcommon ${src_files} ${private_header_files} ${public_header_files})
 generate_export_header(onvifcommon EXPORT_FILE_NAME OnvifCommonExport.h)
-target_link_libraries(onvifcommon "${OpenSSLLib_ssl_PATH}" "${OpenSSLLib_cryptro_PATH}" Qt5::Core)
+target_link_libraries(onvifcommon "${OpenSSL_ssl_PATH}" "${OpenSSL_cryptro_PATH}" Qt5::Core)
 target_compile_features(onvifcommon PUBLIC cxx_strong_enums cxx_auto_type cxx_nullptr cxx_long_long_type)
 set_target_properties(onvifcommon PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifCommonExport.h")
 if(USE_PRECOMPILED_HEADERS)
@@ -410,7 +440,7 @@ set(INCLUDE_INSTALL_DIR "include")
 set(CMAKE_INSTALL_DIR "cmake")
 set(BIN_INSTALL_DIR "bin")
 set(LIB_INSTALL_DIR "lib")
-configure_package_config_file("${CMAKE_SOURCE_DIR}/libONVIFConfig.cmake.in" "${CMAKE_BINARY_DIR}/libONVIFConfig.cmake" INSTALL_DESTINATION cmake
+configure_package_config_file("${CMAKE_SOURCE_DIR}/CMake/libONVIFConfig.cmake.in" "${CMAKE_BINARY_DIR}/libONVIFConfig.cmake" INSTALL_DESTINATION cmake
                               PATH_VARS INCLUDE_INSTALL_DIR CMAKE_INSTALL_DIR BIN_INSTALL_DIR LIB_INSTALL_DIR)
 
 write_basic_package_version_file("${CMAKE_BINARY_DIR}/libONVIFVersion.cmake" VERSION 1.0.0 COMPATIBILITY SameMajorVersion) # Project version is uses

@@ -220,7 +220,7 @@
 #	mapping xsd:duration to string (in milliseconds precision).
 #	Then rerun wsdl2h and also compile and link custom/duration.c.
 
-xsd__duration = #import "custom/duration.h" | xsd__duration
+xsd__duration = #import "duration.h" | xsd__duration
 
 #	Uncomment the line below to use C++11 std::chrono::nanoseconds for
 #	xsd:duration instead of mapping xsd:duration to string.
@@ -257,8 +257,8 @@ xsd__any = | xsd__anyType*
 # };
 # ]
 
-xsd__dateTime = #import "custom/qdatetime.h" | xsd__dateTime
-xsd__string = #import "custom/qstring.h" | xsd__string
+xsd__dateTime = #import "qdatetime.h" | xsd__dateTime
+xsd__string = #import "qstring.h" | xsd__string
 wsnt__AbsoluteOrRelativeTimeType = #import "AbsoluteOrRelativeTimeType.h" | wsnt__AbsoluteOrRelativeTimeType
 _wsnt__NotificationMessageHolderType_Message = $ _tt__Message* Message;
 
