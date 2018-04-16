@@ -1,5 +1,5 @@
 #pragma once
-#include "onvifcommonExport.h"
+#include "OnvifCommonExport.h"
 #include <QString>
 
 
