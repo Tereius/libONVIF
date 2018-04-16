@@ -1,5 +1,5 @@
 #pragma once
-#include "onvifdiscoveryExport.h"
+#include "OnvifDiscoveryExport.h"
 #include "OnvifDiscoveryClient.h"
 #include <QObject>
 #include <QStringList>
