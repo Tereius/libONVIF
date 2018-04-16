@@ -56,7 +56,7 @@ mIsSaved(false) {
 
 SoapCtx::~SoapCtx() {
 
-	delete mpSoap->user;
+	delete (arbData*)mpSoap->user;
 	mpSoap->user = nullptr;
 	soap_free(mpSoap);
 }

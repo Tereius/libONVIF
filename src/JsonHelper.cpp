@@ -15,6 +15,7 @@ JsonHelper::~JsonHelper() {
 
 void JsonHelper::Parse(QJsonObject &rJson, struct soap_dom_element *pDomElement) {
 
+	/*
 	auto tag = QString::fromUtf8(pDomElement->tag());
 	auto ns = QString::fromUtf8(pDomElement->ns());
 	qDebug() << "Found tag: " << tag << " ns: " << ns;
@@ -88,10 +89,12 @@ void JsonHelper::Parse(QJsonObject &rJson, struct soap_dom_element *pDomElement)
 			Parse(jsonChild, child.iter);
 		}
 	}
+	*/
 }
 
 void JsonHelper::Parse(QJsonObject &rJson, struct soap_dom_attribute *pDomAttribute) {
 
+	/*
 	auto tag = QString::fromUtf8(pDomAttribute->tag());
 	auto ns = QString::fromUtf8(pDomAttribute->ns());
 	qDebug() << "Found attribute: " << tag << " ns: " << ns;
@@ -115,6 +118,7 @@ void JsonHelper::Parse(QJsonObject &rJson, struct soap_dom_attribute *pDomAttrib
 	else {
 		rJson.insert(tag, QJsonValue(QJsonValue::Null));
 	}
+	*/
 }
 
 QJsonObject JsonHelper::Parse(struct soap_dom_element *pDomElement) {
