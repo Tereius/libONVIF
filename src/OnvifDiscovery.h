@@ -67,6 +67,7 @@ public:
 	Q_INVOKABLE void ClearMatches();
 	Q_INVOKABLE void SetMatchScopes(const QStringList &rScopesToMatch);
 	Q_INVOKABLE void SetMatchTypes(const QStringList &rTypesToMatch);
+	int GetMatchesCount();
 	QList<DiscoveryMatch> GetMatches();
 	bool Active();
 

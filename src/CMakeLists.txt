@@ -64,7 +64,6 @@ set(src_files
 	gsoap/qstringCompare.cpp
 	SoapCtx.cpp
 	Client.cpp
-	Response.cpp
 	JsonHelper.cpp
 	SoapHelper.cpp
 )

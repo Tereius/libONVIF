@@ -1,5 +1,6 @@
 #include "OnvifDiscovery.h"
 #include "SoapHelper.h"
+#include <QElapsedTimer>
 
 
 DiscoveryMatch::DiscoveryMatch() :
@@ -134,6 +135,12 @@ QList<DiscoveryMatch> OnvifDiscovery::GetMatches() {
 	return mMatches;
 }
 
+int OnvifDiscovery::GetMatchesCount() {
+
+	QMutexLocker lock(&mMutex);
+	return mMatches.size();
+}
+
 void OnvifDiscovery::ClearMatches() {
 
 	mMutex.lock();
@@ -172,7 +179,7 @@ bool OnvifDiscoveryWorker::StartDiscovery() {
 			qDebug() << "Discovery worker successfully started";
 			return true;
 		}
-		qWarning() << "Couldn't start discovery worker - initial probe failed:" << probeResponse;
+		qWarning() << "Couldn't start discovery worker - initial probe failed:" << probeResponse.GetCompleteFault();
 		return false;
 	}
 	return true;
@@ -180,7 +187,7 @@ bool OnvifDiscoveryWorker::StartDiscovery() {
 
 void OnvifDiscoveryWorker::StopDiscovery() {
 
-	if(!isInterruptionRequested()) {
+	if(!isInterruptionRequested() && isRunning()) {
 		qDebug() << "Stopping discovery worker";
 		requestInterruption();
 		mpClient->GetCtx()->ForceSocketClose();
@@ -194,10 +201,14 @@ void OnvifDiscoveryWorker::StopDiscovery() {
 DetailedResponse OnvifDiscoveryWorker::Probe(const QString &rMessageId) {
 
 	ProbeTypeRequest request;
-	request.Types = mTypes.join(' ').toUtf8().data();
+	auto typesString = mTypes.join(' ');
+	auto typesUtf8 = typesString.toUtf8();
+	request.Types = typesUtf8.data();
 	if(!mScopes.empty()) {
+		auto scopesString = mScopes.join(' ');
+		auto scopesUtf8 = scopesString.toUtf8();
 		request.Scopes = new wsdd__ScopesType();
-		request.Scopes->__item = mScopes.join(' ').toUtf8().data();
+		request.Scopes->__item = scopesUtf8.data();
 	}
 	return mpClient->Probe(request, rMessageId);
 }
@@ -205,6 +216,8 @@ DetailedResponse OnvifDiscoveryWorker::Probe(const QString &rMessageId) {
 void OnvifDiscoveryWorker::run() {
 
 	auto probeResponse = DetailedResponse();
+	QElapsedTimer timer;
+	timer.start();
 	while(!QThread::isInterruptionRequested()) {
 		if(probeResponse) {
 			auto matchResp = mpClient->ReceiveProbeMatches();
@@ -241,16 +254,21 @@ void OnvifDiscoveryWorker::run() {
 					qInfo() << "Skipping non related message with id:" << relatesTo;
 				}
 			}
-			else {
-				qWarning() << "The discovery match failed:" << matchResp;
-				for(auto i = 1; i <= 10 && !QThread::isInterruptionRequested(); ++i) QThread::msleep(1000);
+			else if(matchResp.GetErrorCode() != SOAP_EOF) {
+				qWarning() << "The discovery match failed:" << matchResp.GetCompleteFault();
 			}
 		}
 		else {
-			qWarning() << "The discovery probe failed:" << probeResponse;
+			qWarning() << "The discovery probe failed:" << probeResponse.GetCompleteFault();
+			// Sleeping
 			for(auto i = 1; i <= 10 && !QThread::isInterruptionRequested(); ++i) QThread::msleep(1000);
 		}
-		mMesssageId = QString("uuid:%1").arg(SoapHelper::GenerateUuid());
-		probeResponse = Probe(mMesssageId);
+		// Send a new probe earliest 20 seconds after the last probe
+		if(timer.hasExpired(20000)) {
+			mMesssageId = QString("uuid:%1").arg(SoapHelper::GenerateUuid());
+			probeResponse = Probe(mMesssageId);
+			timer.start();
+		}
 	} // end while
+	timer.invalidate();
 }
