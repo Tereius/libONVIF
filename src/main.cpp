@@ -56,6 +56,9 @@ int main(int argc, char **argv) {
 											qDebug() << "Found match:";
 											qDebug() << "    Type:" << probe.Types;
 											qDebug() << "    Endpoint:" << probe.XAddrs;
+											if(probe.wsa5__EndpointReference.Address) {
+												qDebug() << "     Reference:" << probe.wsa5__EndpointReference.Address;
+											}
 											if(probe.Scopes) {
 												auto scopeList = QString::fromLocal8Bit(probe.Scopes->__item).split(' ');
 												auto matchBy = QString::fromLocal8Bit(probe.Scopes->MatchBy);

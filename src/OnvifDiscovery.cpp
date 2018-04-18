@@ -3,47 +3,6 @@
 #include <QElapsedTimer>
 
 
-DiscoveryMatch::DiscoveryMatch() :
-mDeviceEndpoint(),
-mTypes(),
-mScopes() {
-
-}
-
-DiscoveryMatch::~DiscoveryMatch() {
-
-}
-
-QUrl DiscoveryMatch::GetDeviceEndpoint() const {
-
-	return mDeviceEndpoint;
-}
-
-void DiscoveryMatch::SetDeviceEndpoint(const QUrl &rDeviceEndpoint) {
-
-	mDeviceEndpoint = rDeviceEndpoint;
-}
-
-QStringList DiscoveryMatch::GetTypes() const {
-
-	return mTypes;
-}
-
-void DiscoveryMatch::SetTypes(const QStringList &rTypes) {
-
-	mTypes = rTypes;
-}
-
-QStringList DiscoveryMatch::GetScopes() const {
-
-	return mScopes;
-}
-
-void DiscoveryMatch::SetScopes(const QStringList &rScopes) {
-
-	mScopes = rScopes;
-}
-
 OnvifDiscovery::OnvifDiscovery(const QStringList &rScopes /*= {}*/, const QStringList &rTypes /*= {"tds:Device", "tdn:NetworkVideoTransmitter"}*/, QObject *pParent /*= nullptr*/) :
 QObject(pParent),
 mTypes(rTypes),
@@ -231,7 +190,12 @@ void OnvifDiscoveryWorker::run() {
 								for(auto ii = 0; ii < match.__sizeProbeMatch; ++ii) {
 									auto probe = match.ProbeMatch[ii];
 									DiscoveryMatch discoveryMatch;
-									if(probe.XAddrs) discoveryMatch.SetDeviceEndpoint(QString::fromUtf8(probe.XAddrs).trimmed());
+									if(probe.XAddrs) {
+										discoveryMatch.SetDeviceEndpoint(QString::fromUtf8(probe.XAddrs).trimmed());
+										if(probe.wsa5__EndpointReference.Address) {
+											discoveryMatch.SetEndpointReference(SoapHelper::QuuidFromString(QString::fromUtf8(probe.wsa5__EndpointReference.Address)));
+										}
+									}
 									else {
 										qInfo() << "Got a match which doesn't provide an endpoint - skipping";
 										continue;

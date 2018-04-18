@@ -350,6 +350,7 @@ set(src_files
 	OnvifDiscoveryClient.cpp
 	# OnvifDiscover.cpp
 	OnvifDiscovery.cpp
+	DiscoveryMatch.cpp
 	generated/soapwsddProxy.cpp
 )
 
@@ -368,6 +369,7 @@ set(public_header_files
 	# OnvifDiscover.h
 	generated/soapwsddProxy.h
 	OnvifDiscovery.h
+	DiscoveryMatch.h
 )
 
 add_library(onvifdiscovery ${src_files} ${private_header_files} ${public_header_files})
