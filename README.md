@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/craw12co0chie6hn?svg=true)](https://ci.appveyor.com/project/Tereius/libonvif)
+
 # libONVIF
 
 ### Yet another ONVIF library
