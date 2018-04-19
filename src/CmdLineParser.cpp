@@ -7,40 +7,14 @@ void CmdLineParser::setup(QCommandLineParser &parser) {
 	parser.addHelpOption();
 	parser.addVersionOption();
 
-	parser.addOptions({
-		{{"d", "discover"},
-		QCoreApplication::translate("main", "Search ONVIF devices for 10 seconds (change timespan via --discover-timespan option). Ignores the host if specified.")
-		},
-		{"discover-timespan",
-		QCoreApplication::translate("main", "Set discover timespan in seconds for ONVIF devices."),
-		QCoreApplication::translate("main", "timespan"),
-		"10"
-		},
-		{"host",
-		QCoreApplication::translate("main", "The ONVIF <host>: e.g.: http://localhost. Leave empty if you want to search for ONVIF hosts."),
-		QCoreApplication::translate("main", "host")
-		},
-		{"verbose",
-		QCoreApplication::translate("main", "Prints all the raw SOAP messages. Very noisy.")
-		},
-		{"path",
-		QCoreApplication::translate("main", "The ONVIF 'device' web service endpoint <path>."),
-		QCoreApplication::translate("main", "path"),
-		"/onvif/device_service"
-		},
-		{"port",
-		QCoreApplication::translate("main", "The <port> of the 'device' web service endpoint. Defaults to 80 for http and 443 for https."),
-		QCoreApplication::translate("main", "port")
-		},
-		{{"u", "user"},
-		QCoreApplication::translate("main", "The <user> to authenticate against the ONVIF device."),
-		QCoreApplication::translate("main", "user")
-		},
-		{{"p", "pwd"},
-		QCoreApplication::translate("main", "The <password> to authenticate against the ONVIF device."),
-		QCoreApplication::translate("main", "password")
-		}
-	});
+	parser.addOption(QCommandLineOption({"d", "discover"}, QCoreApplication::translate("main", "Search ONVIF devices for 10 seconds (change timespan via --discover-timespan option). Ignores the host if specified.")));
+	parser.addOption(QCommandLineOption(QString("discover-timespan"), QCoreApplication::translate("main", "Set discover timespan in seconds for ONVIF devices."), QCoreApplication::translate("main", "timespan"), QString("10")));
+	parser.addOption(QCommandLineOption(QString("host"), QCoreApplication::translate("main", "The ONVIF <host>: e.g.: http://localhost. Leave empty if you want to search for ONVIF hosts."), QCoreApplication::translate("main", "host")));
+	parser.addOption(QCommandLineOption(QString("verbose"), QCoreApplication::translate("main", "Prints all the raw SOAP messages. Very noisy.")));
+	parser.addOption(QCommandLineOption(QString("path"), QCoreApplication::translate("main", "The ONVIF 'device' web service endpoint <path>."), QCoreApplication::translate("main", "path"), QString("/onvif/device_service")));
+	parser.addOption(QCommandLineOption(QString("port"), QCoreApplication::translate("main", "The <port> of the 'device' web service endpoint. Defaults to 80 for http and 443 for https."), QCoreApplication::translate("main", "port")));
+	parser.addOption(QCommandLineOption({"u", "user"}, QCoreApplication::translate("main", "The <user> to authenticate against the ONVIF device."), QCoreApplication::translate("main", "user")));
+	parser.addOption(QCommandLineOption({"p", "pwd"}, QCoreApplication::translate("main", "The <password> to authenticate against the ONVIF device."), QCoreApplication::translate("main", "password")));
 }
 
 ArbitraryResponse<CmdOptions> CmdLineParser::parse(const QCommandLineParser &parser) {
