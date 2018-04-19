@@ -59,7 +59,7 @@ DetailedResponse OnvifDiscoveryClient::Probe(ProbeTypeRequest &rRequest, const Q
 
 	auto ret = SOAP_OK;
 	auto pSoap = ackquireCtx();
-	soap_wsa_request(pSoap, qUtf8Printable(rMessageId), "urn:schemas-xmlsoap-org:ws:2005:04:discovery", "http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe");
+	soap_wsa_request(pSoap, rMessageId.toUtf8().constData(), "urn:schemas-xmlsoap-org:ws:2005:04:discovery", "http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe");
 	do {
 		auto ret = mpD->mProxy.Probe(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest);
 	} while(retry(pSoap));
