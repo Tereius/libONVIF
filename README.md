@@ -1,4 +1,5 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/craw12co0chie6hn?svg=true)](https://ci.appveyor.com/project/Tereius/libonvif)
+[![Build Status](https://travis-ci.org/Tereius/libONVIF.svg?branch=master)](https://travis-ci.org/Tereius/libONVIF)
 
 # libONVIF
 
