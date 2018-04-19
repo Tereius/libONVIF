@@ -31,7 +31,7 @@ void OnvifPullPointWorker::run() {
 	int pullFaultCount = 0;
 	bool shortPull = true; // The first pull should have a short timeout so we can check if it's working.
 
-	qInfo() << "Starting new Pull Point:" << mpClient->GetEndpointString();
+	qDebug() << "Starting new Pull Point:" << mpClient->GetEndpointString();
 
 	while(!isInterruptionRequested() && pullFaultCount < PULL_POINT_MAX_RETRIES) {
 
@@ -61,11 +61,11 @@ void OnvifPullPointWorker::run() {
 			if(faultDetail) {
 				if(faultDetail->MaxMessageLimit < messageLimit) {
 					messageLimit = faultDetail->MaxMessageLimit;
-					qInfo() << "Got new message limit from Pull Point:" << messageLimit << ")";
+					qDebug() << "Got new message limit from Pull Point:" << messageLimit << ")";
 				}
 				if(faultDetail->MaxTimeout < timeoutLimit) {
 					timeoutLimit = faultDetail->MaxTimeout;
-					qInfo() << "Got new timeout limit from Pull Point:" << timeoutLimit;
+					qDebug() << "Got new timeout limit from Pull Point:" << timeoutLimit;
 				}
 			}
 			else {

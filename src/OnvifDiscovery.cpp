@@ -1,6 +1,7 @@
 #include "OnvifDiscovery.h"
 #include "SoapHelper.h"
 #include <QElapsedTimer>
+#include <QDebug>
 
 
 OnvifDiscovery::OnvifDiscovery(const QStringList &rScopes /*= {}*/, const QStringList &rTypes /*= {"tds:Device", "tdn:NetworkVideoTransmitter"}*/, QObject *pParent /*= nullptr*/) :
@@ -197,16 +198,16 @@ void OnvifDiscoveryWorker::run() {
 										}
 									}
 									else {
-										qInfo() << "Got a match which doesn't provide an endpoint - skipping";
+										qDebug() << "Got a match which doesn't provide an endpoint - skipping";
 										continue;
 									}
 									if(probe.Types) discoveryMatch.SetTypes(QString::fromUtf8(probe.Types).split(' ', QString::SkipEmptyParts));
 									else {
-										qInfo() << "Got a match which doesn't provide a type - skipping";
+										qWarning() << "Got a match which doesn't provide a type - skipping";
 										continue;
 									}
 									if(probe.Scopes && probe.Scopes->__item) discoveryMatch.SetScopes(QString::fromLocal8Bit(probe.Scopes->__item).split(' ', QString::SkipEmptyParts));
-									else qInfo() << "Got a match which doesn't provide a scope:" << discoveryMatch.GetDeviceEndpoint();
+									else qWarning() << "Got a match which doesn't provide a scope:" << discoveryMatch.GetDeviceEndpoint();
 									qDebug() << "Got a match:" << discoveryMatch.GetDeviceEndpoint();
 									emit Match(discoveryMatch);
 								}
@@ -215,7 +216,7 @@ void OnvifDiscoveryWorker::run() {
 					}
 				}
 				else {
-					qInfo() << "Skipping non related message with id:" << relatesTo;
+					qWarning() << "Skipping non related message with id:" << relatesTo;
 				}
 			}
 			else if(matchResp.GetErrorCode() != SOAP_EOF) {
