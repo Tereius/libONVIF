@@ -3,7 +3,6 @@
 #include "Response.h"
 #include "OnvifEventExport.h"
 #include <QThread>
-#include <QAtomicInteger>
 
 
 class OnvifEventClient;
