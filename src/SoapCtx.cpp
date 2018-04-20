@@ -37,18 +37,18 @@ size_t frecv(struct soap *soap, char *s, size_t n) {
 }
 
 SoapCtx::SoapCtx() :
-mpSoap(soap_new()),
-mMutex(QMutex::Recursive),
-mIsSaved(false) {
+	mpSoap(soap_new()),
+	mMutex(QMutex::Recursive),
+	mIsSaved(false) {
 
 	soap_init2(mpSoap, SOAP_NEW_IO_DEFAULT, SOAP_NEW_IO_DEFAULT);
 	InitCtx();
 }
 
 SoapCtx::SoapCtx(soap_mode imode, soap_mode omode) :
-mpSoap(soap_new()),
-mMutex(QMutex::Recursive),
-mIsSaved(false) {
+	mpSoap(soap_new()),
+	mMutex(QMutex::Recursive),
+	mIsSaved(false) {
 
 	soap_init2(mpSoap, imode, omode);
 	InitCtx();
@@ -229,7 +229,7 @@ bool SoapCtx::EnableSsl() {
 		nullptr,
 		nullptr,
 		nullptr
-		);
+	);
 	if(result != SOAP_OK) {
 		qWarning() << GetFaultString();
 	}
@@ -301,4 +301,13 @@ int SoapCtx::GetFaultCode() {
 
 	QMutexLocker locker(&mMutex);
 	return mpSoap->error;
+}
+
+QString SoapCtx::GetFaultSubcode() {
+
+	QMutexLocker locker(&mMutex);
+	if(mpSoap->error != SOAP_OK) {
+		if(*soap_faultsubcode(mpSoap)) return QString::fromLocal8Bit(*soap_faultsubcode(mpSoap));
+	}
+	return QString();
 }

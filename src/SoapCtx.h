@@ -28,6 +28,7 @@ public:
 	QString GetFaultString();
 	QString GetFaultDetail();
 	int GetFaultCode();
+	QString GetFaultSubcode();
 	bool EnableSsl();
 	void SoapDelete(void *p);
 	void SoapDealloc(void *p);

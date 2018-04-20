@@ -2,6 +2,7 @@
 #include "soapH.h"
 #include "SafeBool.h"
 #include "SoapCtx.h"
+#include "global.h"
 #include <QString>
 #include <QDebug>
 
@@ -30,14 +31,16 @@ public:
 	SimpleResponse() :
 		mErrorCode(SOAP_OK),
 		mFault(),
-		mFaultDetail() {
+		mFaultDetail(),
+		mFaultSubcode() {
 
 	}
 
 	SimpleResponse(int errorCode, const QString &rFault = QString(), const QString &rFaultDetail = QString()) :
 		mErrorCode(errorCode),
 		mFault(rFault),
-		mFaultDetail(rFaultDetail) {
+		mFaultDetail(rFaultDetail),
+		mFaultSubcode() {
 
 	}
 
@@ -46,7 +49,8 @@ public:
 	SimpleResponse(const SimpleResponse &rOther) :
 		mErrorCode(rOther.mErrorCode),
 		mFault(rOther.mFault),
-		mFaultDetail(rOther.mFaultDetail) {
+		mFaultDetail(rOther.mFaultDetail),
+		mFaultSubcode(rOther.mFaultSubcode) {
 
 	}
 
@@ -58,6 +62,7 @@ public:
 		this->mErrorCode = rOther.mErrorCode;
 		this->mFault = rOther.mFault;
 		this->mFaultDetail = rOther.mFaultDetail;
+		this->mFaultSubcode = rOther.mFaultSubcode;
 		return *this;
 	}
 
@@ -83,6 +88,8 @@ public:
 	}
 	int GetErrorCode() const { return mErrorCode; }
 	void SetErrorCode(int errorCode) { mErrorCode = errorCode; }
+	QString GetFaultSubcode() const { return mFaultSubcode; }
+	void SetFaultSubcode(const QString &rFaultSubcode) { mFaultSubcode = rFaultSubcode; }
 
 	virtual bool IsSuccess() const { return !IsFault(); }
 	virtual bool IsFault() const { return mErrorCode != SOAP_OK; }
@@ -92,6 +99,9 @@ public:
 	bool IsSslFault() const { return soap_ssl_error_check(mErrorCode); }
 	bool IsZlibFault() const { return soap_zlib_error_check(mErrorCode); }
 	bool IsHttpFault() const { return soap_http_error_check(mErrorCode); }
+	bool IsAuthFault() const {
+		return mErrorCode == HTTP_UNAUTHORIZED || (mErrorCode == SOAP_CLI_FAULT && QString::compare(mFaultSubcode, QString("\"http://www.onvif.org/ver10/error\":NotAuthorized)")) == 0);
+	}
 	bool BooleanTest() const { return IsSuccess(); }
 
 private:
@@ -99,6 +109,7 @@ private:
 	int mErrorCode;
 	QString mFault;
 	QString mFaultDetail;
+	QString mFaultSubcode;
 };
 
 class DetailedResponse : public SimpleResponse {
@@ -283,6 +294,7 @@ public:
 				mpResult.SetErrorCode(errorCode);
 				mpResult.SetFault(rSoapCtx->GetFaultString());
 				mpResult.SetFaultDetail(rSoapCtx->GetFaultDetail());
+				mpResult.SetFaultSubcode(rSoapCtx->GetFaultSubcode());
 				auto pSoap = rSoapCtx->Acquire();
 				if(pSoap->fault) mpResult.SetEnvDetail(pSoap->fault->SOAP_ENV__Detail);
 				rSoapCtx->Release();
