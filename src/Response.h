@@ -100,7 +100,7 @@ public:
 	bool IsZlibFault() const { return soap_zlib_error_check(mErrorCode); }
 	bool IsHttpFault() const { return soap_http_error_check(mErrorCode); }
 	bool IsAuthFault() const {
-		return mErrorCode == HTTP_UNAUTHORIZED || (mErrorCode == SOAP_CLI_FAULT && QString::compare(mFaultSubcode, QString("\"http://www.onvif.org/ver10/error\":NotAuthorized)")) == 0);
+		return mErrorCode == HTTP_UNAUTHORIZED || (mErrorCode == SOAP_CLI_FAULT && QString::compare(mFaultSubcode, QString("\"http://www.onvif.org/ver10/error\":NotAuthorized")) == 0);
 	}
 	bool BooleanTest() const { return IsSuccess(); }
 
