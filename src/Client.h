@@ -26,8 +26,9 @@ public:
 	virtual QString GetFaultString();
 	// Returns the fault detail string of the last service call.
 	virtual QString GetFaultDetail();
-	virtual const QUrl& GetEndpoint() const;
-	virtual const QString GetEndpointString() const;
+	virtual const QUrl GetEndpoint();
+	virtual void SetEndpoint(const QUrl &rEndpoint);
+	virtual const QString GetEndpointString();
 	//! Releases old auth data and sets the new one.
 	virtual void SetAuth(const QString &rUserName, const QString &rPassword, AuthMode mode = AUTO);
 	virtual void DisableAuth();

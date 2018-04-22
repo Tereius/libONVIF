@@ -28,7 +28,7 @@ struct ClientPrivate {
 
 	Client *mpQ;
 	QSharedPointer<SoapCtx> mCtx;
-	const QUrl mEndpoint;
+	QUrl mEndpoint;
 	AuthMode mAuthmode;
 	QString mUserName;
 	QString mPassword;
@@ -149,15 +149,28 @@ QString Client::GetFaultDetail() {
 	return mpD->mCtx->GetFaultDetail();
 }
 
-const QUrl& Client::GetEndpoint() const {
-	return mpD->mEndpoint;
+const QUrl Client::GetEndpoint() {
+
+	mpD->mCtx->Acquire();
+	auto ret = mpD->mEndpoint;
+	mpD->mCtx->Release();
+	return ret;
 }
 
-const QString Client::GetEndpointString() const {
-	return mpD->mEndpoint.toString();
+void Client::SetEndpoint(const QUrl &rEndpoint) {
+
+	mpD->mCtx->Acquire();
+	mpD->mEndpoint = rEndpoint;
+	mpD->mCtx->Release();
+}
+
+const QString Client::GetEndpointString() {
+
+	return GetEndpoint().toString();
 }
 
 QSharedPointer<SoapCtx> Client::GetCtx() const {
+
 	return mpD->mCtx;
 }
 
