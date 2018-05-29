@@ -17,7 +17,7 @@ public:
 	virtual ~OnvifEventClient();
 
 	static QString GetServiceNamespace() { return "http://www.onvif.org/ver10/events/wsdl"; }
-	ArbitraryResponse<QSharedPointer<OnvifPullPoint>> CreatePullPointSubscription(Request<_tev__CreatePullPointSubscription> &rRequest);
+	Response<_tev__CreatePullPointSubscriptionResponse> CreatePullPointSubscription(Request<_tev__CreatePullPointSubscription> &rRequest);
 	Response<_tev__PullMessagesResponse> PullMessages(Request<_tev__PullMessages> &rRequest);
 	Response<_wsnt__RenewResponse> Renew(Request<_wsnt__Renew> &rRequest);
 	Response<_tev__SeekResponse> Seek(Request<_tev__Seek> &rRequest, const QUrl &rEndpoint);

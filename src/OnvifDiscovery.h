@@ -20,10 +20,12 @@ public:
 	bool StartDiscovery();
 	// Blocking
 	void StopDiscovery();
-	void run() override;
 
 signals:
 	void Match(const DiscoveryMatch &rMatch);
+
+protected:
+	void run() override;
 
 private:
 	Q_DISABLE_COPY(OnvifDiscoveryWorker);

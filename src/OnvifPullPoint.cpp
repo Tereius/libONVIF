@@ -10,9 +10,9 @@
 #define PULL_POINT_DEFAULT_MSG_LIMIT 100
 
 OnvifPullPointWorker::OnvifPullPointWorker(const QUrl &rEndpoint, QObject *pParent) :
-QThread(pParent),
-mEndpoint(rEndpoint),
-mpClient(new OnvifEventClient(mEndpoint, QSharedPointer<SoapCtx>::create(), this)) {
+	QThread(pParent),
+	mEndpoint(rEndpoint),
+	mpClient(new OnvifEventClient(mEndpoint, QSharedPointer<SoapCtx>::create(), this)) {
 
 	mpClient->GetCtx()->EnableOModeFlags(SOAP_IO_KEEPALIVE);
 	mpClient->GetCtx()->EnableIModeFlags(SOAP_IO_KEEPALIVE);
@@ -20,6 +20,7 @@ mpClient(new OnvifEventClient(mEndpoint, QSharedPointer<SoapCtx>::create(), this
 
 OnvifPullPointWorker::~OnvifPullPointWorker() {
 
+	StopListening();
 }
 
 void OnvifPullPointWorker::run() {
@@ -33,7 +34,7 @@ void OnvifPullPointWorker::run() {
 
 	qDebug() << "Starting new Pull Point:" << mpClient->GetEndpointString();
 
-	while(!isInterruptionRequested() && pullFaultCount < PULL_POINT_MAX_RETRIES) {
+	while(!isInterruptionRequested() /*&& pullFaultCount < PULL_POINT_MAX_RETRIES*/) {
 
 		Request<_tev__PullMessages> request;
 		if(shortPull) {
@@ -71,11 +72,12 @@ void OnvifPullPointWorker::run() {
 			else {
 				shortPull = true;
 				qWarning() << resp;
+				// Sleeping
+				for(auto i = 1; i <= 10 && !QThread::isInterruptionRequested(); ++i) QThread::msleep(1000);
 			}
 		}
 	}
 	mpClient->GetCtx()->Restore();
-	emit Unsubscribed();
 	Request<_wsnt__Unsubscribe> req;
 	auto resp = mpClient->Unsubscribe(req);
 	if(!resp) {
@@ -83,31 +85,87 @@ void OnvifPullPointWorker::run() {
 	}
 }
 
-void OnvifPullPointWorker::Unsubscribe() {
+Response<_tev__CreatePullPointSubscriptionResponse> OnvifPullPointWorker::Setup() {
 
-	this->requestInterruption();
-	mpClient->GetCtx()->ForceSocketClose();
-	this->start();
+	Request<_tev__CreatePullPointSubscription> request;
+	request.InitialTerminationTime = new AbsoluteOrRelativeTime(SOAP_DEFAULT_SEND_TIMEOUT + SOAP_DEFAULT_RECEIVE_TIMEOUT + 10000);
+	return mpClient->CreatePullPointSubscription(request);
+}
+
+bool OnvifPullPointWorker::StartListening() {
+
+	if(!isRunning()) {
+		qDebug() << "Starting PullPoint worker";
+		auto response = Setup();
+		if(response) {
+			start();
+			qDebug() << "PullPoint worker successfully started";
+			return true;
+		}
+		qWarning() << "Couldn't start PullPoint worker - initial setup failed:" << response.GetCompleteFault();
+		return false;
+	}
+	return true;
+}
+
+void OnvifPullPointWorker::StopListening() {
+
+	if(!isInterruptionRequested() && isRunning()) {
+		qDebug() << "Stopping PullPoint worker";
+		requestInterruption();
+		mpClient->GetCtx()->ForceSocketClose();
+		const auto waitTimespan = 20000UL;
+		auto terminated = wait(waitTimespan);
+		if(!terminated) qWarning() << "PullPoint worker couldn't be terminated within time:" << waitTimespan << "ms";
+		else qDebug() << "PullPoint worker successfully stopped";
+	}
 }
 
 OnvifPullPoint::OnvifPullPoint(const QUrl &rEndpoint, QObject *pParent /*= nullptr*/) :
-Client(rEndpoint, QSharedPointer<SoapCtx>::create(), pParent),
-mpWorker(new OnvifPullPointWorker(rEndpoint, this)) {
+	Client(rEndpoint, QSharedPointer<SoapCtx>::create(), pParent),
+	mEndpoint(rEndpoint),
+	mpWorker(nullptr),
+	mMutex(QMutex::Recursive),
+	mActive(false) {
 
-	connect(mpWorker, &OnvifPullPointWorker::finished, mpWorker, &QObject::deleteLater);
 }
 
 OnvifPullPoint::~OnvifPullPoint() {
 
-	Unsubscribe();
-}
-
-void OnvifPullPoint::Unsubscribe() {
-
-	mpWorker->Unsubscribe();
+	Stop();
 }
 
 void OnvifPullPoint::Start() {
 
-	mpWorker->start();
+	bool activeBackup = mActive;
+	mMutex.lock();
+	if(!mpWorker) {
+		mpWorker = new OnvifPullPointWorker(mEndpoint, this);
+		mActive = mpWorker->StartListening();
+		if(!mActive) {
+			Stop();
+		}
+	}
+	mMutex.unlock();
+	if(activeBackup != mActive) emit ActiveChanged();
+}
+
+void OnvifPullPoint::Stop() {
+
+	auto activeBackup = mActive;
+	mMutex.lock();
+	if(mpWorker) {
+		mpWorker->StopListening();
+		mpWorker->deleteLater();
+		mpWorker = nullptr;
+		mActive = false;
+	}
+	mMutex.unlock();
+	if(activeBackup != mActive) emit ActiveChanged();
+}
+
+bool OnvifPullPoint::Active() {
+
+	QMutexLocker lock(&mMutex);
+	return mActive;
 }

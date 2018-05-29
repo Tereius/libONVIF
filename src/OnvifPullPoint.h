@@ -3,9 +3,27 @@
 #include "Response.h"
 #include "OnvifEventExport.h"
 #include <QThread>
+#include <QList>
 
 
 class OnvifEventClient;
+
+class Topic {
+
+private:
+	QList<Topic> mTopics;
+	QString mName;
+};
+
+class TopicSet {
+
+public:
+
+private:
+	QList<Topic> mTopics;
+	QString mName;
+	QString mNamespace;
+};
 
 class OnvifPullPointWorker : public QThread {
 
@@ -15,17 +33,19 @@ public:
 
 	OnvifPullPointWorker(const QUrl &rEndpoint, QObject *pParent = nullptr);
 	virtual ~OnvifPullPointWorker();
-	void Unsubscribe();
+	bool StartListening();
+	void StopListening();
 
 signals:
 	void MessageReceived(const Response<wsnt__NotificationMessageHolderType> &rResponse);
-	void Unsubscribed();
 
 protected:
 
 	void run();
 
 private:
+
+	Response<_tev__CreatePullPointSubscriptionResponse> Setup();
 
 	QUrl mEndpoint;
 	OnvifEventClient *mpClient;
@@ -39,16 +59,22 @@ class ONVIFEVENT_EXPORT OnvifPullPoint : public Client {
 public:
 	OnvifPullPoint(const QUrl &rEndpoint, QObject *pParent = nullptr);
 	virtual ~OnvifPullPoint();
-	void Unsubscribe();
-	void Start();
+	bool Active();
 
 signals:
 	void MessageReceived(const Response<_tev__PullMessagesResponse> &rResponse);
 	void Unsubscribed();
+	void ActiveChanged();
+
+	public slots:
+	void Start();
+	void Stop();
 
 private:
 	Q_DISABLE_COPY(OnvifPullPoint);
-	//! Returns the DateTime when the Pull Point will time out. An invalid DateTime is returned if the Pull Point already timed out.
-	QDateTime Renew();
+
+	const QUrl mEndpoint;
 	OnvifPullPointWorker *mpWorker;
+	QMutex mMutex;
+	bool mActive;
 };

@@ -23,7 +23,7 @@ OnvifEventClient::~OnvifEventClient() {
 	delete mpD;
 }
 
-ArbitraryResponse<QSharedPointer<OnvifPullPoint>> OnvifEventClient::CreatePullPointSubscription(Request<_tev__CreatePullPointSubscription> &rRequest) {
+Response<_tev__CreatePullPointSubscriptionResponse> OnvifEventClient::CreatePullPointSubscription(Request<_tev__CreatePullPointSubscription> &rRequest) {
 
 	_tev__CreatePullPointSubscriptionResponse responseObject;
 	auto action = "http://www.onvif.org/ver10/events/wsdl/EventPortType/CreatePullPointSubscriptionRequest";
@@ -33,22 +33,10 @@ ArbitraryResponse<QSharedPointer<OnvifPullPoint>> OnvifEventClient::CreatePullPo
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		auto ret = mpD->mProxy.CreatePullPointSubscription(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
-	auto responseBuilder = Response<_tev__CreatePullPointSubscriptionResponse>::Builder();
-	responseBuilder.From(GetCtx(), &responseObject);
+	auto response = Response<_tev__CreatePullPointSubscriptionResponse>::Builder();
+	response.From(GetCtx(), &responseObject);
 	releaseCtx(pSoap);
-	auto response = responseBuilder.Build();
-	ArbitraryResponse<QSharedPointer<OnvifPullPoint>> finalResponse(response);
-	if(response && response.getResultObject()) {
-		auto pullPointEndpoint = QUrl(response.getResultObject()->SubscriptionReference.Address);
-		if(pullPointEndpoint.isValid()) {
-			auto pullPoint = QSharedPointer<OnvifPullPoint>::create(pullPointEndpoint);
-			finalResponse.SetResultObject(pullPoint);
-		}
-		else {
-			finalResponse = DetailedResponse(GENERIC_FAULT, "Given Pull Point url is invalid.", response.getResultObject()->SubscriptionReference.Address);
-		}
-	}
-	return finalResponse;
+	return response.Build();
 }
 
 Response<_tev__PullMessagesResponse> OnvifEventClient::PullMessages(Request<_tev__PullMessages> &rRequest) {
