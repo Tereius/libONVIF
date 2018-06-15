@@ -62,6 +62,11 @@ SoapCtx::~SoapCtx() {
 }
 
 
+const Namespace* SoapCtx::GetDefaultNamespaces() {
+
+	return namespaces;
+}
+
 void SoapCtx::SoapDelete(void *p) {
 
 	QMutexLocker locker(&mMutex);
@@ -148,7 +153,7 @@ void SoapCtx::InitCtx() {
 	mpSoap->connect_timeout = SOAP_DEFAULT_CONNECT_TIMEOUT * -1000;
 	mpSoap->recv_timeout = SOAP_DEFAULT_RECEIVE_TIMEOUT * -1000;
 	mpSoap->send_timeout = SOAP_DEFAULT_SEND_TIMEOUT * -1000;
-	soap_set_namespaces(mpSoap, namespaces);
+	soap_set_namespaces(mpSoap, SoapCtx::GetDefaultNamespaces());
 
 	int(*pFsend)(struct soap *, const char *, size_t);
 	pFsend = &fsend;

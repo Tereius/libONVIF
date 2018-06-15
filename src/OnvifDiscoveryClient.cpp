@@ -1,7 +1,6 @@
 #include "OnvifDiscoveryClient.h"
 #include "soapwsddProxy.h"
 #include "wsaapi.h"
-#include "namespaces.nsmap"
 #include <QUuid>
 
 
@@ -9,7 +8,7 @@ struct OnvifDiscoveryClientPrivate {
 
 	OnvifDiscoveryClientPrivate(OnvifDiscoveryClient *pQ) : mpQ(pQ),
 		mProxy(mpQ->GetCtx()->Acquire()) {
-		soap_set_namespaces(mProxy.soap, namespaces);
+		soap_set_namespaces(mProxy.soap, SoapCtx::GetDefaultNamespaces());
 		mpQ->GetCtx()->Release();
 	}
 

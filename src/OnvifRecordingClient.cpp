@@ -1,12 +1,12 @@
 #include "OnvifRecordingClient.h"
 #include "soapRecordingBindingProxy.h"
-#include "namespaces.nsmap"
+
 
 struct OnvifRecordingClientPrivate {
 
 	OnvifRecordingClientPrivate(OnvifRecordingClient *pQ) : mpQ(pQ),
 		mProxy(mpQ->GetCtx()->Acquire()) {
-		soap_set_namespaces(mProxy.soap, namespaces);
+		soap_set_namespaces(mProxy.soap, SoapCtx::GetDefaultNamespaces());
 		mpQ->GetCtx()->Release();
 	}
 

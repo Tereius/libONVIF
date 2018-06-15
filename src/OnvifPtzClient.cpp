@@ -1,12 +1,12 @@
 #include "OnvifPtzClient.h"
 #include "soapPTZBindingProxy.h"
-#include "namespaces.nsmap"
+
 
 struct OnvifPtzClientPrivate {
 
 	OnvifPtzClientPrivate(OnvifPtzClient *pQ) : mpQ(pQ),
 		mProxy(mpQ->GetCtx()->Acquire()) {
-		soap_set_namespaces(mProxy.soap, namespaces);
+		soap_set_namespaces(mProxy.soap, SoapCtx::GetDefaultNamespaces());
 		mpQ->GetCtx()->Release();
 	}
 	OnvifPtzClient *mpQ;

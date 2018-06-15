@@ -1,12 +1,12 @@
 #include "OnvifDisplayClient.h"
 #include "soapDisplayBindingProxy.h"
-#include "namespaces.nsmap"
+
 
 struct OnvifDisplayClientPrivate {
 
 	OnvifDisplayClientPrivate(OnvifDisplayClient *pQ) : mpQ(pQ),
 		mProxy(mpQ->GetCtx()->Acquire()) {
-		soap_set_namespaces(mProxy.soap, namespaces);
+		soap_set_namespaces(mProxy.soap, SoapCtx::GetDefaultNamespaces());
 		mpQ->GetCtx()->Release();
 	}
 	OnvifDisplayClient *mpQ;

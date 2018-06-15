@@ -11,6 +11,8 @@
 #define SOAP_DEFAULT_RECEIVE_TIMEOUT 10000
 #define SOAP_DEFAULT_SEND_TIMEOUT 10000
 
+struct Namespace;
+
 class ONVIFCOMMON_EXPORT SoapCtx {
 
 public:
@@ -50,6 +52,8 @@ public:
 	soap* TryAcquire(int timeout = 0);
 	//! Release the raw soap ctx after Acquire().
 	void Release();
+
+	static const Namespace* GetDefaultNamespaces();
 
 	class Builder {
 
