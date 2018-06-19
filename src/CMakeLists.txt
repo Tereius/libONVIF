@@ -1,7 +1,7 @@
 include(GenerateExportHeader)
 include(CMakePackageConfigHelpers)
-find_package(CommonLibs)
-find_package(Qt5Core)
+find_package(CommonLibs QUIET)
+find_package(Qt5 COMPONENTS Core REQUIRED)
 find_library(OpenSSL_cryptro_PATH NAMES libeay libeay32 libcrypto libcrypto32 eay crypto PATH_SUFFIXES "lib")
 find_library(OpenSSL_ssl_PATH NAMES ssleay ssleay32 libssl libssl32 eay ssl PATH_SUFFIXES "lib")
 find_path(OpenSSL_include_DIR NAMES openssl/ssl.h PATH_SUFFIXES "include")
@@ -16,7 +16,12 @@ set(BUILD_SHARED_LIBS true CACHE BOOL "Build shared or static lib?")
 set(ENABLE_CODESYNTHESIS false CACHE BOOL "Run wsdl2h and soapcpp2?")
 set(CMAKE_DEBUG_POSTFIX d) # Append "d" if debug lib.
 
+link_directories("${_qt5Core_install_prefix}/lib")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" "${OpenSSL_include_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/generated" "${CMAKE_CURRENT_SOURCE_DIR}/gsoap")
+
+if(WIN32)
+	add_definitions(-DOS_WIN32)
+endif()
 
 add_definitions(-DWITH_OPENSSL)
 if(MSVC)
@@ -100,6 +105,9 @@ set(public_header_files
 add_library(onvifcommon ${src_files} ${private_header_files} ${public_header_files})
 generate_export_header(onvifcommon EXPORT_FILE_NAME OnvifCommonExport.h)
 target_link_libraries(onvifcommon "${OpenSSL_ssl_PATH}" "${OpenSSL_cryptro_PATH}" Qt5::Core)
+if(WIN32 AND NOT BUILD_SHARED_LIBS)
+	target_link_libraries(onvifcommon qtpcre2.lib version.lib Winmm.lib Netapi32.lib Userenv.lib)
+endif()
 target_compile_features(onvifcommon PUBLIC cxx_strong_enums cxx_auto_type cxx_nullptr cxx_long_long_type)
 set_target_properties(onvifcommon PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifCommonExport.h")
 if(USE_PRECOMPILED_HEADERS)
