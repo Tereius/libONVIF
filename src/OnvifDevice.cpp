@@ -1,18 +1,18 @@
-/* Copyright(C) 2018 Björn Stresing
-*
-* This program is free software : you can redistribute it and / or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.If not, see < http://www.gnu.org/licenses/>.
-*/
+/* Copyright(C) 2018 BjÃ¶rn Stresing
+ *
+ * This program is free software : you can redistribute it and / or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.If not, see < http://www.gnu.org/licenses/>.
+ */
 #include "OnvifDevice.h"
 #include "OnvifAnalyticsClient.h"
 #include "OnvifDeviceClient.h"
@@ -100,7 +100,7 @@ SimpleResponse OnvifDevice::Initialize() {
 	request.IncludeCapability = false;
 	auto servicesResponse = device->GetServices(request);
 	if(servicesResponse) {
-		for(auto service : servicesResponse.getResultObject()->Service) {
+		for(auto service : servicesResponse.GetResultObject()->Service) {
 			if(service->Namespace == OnvifAnalyticsClient::GetServiceNamespace()) {
 				qDebug() << "ONVIF analytics service" << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
 				mpD->mpOnvifAnalyticsClient = new OnvifAnalyticsClient(QUrl(qPrintable(service->XAddr)), ctx, this);
@@ -119,8 +119,8 @@ SimpleResponse OnvifDevice::Initialize() {
 				if(capResp) {
 
 					auto soap = soap_new1(SOAP_C_UTFSTRING | SOAP_XML_INDENT | SOAP_DOM_NODE);
-					auto dom = soap_dom_element(soap, nullptr, "root", (void*)capResp.getResultObject()->Capabilities, capResp.getResultObject()->Capabilities->soap_type());
-					dom.set((void*)capResp.getResultObject()->Capabilities, capResp.getResultObject()->Capabilities->soap_type());
+					auto dom = soap_dom_element(soap, nullptr, "root", (void*)capResp.GetResultObject()->Capabilities, capResp.GetResultObject()->Capabilities->soap_type());
+					dom.set((void*)capResp.GetResultObject()->Capabilities, capResp.GetResultObject()->Capabilities->soap_type());
 					soap_destroy(dom.soap);
 					soap_end(dom.soap);
 					soap_done(dom.soap);
@@ -194,8 +194,8 @@ SimpleResponse OnvifDevice::Initialize() {
 
 	Request<_tds__GetCapabilities> r;
 	auto res = device->GetCapabilities(r);
-	if(auto rr = res.getResultObject()) {
-		auto capa = res.getResultObject()->Capabilities;
+	if(auto rr = res.GetResultObject()) {
+		auto capa = res.GetResultObject()->Capabilities;
 		if(capa->Device) {
 
 		}

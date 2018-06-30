@@ -1,18 +1,18 @@
-/* Copyright(C) 2018 Björn Stresing
-*
-* This program is free software : you can redistribute it and / or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.If not, see < http://www.gnu.org/licenses/>.
-*/
+/* Copyright(C) 2018 BjÃ¶rn Stresing
+ *
+ * This program is free software : you can redistribute it and / or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.If not, see < http://www.gnu.org/licenses/>.
+ */
 #pragma once
 #include "soapH.h"
 #include "SafeBool.h"
@@ -371,7 +371,7 @@ public:
 	}
 
 	//! Get the result object of a WS response
-	const T* getResultObject() const { return mpResultObject; }
+	const T* GetResultObject() const { return mpResultObject; }
 
 	//! Set the result object of a WS response
 	void SetResultObject(const T *pResultObject) {
@@ -380,7 +380,7 @@ public:
 		this->mpResultObject = pResultObject ? mDuplicator(pResultObject) : nullptr;
 	}
 
-	virtual bool IsFault() const { return DetailedResponse::IsFault() || !getResultObject(); }
+	virtual bool IsFault() const { return DetailedResponse::IsFault() || !GetResultObject(); }
 
 	/*!
 	 *
