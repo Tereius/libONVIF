@@ -1,3 +1,18 @@
+/* Copyright(C) 2018 Björn Stresing
+*
+* This program is free software : you can redistribute it and / or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.If not, see < http://www.gnu.org/licenses/>.
+*/
 #include "OnvifMediaClient.h"
 #include "soapMediaBindingProxy.h"
 
@@ -26,7 +41,7 @@ Response<_trt__GetServiceCapabilitiesResponse> OnvifMediaClient::GetServiceCapab
 
 	_trt__GetServiceCapabilitiesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetServiceCapabilities(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -40,7 +55,7 @@ Response<_trt__GetVideoSourcesResponse> OnvifMediaClient::GetVideoSources(Reques
 
 	_trt__GetVideoSourcesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetVideoSources(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -54,7 +69,7 @@ Response<_trt__GetAudioSourcesResponse> OnvifMediaClient::GetAudioSources(Reques
 
 	_trt__GetAudioSourcesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetAudioSources(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -68,7 +83,7 @@ Response<_trt__GetAudioOutputsResponse> OnvifMediaClient::GetAudioOutputs(Reques
 
 	_trt__GetAudioOutputsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetAudioOutputs(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -82,7 +97,7 @@ Response<_trt__CreateProfileResponse> OnvifMediaClient::CreateProfile(Request<_t
 
 	_trt__CreateProfileResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.CreateProfile(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -96,7 +111,7 @@ Response<_trt__GetProfileResponse> OnvifMediaClient::GetProfile(Request<_trt__Ge
 
 	_trt__GetProfileResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetProfile(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -110,7 +125,7 @@ Response<_trt__GetProfilesResponse> OnvifMediaClient::GetProfiles(Request<_trt__
 
 	_trt__GetProfilesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetProfiles(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -124,7 +139,7 @@ Response<_trt__AddVideoEncoderConfigurationResponse> OnvifMediaClient::AddVideoE
 
 	_trt__AddVideoEncoderConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.AddVideoEncoderConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -138,7 +153,7 @@ Response<_trt__AddVideoSourceConfigurationResponse> OnvifMediaClient::AddVideoSo
 
 	_trt__AddVideoSourceConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.AddVideoSourceConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -152,7 +167,7 @@ Response<_trt__AddAudioEncoderConfigurationResponse> OnvifMediaClient::AddAudioE
 
 	_trt__AddAudioEncoderConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.AddAudioEncoderConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -166,7 +181,7 @@ Response<_trt__AddAudioSourceConfigurationResponse> OnvifMediaClient::AddAudioSo
 
 	_trt__AddAudioSourceConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.AddAudioSourceConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -180,7 +195,7 @@ Response<_trt__AddPTZConfigurationResponse> OnvifMediaClient::AddPTZConfiguratio
 
 	_trt__AddPTZConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.AddPTZConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -194,7 +209,7 @@ Response<_trt__AddVideoAnalyticsConfigurationResponse> OnvifMediaClient::AddVide
 
 	_trt__AddVideoAnalyticsConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.AddVideoAnalyticsConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -208,7 +223,7 @@ Response<_trt__AddMetadataConfigurationResponse> OnvifMediaClient::AddMetadataCo
 
 	_trt__AddMetadataConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.AddMetadataConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -222,7 +237,7 @@ Response<_trt__AddAudioOutputConfigurationResponse> OnvifMediaClient::AddAudioOu
 
 	_trt__AddAudioOutputConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.AddAudioOutputConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -236,7 +251,7 @@ Response<_trt__AddAudioDecoderConfigurationResponse> OnvifMediaClient::AddAudioD
 
 	_trt__AddAudioDecoderConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.AddAudioDecoderConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -250,7 +265,7 @@ Response<_trt__RemoveVideoEncoderConfigurationResponse> OnvifMediaClient::Remove
 
 	_trt__RemoveVideoEncoderConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.RemoveVideoEncoderConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -264,7 +279,7 @@ Response<_trt__RemoveVideoSourceConfigurationResponse> OnvifMediaClient::RemoveV
 
 	_trt__RemoveVideoSourceConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.RemoveVideoSourceConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -278,7 +293,7 @@ Response<_trt__RemoveAudioEncoderConfigurationResponse> OnvifMediaClient::Remove
 
 	_trt__RemoveAudioEncoderConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.RemoveAudioEncoderConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -292,7 +307,7 @@ Response<_trt__RemoveAudioSourceConfigurationResponse> OnvifMediaClient::RemoveA
 
 	_trt__RemoveAudioSourceConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.RemoveAudioSourceConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -306,7 +321,7 @@ Response<_trt__RemovePTZConfigurationResponse> OnvifMediaClient::RemovePTZConfig
 
 	_trt__RemovePTZConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.RemovePTZConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -320,7 +335,7 @@ Response<_trt__RemoveVideoAnalyticsConfigurationResponse> OnvifMediaClient::Remo
 
 	_trt__RemoveVideoAnalyticsConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.RemoveVideoAnalyticsConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -334,7 +349,7 @@ Response<_trt__RemoveMetadataConfigurationResponse> OnvifMediaClient::RemoveMeta
 
 	_trt__RemoveMetadataConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.RemoveMetadataConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -348,7 +363,7 @@ Response<_trt__RemoveAudioOutputConfigurationResponse> OnvifMediaClient::RemoveA
 
 	_trt__RemoveAudioOutputConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.RemoveAudioOutputConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -362,7 +377,7 @@ Response<_trt__RemoveAudioDecoderConfigurationResponse> OnvifMediaClient::Remove
 
 	_trt__RemoveAudioDecoderConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.RemoveAudioDecoderConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -376,7 +391,7 @@ Response<_trt__DeleteProfileResponse> OnvifMediaClient::DeleteProfile(Request<_t
 
 	_trt__DeleteProfileResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.DeleteProfile(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -390,7 +405,7 @@ Response<_trt__GetVideoSourceConfigurationsResponse> OnvifMediaClient::GetVideoS
 
 	_trt__GetVideoSourceConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetVideoSourceConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -404,7 +419,7 @@ Response<_trt__GetVideoEncoderConfigurationsResponse> OnvifMediaClient::GetVideo
 
 	_trt__GetVideoEncoderConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetVideoEncoderConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -418,7 +433,7 @@ Response<_trt__GetAudioSourceConfigurationsResponse> OnvifMediaClient::GetAudioS
 
 	_trt__GetAudioSourceConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetAudioSourceConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -432,7 +447,7 @@ Response<_trt__GetAudioEncoderConfigurationsResponse> OnvifMediaClient::GetAudio
 
 	_trt__GetAudioEncoderConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetAudioEncoderConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -446,7 +461,7 @@ Response<_trt__GetVideoAnalyticsConfigurationsResponse> OnvifMediaClient::GetVid
 
 	_trt__GetVideoAnalyticsConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetVideoAnalyticsConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -460,7 +475,7 @@ Response<_trt__GetMetadataConfigurationsResponse> OnvifMediaClient::GetMetadataC
 
 	_trt__GetMetadataConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetMetadataConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -474,7 +489,7 @@ Response<_trt__GetAudioOutputConfigurationsResponse> OnvifMediaClient::GetAudioO
 
 	_trt__GetAudioOutputConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetAudioOutputConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -488,7 +503,7 @@ Response<_trt__GetAudioDecoderConfigurationsResponse> OnvifMediaClient::GetAudio
 
 	_trt__GetAudioDecoderConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetAudioDecoderConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -502,7 +517,7 @@ Response<_trt__GetVideoSourceConfigurationResponse> OnvifMediaClient::GetVideoSo
 
 	_trt__GetVideoSourceConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetVideoSourceConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -516,7 +531,7 @@ Response<_trt__GetVideoEncoderConfigurationResponse> OnvifMediaClient::GetVideoE
 
 	_trt__GetVideoEncoderConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetVideoEncoderConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -530,7 +545,7 @@ Response<_trt__GetAudioSourceConfigurationResponse> OnvifMediaClient::GetAudioSo
 
 	_trt__GetAudioSourceConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetAudioSourceConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -544,7 +559,7 @@ Response<_trt__GetAudioEncoderConfigurationResponse> OnvifMediaClient::GetAudioE
 
 	_trt__GetAudioEncoderConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetAudioEncoderConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -558,7 +573,7 @@ Response<_trt__GetVideoAnalyticsConfigurationResponse> OnvifMediaClient::GetVide
 
 	_trt__GetVideoAnalyticsConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetVideoAnalyticsConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -572,7 +587,7 @@ Response<_trt__GetMetadataConfigurationResponse> OnvifMediaClient::GetMetadataCo
 
 	_trt__GetMetadataConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetMetadataConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -586,7 +601,7 @@ Response<_trt__GetAudioOutputConfigurationResponse> OnvifMediaClient::GetAudioOu
 
 	_trt__GetAudioOutputConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetAudioOutputConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -600,7 +615,7 @@ Response<_trt__GetAudioDecoderConfigurationResponse> OnvifMediaClient::GetAudioD
 
 	_trt__GetAudioDecoderConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetAudioDecoderConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -614,7 +629,7 @@ Response<_trt__GetCompatibleVideoEncoderConfigurationsResponse> OnvifMediaClient
 
 	_trt__GetCompatibleVideoEncoderConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetCompatibleVideoEncoderConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -628,7 +643,7 @@ Response<_trt__GetCompatibleVideoSourceConfigurationsResponse> OnvifMediaClient:
 
 	_trt__GetCompatibleVideoSourceConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetCompatibleVideoSourceConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -642,7 +657,7 @@ Response<_trt__GetCompatibleAudioEncoderConfigurationsResponse> OnvifMediaClient
 
 	_trt__GetCompatibleAudioEncoderConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetCompatibleAudioEncoderConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -656,7 +671,7 @@ Response<_trt__GetCompatibleAudioSourceConfigurationsResponse> OnvifMediaClient:
 
 	_trt__GetCompatibleAudioSourceConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetCompatibleAudioSourceConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -670,7 +685,7 @@ Response<_trt__GetCompatibleVideoAnalyticsConfigurationsResponse> OnvifMediaClie
 
 	_trt__GetCompatibleVideoAnalyticsConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetCompatibleVideoAnalyticsConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -684,7 +699,7 @@ Response<_trt__GetCompatibleMetadataConfigurationsResponse> OnvifMediaClient::Ge
 
 	_trt__GetCompatibleMetadataConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetCompatibleMetadataConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -698,7 +713,7 @@ Response<_trt__GetCompatibleAudioOutputConfigurationsResponse> OnvifMediaClient:
 
 	_trt__GetCompatibleAudioOutputConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetCompatibleAudioOutputConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -712,7 +727,7 @@ Response<_trt__GetCompatibleAudioDecoderConfigurationsResponse> OnvifMediaClient
 
 	_trt__GetCompatibleAudioDecoderConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetCompatibleAudioDecoderConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -726,7 +741,7 @@ Response<_trt__SetVideoSourceConfigurationResponse> OnvifMediaClient::SetVideoSo
 
 	_trt__SetVideoSourceConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.SetVideoSourceConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -740,7 +755,7 @@ Response<_trt__SetVideoEncoderConfigurationResponse> OnvifMediaClient::SetVideoE
 
 	_trt__SetVideoEncoderConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.SetVideoEncoderConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -754,7 +769,7 @@ Response<_trt__SetAudioSourceConfigurationResponse> OnvifMediaClient::SetAudioSo
 
 	_trt__SetAudioSourceConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.SetAudioSourceConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -768,7 +783,7 @@ Response<_trt__SetAudioEncoderConfigurationResponse> OnvifMediaClient::SetAudioE
 
 	_trt__SetAudioEncoderConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.SetAudioEncoderConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -782,7 +797,7 @@ Response<_trt__SetVideoAnalyticsConfigurationResponse> OnvifMediaClient::SetVide
 
 	_trt__SetVideoAnalyticsConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.SetVideoAnalyticsConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -796,7 +811,7 @@ Response<_trt__SetMetadataConfigurationResponse> OnvifMediaClient::SetMetadataCo
 
 	_trt__SetMetadataConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.SetMetadataConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -810,7 +825,7 @@ Response<_trt__SetAudioOutputConfigurationResponse> OnvifMediaClient::SetAudioOu
 
 	_trt__SetAudioOutputConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.SetAudioOutputConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -824,7 +839,7 @@ Response<_trt__SetAudioDecoderConfigurationResponse> OnvifMediaClient::SetAudioD
 
 	_trt__SetAudioDecoderConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.SetAudioDecoderConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -838,7 +853,7 @@ Response<_trt__GetVideoSourceConfigurationOptionsResponse> OnvifMediaClient::Get
 
 	_trt__GetVideoSourceConfigurationOptionsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetVideoSourceConfigurationOptions(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -852,7 +867,7 @@ Response<_trt__GetVideoEncoderConfigurationOptionsResponse> OnvifMediaClient::Ge
 
 	_trt__GetVideoEncoderConfigurationOptionsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetVideoEncoderConfigurationOptions(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -866,7 +881,7 @@ Response<_trt__GetAudioSourceConfigurationOptionsResponse> OnvifMediaClient::Get
 
 	_trt__GetAudioSourceConfigurationOptionsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetAudioSourceConfigurationOptions(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -880,7 +895,7 @@ Response<_trt__GetAudioEncoderConfigurationOptionsResponse> OnvifMediaClient::Ge
 
 	_trt__GetAudioEncoderConfigurationOptionsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetAudioEncoderConfigurationOptions(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -894,7 +909,7 @@ Response<_trt__GetMetadataConfigurationOptionsResponse> OnvifMediaClient::GetMet
 
 	_trt__GetMetadataConfigurationOptionsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetMetadataConfigurationOptions(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -908,7 +923,7 @@ Response<_trt__GetAudioOutputConfigurationOptionsResponse> OnvifMediaClient::Get
 
 	_trt__GetAudioOutputConfigurationOptionsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetAudioOutputConfigurationOptions(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -922,7 +937,7 @@ Response<_trt__GetAudioDecoderConfigurationOptionsResponse> OnvifMediaClient::Ge
 
 	_trt__GetAudioDecoderConfigurationOptionsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetAudioDecoderConfigurationOptions(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -936,7 +951,7 @@ Response<_trt__GetGuaranteedNumberOfVideoEncoderInstancesResponse> OnvifMediaCli
 
 	_trt__GetGuaranteedNumberOfVideoEncoderInstancesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetGuaranteedNumberOfVideoEncoderInstances(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -950,7 +965,7 @@ Response<_trt__GetStreamUriResponse> OnvifMediaClient::GetStreamUri(Request<_trt
 
 	_trt__GetStreamUriResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetStreamUri(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -964,7 +979,7 @@ Response<_trt__StartMulticastStreamingResponse> OnvifMediaClient::StartMulticast
 
 	_trt__StartMulticastStreamingResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.StartMulticastStreaming(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -978,7 +993,7 @@ Response<_trt__StopMulticastStreamingResponse> OnvifMediaClient::StopMulticastSt
 
 	_trt__StopMulticastStreamingResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.StopMulticastStreaming(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -992,7 +1007,7 @@ Response<_trt__SetSynchronizationPointResponse> OnvifMediaClient::SetSynchroniza
 
 	_trt__SetSynchronizationPointResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.SetSynchronizationPoint(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -1006,7 +1021,7 @@ Response<_trt__GetSnapshotUriResponse> OnvifMediaClient::GetSnapshotUri(Request<
 
 	_trt__GetSnapshotUriResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetSnapshotUri(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -1020,7 +1035,7 @@ Response<_trt__GetVideoSourceModesResponse> OnvifMediaClient::GetVideoSourceMode
 
 	_trt__GetVideoSourceModesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetVideoSourceModes(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -1034,7 +1049,7 @@ Response<_trt__SetVideoSourceModeResponse> OnvifMediaClient::SetVideoSourceMode(
 
 	_trt__SetVideoSourceModeResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.SetVideoSourceMode(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -1048,7 +1063,7 @@ Response<_trt__GetOSDsResponse> OnvifMediaClient::GetOSDs(Request<_trt__GetOSDs>
 
 	_trt__GetOSDsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetOSDs(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -1062,7 +1077,7 @@ Response<_trt__GetOSDResponse> OnvifMediaClient::GetOSD(Request<_trt__GetOSD> &r
 
 	_trt__GetOSDResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetOSD(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -1076,7 +1091,7 @@ Response<_trt__GetOSDOptionsResponse> OnvifMediaClient::GetOSDOptions(Request<_t
 
 	_trt__GetOSDOptionsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.GetOSDOptions(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -1090,7 +1105,7 @@ Response<_trt__SetOSDResponse> OnvifMediaClient::SetOSD(Request<_trt__SetOSD> &r
 
 	_trt__SetOSDResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.SetOSD(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -1104,7 +1119,7 @@ Response<_trt__CreateOSDResponse> OnvifMediaClient::CreateOSD(Request<_trt__Crea
 
 	_trt__CreateOSDResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.CreateOSD(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));
@@ -1118,7 +1133,7 @@ Response<_trt__DeleteOSDResponse> OnvifMediaClient::DeleteOSD(Request<_trt__Dele
 
 	_trt__DeleteOSDResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = acquireCtx();
 	do {
 		ret = mpD->mProxy.DeleteOSD(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(retry(pSoap));

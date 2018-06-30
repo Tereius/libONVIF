@@ -1,3 +1,18 @@
+/* Copyright(C) 2018 Björn Stresing
+*
+* This program is free software : you can redistribute it and / or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.If not, see < http://www.gnu.org/licenses/>.
+*/
 #include "OnvifPullPoint.h"
 #include "Request.h"
 #include "OnvifEventClient.h"
@@ -121,51 +136,67 @@ void OnvifPullPointWorker::StopListening() {
 	}
 }
 
+struct OnvifPullPointPrivate {
+
+	OnvifPullPointPrivate(OnvifPullPoint *pQ, const QUrl &rEndpoint) :
+		mpQ(pQ),
+		mEndpoint(rEndpoint),
+		mpWorker(nullptr),
+		mMutex(QMutex::Recursive),
+		mActive(false) {
+
+	}
+
+	OnvifPullPoint *mpQ;
+	const QUrl mEndpoint;
+	OnvifPullPointWorker *mpWorker;
+	QMutex mMutex;
+	bool mActive;
+};
+
 OnvifPullPoint::OnvifPullPoint(const QUrl &rEndpoint, QObject *pParent /*= nullptr*/) :
 	Client(rEndpoint, QSharedPointer<SoapCtx>::create(), pParent),
-	mEndpoint(rEndpoint),
-	mpWorker(nullptr),
-	mMutex(QMutex::Recursive),
-	mActive(false) {
+	mpD(new OnvifPullPointPrivate(this, rEndpoint)) {
 
 }
 
 OnvifPullPoint::~OnvifPullPoint() {
 
 	Stop();
+	delete mpD;
 }
 
 void OnvifPullPoint::Start() {
 
-	bool activeBackup = mActive;
-	mMutex.lock();
-	if(!mpWorker) {
-		mpWorker = new OnvifPullPointWorker(mEndpoint, this);
-		mActive = mpWorker->StartListening();
-		if(!mActive) {
+	bool activeBackup = mpD->mActive;
+	mpD->mMutex.lock();
+	if(!mpD->mpWorker) {
+		mpD->mpWorker = new OnvifPullPointWorker(mpD->mEndpoint, this);
+		mpD->mActive = mpD->mpWorker->StartListening();
+		if(!mpD->mActive) {
 			Stop();
 		}
 	}
-	mMutex.unlock();
-	if(activeBackup != mActive) emit ActiveChanged();
+	mpD->mMutex.unlock();
+	if(activeBackup != mpD->mActive) emit ActiveChanged();
 }
 
 void OnvifPullPoint::Stop() {
 
-	auto activeBackup = mActive;
-	mMutex.lock();
-	if(mpWorker) {
-		mpWorker->StopListening();
-		mpWorker->deleteLater();
-		mpWorker = nullptr;
-		mActive = false;
+	auto activeBackup = mpD->mActive;
+	mpD->mMutex.lock();
+	if(mpD->mpWorker) {
+		mpD->mpWorker->StopListening();
+		mpD->mpWorker->deleteLater();
+		mpD->mpWorker = nullptr;
+		mpD->mActive = false;
 	}
-	mMutex.unlock();
-	if(activeBackup != mActive) emit ActiveChanged();
+	mpD->mMutex.unlock();
+	if(activeBackup != mpD->mActive) emit ActiveChanged();
 }
 
 bool OnvifPullPoint::Active() {
 
-	QMutexLocker lock(&mMutex);
-	return mActive;
+	QMutexLocker lock(&mpD->mMutex);
+	return mpD->mActive;
 }

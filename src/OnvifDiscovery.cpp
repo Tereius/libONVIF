@@ -1,3 +1,18 @@
+/* Copyright(C) 2018 Björn Stresing
+*
+* This program is free software : you can redistribute it and / or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.If not, see < http://www.gnu.org/licenses/>.
+*/
 #include "OnvifDiscovery.h"
 #include "SoapHelper.h"
 #include <QElapsedTimer>
@@ -5,11 +20,11 @@
 
 
 OnvifDiscoveryWorker::OnvifDiscoveryWorker(const QStringList &rScopes, const QStringList &rTypes, QObject *pParent) :
-QThread(pParent),
-mpClient(new OnvifDiscoveryClient(QUrl("soap.udp://239.255.255.250:3702"), QSharedPointer<SoapCtx>::create(), this)),
-mTypes(rTypes),
-mScopes(rScopes),
-mMesssageId(QString("uuid:%1").arg(SoapHelper::GenerateUuid())) {
+	QThread(pParent),
+	mpClient(new OnvifDiscoveryClient(QUrl("soap.udp://239.255.255.250:3702"), QSharedPointer<SoapCtx>::create(), this)),
+	mTypes(rTypes),
+	mScopes(rScopes),
+	mMesssageId(QString("uuid:%1").arg(SoapHelper::GenerateUuid())) {
 
 }
 
@@ -127,113 +142,133 @@ void OnvifDiscoveryWorker::run() {
 	timer.invalidate();
 }
 
-OnvifDiscovery::OnvifDiscovery(const QStringList &rScopes /*= {}*/, const QStringList &rTypes /*= {"tds:Device", "tdn:NetworkVideoTransmitter"}*/, QObject *pParent /*= nullptr*/) :
-QObject(pParent),
-mTypes(rTypes),
-mScopes(rScopes),
-mpWorker(nullptr),
-mMutex(QMutex::Recursive),
-mMatches(),
-mActive(false) {
+struct OnvifDiscoveryPrivate {
 
+	OnvifDiscoveryPrivate(OnvifDiscovery *pQ) :
+		mpQ(pQ),
+		mTypes(),
+		mScopes(),
+		mpWorker(nullptr),
+		mMutex(QMutex::Recursive),
+		mMatches(),
+		mActive(false) {
+
+	}
+
+	OnvifDiscovery *mpQ;
+	QStringList mTypes;
+	QStringList mScopes;
+	OnvifDiscoveryWorker *mpWorker;
+	QMutex mMutex;
+	QList<DiscoveryMatch> mMatches;
+	bool mActive;
+};
+
+OnvifDiscovery::OnvifDiscovery(const QStringList &rScopes /*= {}*/, const QStringList &rTypes /*= {"tds:Device", "tdn:NetworkVideoTransmitter"}*/, QObject *pParent /*= nullptr*/) :
+	QObject(pParent),
+	mpD(new OnvifDiscoveryPrivate(this)) {
+
+	mpD->mTypes = rTypes;
+	mpD->mScopes = rScopes;
 }
 
 OnvifDiscovery::~OnvifDiscovery() {
 
 	Stop();
+	delete mpD;
 }
 
 void OnvifDiscovery::Start() {
 
-	bool activeBackup = mActive;
-	mMutex.lock();
-	if(!mpWorker) {
-		mpWorker = new OnvifDiscoveryWorker(mScopes, mTypes, this);
-		connect(mpWorker, &OnvifDiscoveryWorker::Match, this, &OnvifDiscovery::Match);
-		connect(mpWorker, &OnvifDiscoveryWorker::Match, [this](const DiscoveryMatch &rMatch) {
+	bool activeBackup = mpD->mActive;
+	mpD->mMutex.lock();
+	if(!mpD->mpWorker) {
+		mpD->mpWorker = new OnvifDiscoveryWorker(mpD->mScopes, mpD->mTypes, this);
+		connect(mpD->mpWorker, &OnvifDiscoveryWorker::Match, this, &OnvifDiscovery::Match);
+		connect(mpD->mpWorker, &OnvifDiscoveryWorker::Match, [this](const DiscoveryMatch &rMatch) {
 			auto found = false;
-			this->mMutex.lock();
-			for(auto match : this->mMatches) {
+			this->mpD->mMutex.lock();
+			for(auto match : this->mpD->mMatches) {
 				if(match.GetDeviceEndpoint() == rMatch.GetDeviceEndpoint()) {
 					found = true;
 					break;
 				}
 			}
 			if(!found) {
-				this->mMatches << rMatch;
+				this->mpD->mMatches << rMatch;
 			}
-			this->mMutex.unlock();
+			this->mpD->mMutex.unlock();
 			if(!found) {
 				emit NewMatch(rMatch);
 				emit MatchesChanged();
 			}
 		});
-		mActive = mpWorker->StartDiscovery();
-		if(!mActive) {
+		mpD->mActive = mpD->mpWorker->StartDiscovery();
+		if(!mpD->mActive) {
 			Stop();
 		}
 	}
-	mMutex.unlock();
-	if(activeBackup != mActive) emit ActiveChanged();
+	mpD->mMutex.unlock();
+	if(activeBackup != mpD->mActive) emit ActiveChanged();
 }
 
 void OnvifDiscovery::Stop() {
 
-	auto activeBackup = mActive;
-	mMutex.lock();
-	if(mpWorker) {
-		mpWorker->StopDiscovery();
-		mpWorker->deleteLater();
-		mpWorker = nullptr;
-		mActive = false;
+	auto activeBackup = mpD->mActive;
+	mpD->mMutex.lock();
+	if(mpD->mpWorker) {
+		mpD->mpWorker->StopDiscovery();
+		mpD->mpWorker->deleteLater();
+		mpD->mpWorker = nullptr;
+		mpD->mActive = false;
 	}
-	mMutex.unlock();
-	if(activeBackup != mActive) emit ActiveChanged();
+	mpD->mMutex.unlock();
+	if(activeBackup != mpD->mActive) emit ActiveChanged();
 }
 
 void OnvifDiscovery::SetMatchScopes(const QStringList &rScopesToMatch) {
 
-	QMutexLocker lock(&mMutex);
-	mScopes = rScopesToMatch;
+	QMutexLocker lock(&mpD->mMutex);
+	mpD->mScopes = rScopesToMatch;
 	Restart();
 }
 
 void OnvifDiscovery::SetMatchTypes(const QStringList &rTypesToMatch) {
 
-	QMutexLocker lock(&mMutex);
-	mTypes = rTypesToMatch;
+	QMutexLocker lock(&mpD->mMutex);
+	mpD->mTypes = rTypesToMatch;
 	Restart();
 }
 
 void OnvifDiscovery::Restart() {
 
-	QMutexLocker lock(&mMutex);
+	QMutexLocker lock(&mpD->mMutex);
 	Stop();
 	Start();
 }
 
 QList<DiscoveryMatch> OnvifDiscovery::GetMatches() {
 
-	QMutexLocker lock(&mMutex);
-	return mMatches;
+	QMutexLocker lock(&mpD->mMutex);
+	return mpD->mMatches;
 }
 
 int OnvifDiscovery::GetMatchesCount() {
 
-	QMutexLocker lock(&mMutex);
-	return mMatches.size();
+	QMutexLocker lock(&mpD->mMutex);
+	return mpD->mMatches.size();
 }
 
 void OnvifDiscovery::ClearMatches() {
 
-	mMutex.lock();
-	mMatches.clear();
-	mMutex.unlock();
+	mpD->mMutex.lock();
+	mpD->mMatches.clear();
+	mpD->mMutex.unlock();
 	emit MatchesChanged();
 }
 
 bool OnvifDiscovery::Active() {
 
-	QMutexLocker lock(&mMutex);
-	return mActive;
+	QMutexLocker lock(&mpD->mMutex);
+	return mpD->mActive;
 }
