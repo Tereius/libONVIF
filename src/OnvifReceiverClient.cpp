@@ -41,13 +41,13 @@ Response<_trv__GetServiceCapabilitiesResponse> OnvifReceiverClient::GetServiceCa
 
 	_trv__GetServiceCapabilitiesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetServiceCapabilities(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trv__GetServiceCapabilitiesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -55,13 +55,13 @@ Response<_trv__GetReceiversResponse> OnvifReceiverClient::GetReceivers(Request<_
 
 	_trv__GetReceiversResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetReceivers(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trv__GetReceiversResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -69,13 +69,13 @@ Response<_trv__GetReceiverResponse> OnvifReceiverClient::GetReceiver(Request<_tr
 
 	_trv__GetReceiverResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetReceiver(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trv__GetReceiverResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -83,13 +83,13 @@ Response<_trv__CreateReceiverResponse> OnvifReceiverClient::CreateReceiver(Reque
 
 	_trv__CreateReceiverResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.CreateReceiver(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trv__CreateReceiverResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -97,13 +97,13 @@ Response<_trv__DeleteReceiverResponse> OnvifReceiverClient::DeleteReceiver(Reque
 
 	_trv__DeleteReceiverResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.DeleteReceiver(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trv__DeleteReceiverResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -111,13 +111,13 @@ Response<_trv__ConfigureReceiverResponse> OnvifReceiverClient::ConfigureReceiver
 
 	_trv__ConfigureReceiverResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.ConfigureReceiver(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trv__ConfigureReceiverResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -125,13 +125,13 @@ Response<_trv__SetReceiverModeResponse> OnvifReceiverClient::SetReceiverMode(Req
 
 	_trv__SetReceiverModeResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetReceiverMode(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trv__SetReceiverModeResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -139,12 +139,12 @@ Response<_trv__GetReceiverStateResponse> OnvifReceiverClient::GetReceiverState(R
 
 	_trv__GetReceiverStateResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetReceiverState(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trv__GetReceiverStateResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }

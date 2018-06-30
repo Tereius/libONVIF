@@ -89,15 +89,15 @@ public:
 
 protected:
 	//! Service implementations use this to acquire/prepare a raw soap context. releaseCtx must be called afterwards
-	soap* acquireCtx();
+	soap* AcquireCtx();
 	//! Service implementations use this to acquire/prepare a raw soap context. releaseCtx must be called afterwards if successful.
 	//! (If the timeout is reached before the soap context could be acquired/prepared null is returned)
-	soap* tryAcquireCtx(int timeoutMs = 0);
+	soap* TryAcquireCtx(int timeoutMs = 0);
 	//! Service implementations use this to release a previously acquired raw soap context
-	void releaseCtx(soap *pCtx);
+	void ReleaseCtx(soap *pCtx);
 	//! Service implementations use this to find out how many times a service call has to be repeated
 	//! (needed because of HTTP digest authentication)
-	int retry(soap *pCtx);
+	int Retry(soap *pCtx);
 
 private:
 	Q_DISABLE_COPY(Client);

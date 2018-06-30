@@ -41,13 +41,13 @@ Response<_tad__GetServiceCapabilitiesResponse> OnvifAnalyticsClient::GetServiceC
 
 	_tad__GetServiceCapabilitiesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.GetServiceCapabilities(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tad__GetServiceCapabilitiesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -55,13 +55,13 @@ Response<_tad__DeleteAnalyticsEngineControlResponse> OnvifAnalyticsClient::Delet
 
 	_tad__DeleteAnalyticsEngineControlResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.DeleteAnalyticsEngineControl(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tad__DeleteAnalyticsEngineControlResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -69,13 +69,13 @@ Response<_tad__CreateAnalyticsEngineControlResponse> OnvifAnalyticsClient::Creat
 
 	_tad__CreateAnalyticsEngineControlResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.CreateAnalyticsEngineControl(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tad__CreateAnalyticsEngineControlResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -83,13 +83,13 @@ Response<_tad__SetAnalyticsEngineControlResponse> OnvifAnalyticsClient::SetAnaly
 
 	_tad__SetAnalyticsEngineControlResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.SetAnalyticsEngineControl(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tad__SetAnalyticsEngineControlResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -97,13 +97,13 @@ Response<_tad__GetAnalyticsEngineControlResponse> OnvifAnalyticsClient::GetAnaly
 
 	_tad__GetAnalyticsEngineControlResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.GetAnalyticsEngineControl(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tad__GetAnalyticsEngineControlResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -111,13 +111,13 @@ Response<_tad__GetAnalyticsEngineControlsResponse> OnvifAnalyticsClient::GetAnal
 
 	_tad__GetAnalyticsEngineControlsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.GetAnalyticsEngineControls(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tad__GetAnalyticsEngineControlsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -125,13 +125,13 @@ Response<_tad__GetAnalyticsEngineResponse> OnvifAnalyticsClient::GetAnalyticsEng
 
 	_tad__GetAnalyticsEngineResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.GetAnalyticsEngine(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tad__GetAnalyticsEngineResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -139,13 +139,13 @@ Response<_tad__GetAnalyticsEnginesResponse> OnvifAnalyticsClient::GetAnalyticsEn
 
 	_tad__GetAnalyticsEnginesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.GetAnalyticsEngines(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tad__GetAnalyticsEnginesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -153,13 +153,13 @@ Response<_tad__SetVideoAnalyticsConfigurationResponse> OnvifAnalyticsClient::Set
 
 	_tad__SetVideoAnalyticsConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.SetVideoAnalyticsConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tad__SetVideoAnalyticsConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -167,13 +167,13 @@ Response<_tad__GetAnalyticsEngineInputResponse> OnvifAnalyticsClient::GetAnalyti
 
 	_tad__GetAnalyticsEngineInputResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.GetAnalyticsEngineInput(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tad__GetAnalyticsEngineInputResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -181,13 +181,13 @@ Response<_tad__GetAnalyticsEngineInputsResponse> OnvifAnalyticsClient::GetAnalyt
 
 	_tad__GetAnalyticsEngineInputsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.GetAnalyticsEngineInputs(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tad__GetAnalyticsEngineInputsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -195,13 +195,13 @@ Response<_tad__GetAnalyticsDeviceStreamUriResponse> OnvifAnalyticsClient::GetAna
 
 	_tad__GetAnalyticsDeviceStreamUriResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.GetAnalyticsDeviceStreamUri(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tad__GetAnalyticsDeviceStreamUriResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -209,13 +209,13 @@ Response<_tad__GetVideoAnalyticsConfigurationResponse> OnvifAnalyticsClient::Get
 
 	_tad__GetVideoAnalyticsConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.GetVideoAnalyticsConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tad__GetVideoAnalyticsConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -223,13 +223,13 @@ Response<_tad__CreateAnalyticsEngineInputsResponse> OnvifAnalyticsClient::Create
 
 	_tad__CreateAnalyticsEngineInputsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.CreateAnalyticsEngineInputs(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tad__CreateAnalyticsEngineInputsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -237,13 +237,13 @@ Response<_tad__DeleteAnalyticsEngineInputsResponse> OnvifAnalyticsClient::Delete
 
 	_tad__DeleteAnalyticsEngineInputsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.DeleteAnalyticsEngineInputs(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tad__DeleteAnalyticsEngineInputsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -251,12 +251,12 @@ Response<_tad__GetAnalyticsStateResponse> OnvifAnalyticsClient::GetAnalyticsStat
 
 	_tad__GetAnalyticsStateResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.GetAnalyticsState(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tad__GetAnalyticsStateResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }

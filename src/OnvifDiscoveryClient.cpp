@@ -48,37 +48,37 @@ OnvifDiscoveryClient::~OnvifDiscoveryClient() {
 DetailedResponse OnvifDiscoveryClient::Hello(HelloTypeRequest &rRequest) {
 
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.Hello(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	DetailedResponse response(ret, GetFaultString(), GetFaultDetail(), ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response;
 }
 
 DetailedResponse OnvifDiscoveryClient::Bye(ByeTypeRequest &rRequest) {
 
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.Bye(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	DetailedResponse response(ret, GetFaultString(), GetFaultDetail(), ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response;
 }
 
 DetailedResponse OnvifDiscoveryClient::Probe(ProbeTypeRequest &rRequest, const QString &rMessageId) {
 
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	soap_wsa_request(pSoap, rMessageId.toUtf8().constData(), "urn:schemas-xmlsoap-org:ws:2005:04:discovery", "http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe");
 	do {
 		auto ret = mpD->mProxy.Probe(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	DetailedResponse response(ret, GetFaultString(), GetFaultDetail(), ret != SOAP_OK && pSoap->fault ? pSoap->fault->SOAP_ENV__Detail : nullptr);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response;
 }
 
@@ -86,13 +86,13 @@ ProbeMatchesResponse OnvifDiscoveryClient::ReceiveProbeMatches() {
 
 	__wsdd__ProbeMatches responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		auto ret = mpD->mProxy.recv_ProbeMatches(responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto builder = ProbeMatchesResponse::Builder();
 	builder.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return builder.Build();
 }
 

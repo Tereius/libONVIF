@@ -63,21 +63,21 @@ Client::~Client() {
 	delete mpD;
 }
 
-soap* Client::acquireCtx() {
+soap* Client::AcquireCtx() {
 
 	auto pCtx = mpD->mCtx->Acquire();
 	RestoreAuth(pCtx);
 	return pCtx;
 }
 
-soap* Client::tryAcquireCtx(int timeoutMs /*= 0*/) {
+soap* Client::TryAcquireCtx(int timeoutMs /*= 0*/) {
 
 	auto pCtx = mpD->mCtx->TryAcquire(timeoutMs);
 	if(pCtx) RestoreAuth(pCtx);
 	return pCtx;
 }
 
-void Client::releaseCtx(soap *pCtx) {
+void Client::ReleaseCtx(soap *pCtx) {
 
 	if(pCtx) {
 		soap_destroy(pCtx);
@@ -188,7 +188,7 @@ QSharedPointer<SoapCtx> Client::GetCtx() const {
 	return mpD->mCtx;
 }
 
-int Client::retry(soap *pCtx) {
+int Client::Retry(soap *pCtx) {
 
 	return ProcessAuthFaultAndRetry(pCtx);
 }

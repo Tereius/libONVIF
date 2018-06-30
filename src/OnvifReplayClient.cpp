@@ -41,13 +41,13 @@ Response<_trp__GetServiceCapabilitiesResponse> OnvifReplayClient::GetServiceCapa
 
 	_trp__GetServiceCapabilitiesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetServiceCapabilities(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trp__GetServiceCapabilitiesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -55,13 +55,13 @@ Response<_trp__GetReplayUriResponse> OnvifReplayClient::GetReplayUri(Request<_tr
 
 	_trp__GetReplayUriResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetReplayUri(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trp__GetReplayUriResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -69,13 +69,13 @@ Response<_trp__GetReplayConfigurationResponse> OnvifReplayClient::GetReplayConfi
 
 	_trp__GetReplayConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetReplayConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trp__GetReplayConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -83,12 +83,12 @@ Response<_trp__SetReplayConfigurationResponse> OnvifReplayClient::SetReplayConfi
 
 	_trp__SetReplayConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetReplayConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trp__SetReplayConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }

@@ -43,14 +43,14 @@ Response<_tev__CreatePullPointSubscriptionResponse> OnvifEventClient::CreatePull
 	_tev__CreatePullPointSubscriptionResponse responseObject;
 	auto action = "http://www.onvif.org/ver10/events/wsdl/EventPortType/CreatePullPointSubscriptionRequest";
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		auto ret = mpD->mProxy.CreatePullPointSubscription(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tev__CreatePullPointSubscriptionResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -59,14 +59,14 @@ Response<_tev__PullMessagesResponse> OnvifEventClient::PullMessages(Request<_tev
 	_tev__PullMessagesResponse responseObject;
 	auto action = "http://www.onvif.org/ver10/events/wsdl/PullPointSubscription/PullMessagesRequest";
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.PullMessages(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tev__PullMessagesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -75,14 +75,14 @@ Response<_tev__SeekResponse> OnvifEventClient::Seek(Request<_tev__Seek> &rReques
 	_tev__SeekResponse responseObject;
 	auto action = "http://www.onvif.org/ver10/events/wsdl/PullPointSubscription/SeekRequest";
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.Seek(rEndpoint.toString().toStdString().c_str(), action, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tev__SeekResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -91,14 +91,14 @@ Response<_wsnt__RenewResponse> OnvifEventClient::Renew(Request<_wsnt__Renew> &rR
 	_wsnt__RenewResponse responseObject;
 	auto action = "http://docs.oasis-open.org/wsn/bw-2/SubscriptionManager/RenewRequest";
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.Renew(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_wsnt__RenewResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -107,14 +107,14 @@ Response<_wsnt__UnsubscribeResponse> OnvifEventClient::Unsubscribe(Request<_wsnt
 	_wsnt__UnsubscribeResponse responseObject;
 	auto action = "http://docs.oasis-open.org/wsn/bw-2/SubscriptionManager/UnsubscribeRequest";
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.Unsubscribe(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_wsnt__UnsubscribeResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -123,14 +123,14 @@ Response<_tev__SetSynchronizationPointResponse> OnvifEventClient::SetSynchroniza
 	_tev__SetSynchronizationPointResponse responseObject;
 	auto action = "http://www.onvif.org/ver10/events/wsdl/PullPointSubscription/SetSynchronizationPointRequest";
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.SetSynchronizationPoint(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tev__SetSynchronizationPointResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -139,14 +139,14 @@ Response<_tev__GetServiceCapabilitiesResponse> OnvifEventClient::GetServiceCapab
 	_tev__GetServiceCapabilitiesResponse responseObject;
 	auto action = "http://www.onvif.org/ver10/events/wsdl/EventPortType/GetServiceCapabilitiesRequest";
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.GetServiceCapabilities(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tev__GetServiceCapabilitiesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -155,14 +155,14 @@ Response<_tev__GetEventPropertiesResponse> OnvifEventClient::GetEventProperties(
 	_tev__GetEventPropertiesResponse responseObject;
 	auto action = "http://www.onvif.org/ver10/events/wsdl/EventPortType/GetEventPropertiesRequest";
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.GetEventProperties(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tev__GetEventPropertiesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -171,14 +171,14 @@ Response<_wsnt__SubscribeResponse> OnvifEventClient::Subscribe(Request<_wsnt__Su
 	_wsnt__SubscribeResponse responseObject;
 	auto action = "http://docs.oasis-open.org/wsn/bw-2/NotificationProducer/SubscribeRequest";
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.Subscribe(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_wsnt__SubscribeResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -187,14 +187,14 @@ Response<_wsnt__GetCurrentMessageResponse> OnvifEventClient::GetCurrentMessage(R
 	_wsnt__GetCurrentMessageResponse responseObject;
 	auto action = "http://docs.oasis-open.org/wsn/bw-2/NotificationProducer/GetCurrentMessageRequest";
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.GetCurrentMessage(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_wsnt__GetCurrentMessageResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -202,13 +202,13 @@ SimpleResponse OnvifEventClient::send_Notify(Request<_wsnt__Notify> &rRequest) {
 
 	auto action = "http://docs.oasis-open.org/wsn/bw-2/NotificationConsumer/Notify";
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.send_Notify(qPrintable(GetEndpointString()), action, &rRequest);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	SimpleResponse response(ret, mpD->mProxy.soap_fault_string(), mpD->mProxy.soap_fault_detail());
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response;
 }
 
@@ -216,24 +216,24 @@ Response<_wsnt__Notify> OnvifEventClient::recv_Notify() {
 
 	__tev__Notify responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.recv_Notify(responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	Response<_wsnt__Notify> response(ret, mpD->mProxy.soap_fault_string(), mpD->mProxy.soap_fault_detail(), ret == SOAP_OK && responseObject.wsnt__Notify ? responseObject.wsnt__Notify->soap_dup() : nullptr);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response;
 }
 
 SimpleResponse OnvifEventClient::recv_Notify_empty_response() {
 
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.recv_Notify_empty_response();
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	SimpleResponse response(ret, mpD->mProxy.soap_fault_string(), mpD->mProxy.soap_fault_detail());
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response;
 }
 
@@ -241,13 +241,13 @@ SimpleResponse OnvifEventClient::Notify(Request<_wsnt__Notify> &rRequest) {
 
 	auto action = "http://docs.oasis-open.org/wsn/bw-2/NotificationConsumer/Notify";
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.Notify(qPrintable(GetEndpointString()), action, &rRequest);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	SimpleResponse response(ret, mpD->mProxy.soap_fault_string(), mpD->mProxy.soap_fault_detail());
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response;
 }
 
@@ -256,14 +256,14 @@ Response<_wsnt__GetMessagesResponse> OnvifEventClient::GetMessages(Request<_wsnt
 	_wsnt__GetMessagesResponse responseObject;
 	auto action = "http://docs.oasis-open.org/wsn/bw-2/PullPoint/GetMessagesRequest";
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.GetMessages(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_wsnt__GetMessagesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -272,14 +272,14 @@ Response<_wsnt__DestroyPullPointResponse> OnvifEventClient::DestroyPullPoint(Req
 	_wsnt__DestroyPullPointResponse responseObject;
 	auto action = "http://docs.oasis-open.org/wsn/bw-2/PullPoint/DestroyPullPointRequest";
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.DestroyPullPoint(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_wsnt__DestroyPullPointResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -288,14 +288,14 @@ Response<_wsnt__PauseSubscriptionResponse> OnvifEventClient::PauseSubscription(R
 	_wsnt__PauseSubscriptionResponse responseObject;
 	auto action = "http://docs.oasis-open.org/wsn/bw-2/PausableSubscriptionManager/PauseSubscriptionRequest";
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.PauseSubscription(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_wsnt__PauseSubscriptionResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -304,13 +304,13 @@ Response<_wsnt__ResumeSubscriptionResponse> OnvifEventClient::ResumeSubscription
 	_wsnt__ResumeSubscriptionResponse responseObject;
 	auto action = "http://docs.oasis-open.org/wsn/bw-2/PausableSubscriptionManager/ResumeSubscriptionRequest";
 	auto ret = SOAP_OK;
-	auto pSoap = acquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
 		ret = mpD->mProxy.ResumeSubscription(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_wsnt__ResumeSubscriptionResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
