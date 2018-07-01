@@ -158,8 +158,8 @@ void SoapCtx::EnableIModeFlags(soap_mode imode) {
 
 void SoapCtx::EnableModeFlags(soap_mode mode) {
 
-	QMutexLocker locker(&mMutex);
-	soap_set_mode(mpSoap, mode);
+	QMutexLocker locker(&mpD->mMutex);
+	soap_set_mode(mpD->mpSoap, mode);
 }
 
 void SoapCtx::EnableOModeFlags(soap_mode omode) {
@@ -176,8 +176,8 @@ void SoapCtx::DisableIModeFlags(soap_mode imode) {
 
 void SoapCtx::DisableModeFlags(soap_mode mode) {
 
-	QMutexLocker locker(&mMutex);
-	soap_clr_mode(mpSoap, mode);
+	QMutexLocker locker(&mpD->mMutex);
+	soap_clr_mode(mpD->mpSoap, mode);
 }
 
 void SoapCtx::DisableOModeFlags(soap_mode omode) {

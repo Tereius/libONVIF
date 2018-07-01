@@ -24,7 +24,7 @@
 
 #define GENERIC_FAULT 600
 
-//! Deleter functor
+ //! Deleter functor
 template <class T>
 struct SoapDeleter {
 
@@ -157,6 +157,25 @@ public:
 	}
 	//! Safe bool
 	bool BooleanTest() const { return IsSuccess(); }
+
+protected:
+
+	virtual void PopulateFromCtx(const QSharedPointer<SoapCtx> &rSoapCtx) {
+
+		auto errorCode = rSoapCtx->GetFaultCode();
+		if(errorCode != SOAP_OK) {
+			SetErrorCode(errorCode);
+			SetFault(rSoapCtx->GetFaultString());
+			SetFaultDetail(rSoapCtx->GetFaultDetail());
+			SetFaultSubcode(rSoapCtx->GetFaultSubcode());
+		}
+		else {
+			SetErrorCode(SOAP_OK);
+			mFault.clear();
+			mFaultDetail.clear();
+			mFaultSubcode.clear();
+		}
+	}
 
 private:
 
@@ -294,6 +313,26 @@ public:
 		return QString();
 	}
 
+protected:
+
+	virtual void PopulateFromCtx(const QSharedPointer<SoapCtx> &rSoapCtx) override {
+
+		SimpleResponse::PopulateFromCtx(rSoapCtx);
+		auto errorCode = rSoapCtx->GetFaultCode();
+		if(errorCode != SOAP_OK) {
+			SetSoapHeader(nullptr);
+			auto pSoap = rSoapCtx->Acquire();
+			if(pSoap->fault) SetEnvDetail(pSoap->fault->SOAP_ENV__Detail);
+			rSoapCtx->Release();
+		}
+		else {
+			SetEnvDetail(nullptr);
+			auto pSoap = rSoapCtx->Acquire();
+			SetSoapHeader(pSoap->header);
+			rSoapCtx->Release();
+		}
+	}
+
 private:
 
 	SOAP_ENV__Detail* mpFaultResultObject;
@@ -394,20 +433,13 @@ public:
 			mpResult() {}
 
 		Builder& From(const QSharedPointer<SoapCtx> &rSoapCtx, const T *pResultObject = nullptr) {
+
+			mpResult.PopulateFromCtx(rSoapCtx);
 			auto errorCode = rSoapCtx->GetFaultCode();
 			if(errorCode != SOAP_OK) {
-				mpResult.SetErrorCode(errorCode);
-				mpResult.SetFault(rSoapCtx->GetFaultString());
-				mpResult.SetFaultDetail(rSoapCtx->GetFaultDetail());
-				mpResult.SetFaultSubcode(rSoapCtx->GetFaultSubcode());
-				auto pSoap = rSoapCtx->Acquire();
-				if(pSoap->fault) mpResult.SetEnvDetail(pSoap->fault->SOAP_ENV__Detail);
-				rSoapCtx->Release();
+				mpResult.SetResultObject(nullptr);
 			}
 			else {
-				auto pSoap = rSoapCtx->Acquire();
-				mpResult.SetSoapHeader(pSoap->header);
-				rSoapCtx->Release();
 				mpResult.SetResultObject(pResultObject);
 			}
 			return *this;
@@ -496,6 +528,39 @@ public:
 	T GetResultObject() const { return mResultObject; }
 	// Set the arbitrary response object
 	void SetResultObject(const T &rResultObject) { mResultObject = rResultObject; }
+
+	/*!
+	*
+	* \brief Builds an arbitrary response object
+	*
+	*/
+	class Builder {
+
+	public:
+		Builder() :
+			mpResult() {}
+
+		Builder& From(const QSharedPointer<SoapCtx> &rSoapCtx, const T &rResultObject) {
+
+			mpResult.PopulateFromCtx(rSoapCtx);
+			auto errorCode = rSoapCtx->GetFaultCode();
+			if(errorCode == SOAP_OK) {
+				mpResult.SetResultObject(rResultObject);
+			}
+			return *this;
+		}
+
+		Builder& From(const QSharedPointer<SoapCtx> &rSoapCtx) {
+
+			mpResult.PopulateFromCtx(rSoapCtx);
+			return *this;
+		}
+
+		ArbitraryResponse<T> Build() const { return mpResult; }
+
+	private:
+		ArbitraryResponse<T> mpResult;
+	};
 
 private:
 

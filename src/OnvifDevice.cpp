@@ -197,7 +197,7 @@ SimpleResponse OnvifDevice::Initialize() {
 	if(auto rr = res.GetResultObject()) {
 		auto capa = res.GetResultObject()->Capabilities;
 		if(capa->Device) {
-
+			//TODO: Print
 		}
 	}
 
@@ -211,6 +211,20 @@ SimpleResponse OnvifDevice::InitializeTopicSet() {
 	Request<_tev__GetEventProperties> request;
 	auto response = mpD->mpOnvifEventClient->GetParsedEventProperties(request);
 	if(response) {
+		for(auto topic : response.GetResultObject().GetTopics()) {
+			auto topicPath = topic.GetTopicPath().join("/");
+			if(topicPath.isEmpty()) topicPath.append("/");
+			qDebug() << "\nTopic name" << topic.GetName();
+			qDebug() << "Topic path" << topicPath;
+			for(auto item : topic.GetItems()) {
+				if(item.GetType() == 0) {
+					qDebug() << "    Unknown Item" << item.GetName() << "with type" << item.GetSoapTypeQname();
+				}
+				else {
+					qDebug() << "    Item" << item.GetName() << "gsoap type" << item.GetType();
+				}
+			}
+		}
 	}
 	else {
 		qWarning() << "Couldn't get event properties" << response.GetCompleteFault();

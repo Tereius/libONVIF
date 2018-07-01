@@ -58,11 +58,13 @@ public:
 	void SetOMode(soap_mode omode);
 	//! Enable one imode flag
 	void EnableIModeFlags(soap_mode imode);
+	//! Enable one mode flag
 	void EnableModeFlags(soap_mode mode);
 	//! Enable one omode flag
 	void EnableOModeFlags(soap_mode omode);
 	//! Disable one imode flag
 	void DisableIModeFlags(soap_mode imode);
+	//! Disable one mode flag
 	void DisableModeFlags(soap_mode mode);
 	//! Disable one omode flag
 	void DisableOModeFlags(soap_mode omode);

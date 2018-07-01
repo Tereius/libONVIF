@@ -1,3 +1,18 @@
+/* Copyright(C) 2018 Björn Stresing
+ *
+ * This program is free software : you can redistribute it and / or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.If not, see < http://www.gnu.org/licenses/>.
+ */
 #include "Topics.h"
 #include "soapStub.h"
 #include "SoapCtx.h"
@@ -30,16 +45,17 @@ void TopicSet::fromDom(soap_dom_element *pDom, QString topicPath /*= QString()*/
 
 	topicPath.append("/");
 	auto isTopicAttr = pDom->att_get("wstop:topic");
-	if(isTopicAttr && isTopicAttr->is_true()) {
+	auto isPropertyAttr = pDom->att_get("IsProperty");
+	auto messageDescrChild = pDom->elt_get("tt:MessageDescription");
+	if(messageDescrChild && isTopicAttr && isTopicAttr->is_true()) {
 		// Leaf topic node
 		Topic topic;
 		topic.SetName(QString::fromUtf8(pDom->tag()));
 		topic.SetTopicPath(topicPath.split("/", QString::SkipEmptyParts));
-		auto messageDef = pDom->elt_get("tt:MessageDescription");
-		topic.PopulateItems((tt__MessageDescription*)messageDef->get_node(SOAP_TYPE_tt__MessageDescription));
+		topic.PopulateItems((tt__MessageDescription*)messageDescrChild->get_node(SOAP_TYPE_tt__MessageDescription));
 		mTopics.push_back(topic);
 	}
-	else {
+	else if(isTopicAttr && isTopicAttr->is_true()) {
 		topicPath.append(QString::fromUtf8(pDom->tag()));
 		for(xsd__anyType::iterator it = pDom->elt_begin(); it != pDom->elt_end(); ++it) {
 			fromDom(it.iter, topicPath);
@@ -49,6 +65,7 @@ void TopicSet::fromDom(soap_dom_element *pDom, QString topicPath /*= QString()*/
 
 int TopicSet::GetTypeId(const QString &rQName) {
 
+	// TODO: Very hacky! Is there a better option?
 	QString typeStr = rQName;
 	ctx.EnableModeFlags(SOAP_XML_IGNORENS);
 	auto pSoap = ctx.Acquire();
@@ -78,19 +95,19 @@ void Topic::PopulateItems(const tt__MessageDescription *pMessageDescr) {
 	if(pMessageDescr) {
 		if(pMessageDescr->Key) {
 			for(auto item : pMessageDescr->Key->SimpleItemDescription) {
-				auto futureItem = SimpleItemInfo(item.Name, TopicSet::GetTypeId(QString(item.Type.c_str())), KEY);
+				auto futureItem = SimpleItemInfo(item.Name, TopicSet::GetTypeId(QString(item.Type.c_str())), QString(item.Type.c_str()), KEY);
 				mItems.push_back(futureItem);
 			}
 		}
 		if(pMessageDescr->Source) {
 			for(auto item : pMessageDescr->Source->SimpleItemDescription) {
-				auto futureItem = SimpleItemInfo(item.Name, TopicSet::GetTypeId(QString(item.Type.c_str())), SOURCE);
+				auto futureItem = SimpleItemInfo(item.Name, TopicSet::GetTypeId(QString(item.Type.c_str())), QString(item.Type.c_str()), SOURCE);
 				mItems.push_back(futureItem);
 			}
 		}
 		if(pMessageDescr->Data) {
 			for(auto item : pMessageDescr->Data->SimpleItemDescription) {
-				auto futureItem = SimpleItemInfo(item.Name, TopicSet::GetTypeId(QString(item.Type.c_str())), DATA);
+				auto futureItem = SimpleItemInfo(item.Name, TopicSet::GetTypeId(QString(item.Type.c_str())), QString(item.Type.c_str()), DATA);
 				mItems.push_back(futureItem);
 			}
 		}
