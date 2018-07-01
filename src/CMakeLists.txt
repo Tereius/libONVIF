@@ -276,6 +276,7 @@ set(src_files
 	#generated/soapPullPointSubscriptionBindingService.cpp
 	OnvifEventClient.cpp
 	OnvifPullPoint.cpp
+	Topics.cpp
 )
 
 # private header
@@ -288,6 +289,7 @@ set(private_header_files
 set(public_header_files
 	OnvifEventClient.h
 	OnvifPullPoint.h
+	Topics.h
 )
 
 add_library(onvifevent ${src_files} ${private_header_files} ${public_header_files})

@@ -88,7 +88,7 @@ ArbitraryResponse<CmdOptions> CmdLineParser::parse(const QCommandLineParser &par
 		}
 
 		if(parser.isSet("user")) {
-			options.user = parser.value("port");
+			options.user = parser.value("user");
 		}
 
 		if(parser.isSet("pwd")) {

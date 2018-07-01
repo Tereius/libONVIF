@@ -22,8 +22,10 @@ public:
 	void SetIMode(soap_mode imode);
 	void SetOMode(soap_mode omode);
 	void EnableIModeFlags(soap_mode imode);
+	void EnableModeFlags(soap_mode mode);
 	void EnableOModeFlags(soap_mode omode);
 	void DisableIModeFlags(soap_mode imode);
+	void DisableModeFlags(soap_mode mode);
 	void DisableOModeFlags(soap_mode omode);
 	void EnablePrintRawSoap();
 	void DisablePrintRawSoap();

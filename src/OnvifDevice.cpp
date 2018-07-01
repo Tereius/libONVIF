@@ -53,7 +53,7 @@ struct OnvifDevicePrivate {
 };
 
 OnvifDevice::OnvifDevice(const QUrl &rDeviceEndpoint, QObject *pParent /*= nullptr*/) :
-QObject(pParent), mpD(new OnvifDevicePrivate(this)) {
+	QObject(pParent), mpD(new OnvifDevicePrivate(this)) {
 
 	mpD->mDeviceEndpoint = rDeviceEndpoint;
 }
@@ -187,6 +187,21 @@ SimpleResponse OnvifDevice::Initialize() {
 		if(capa->Device) {
 
 		}
+	}
+
+	InitializeTopicSet();
+
+	return SimpleResponse();
+}
+
+SimpleResponse OnvifDevice::InitializeTopicSet() {
+
+	Request<_tev__GetEventProperties> request;
+	auto response = mpD->mpOnvifEventClient->GetParsedEventProperties(request);
+	if(response) {
+	}
+	else {
+		qWarning() << "Couldn't get event properties" << response.GetCompleteFault();
 	}
 
 	return SimpleResponse();

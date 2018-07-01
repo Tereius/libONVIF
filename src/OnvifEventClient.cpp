@@ -151,6 +151,25 @@ Response<_tev__GetEventPropertiesResponse> OnvifEventClient::GetEventProperties(
 	return response.Build();
 }
 
+ArbitraryResponse<TopicSet> OnvifEventClient::GetParsedEventProperties(Request<_tev__GetEventProperties> &rRequest) {
+
+	_tev__GetEventPropertiesResponse responseObject;
+	auto action = "http://www.onvif.org/ver10/events/wsdl/EventPortType/GetEventPropertiesRequest";
+	auto ret = SOAP_OK;
+	auto pSoap = ackquireCtx();
+	do {
+		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
+		ret = mpD->mProxy.GetEventProperties(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
+	} while(retry(pSoap));
+
+	TopicSet topicSet = TopicSet::FromXml(responseObject.wstop__TopicSet);
+
+	auto response = ArbitraryResponse<TopicSet>();
+	response.SetResultObject(topicSet);
+	releaseCtx(pSoap);
+	return response;
+}
+
 Response<_wsnt__SubscribeResponse> OnvifEventClient::Subscribe(Request<_wsnt__Subscribe> &rRequest) {
 
 	_wsnt__SubscribeResponse responseObject;

@@ -17,6 +17,7 @@ public:
 
 	void SetAuth(const QString &rUserName, const QString &rPassword, AuthMode mode = AUTO);
 	SimpleResponse Initialize();
+	SimpleResponse InitializeTopicSet();
 
 private:
 

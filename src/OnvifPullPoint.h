@@ -8,23 +8,6 @@
 
 class OnvifEventClient;
 
-class Topic {
-
-private:
-	QList<Topic> mTopics;
-	QString mName;
-};
-
-class TopicSet {
-
-public:
-
-private:
-	QList<Topic> mTopics;
-	QString mName;
-	QString mNamespace;
-};
-
 class OnvifPullPointWorker : public QThread {
 
 	Q_OBJECT
