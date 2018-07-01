@@ -3,7 +3,7 @@
  */
 #pragma once
 
-//! Safe Bool: https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Safe_bool
+ //! Safe Bool: https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Safe_bool
 class AbstractSaveBool {
 
 public:
@@ -16,7 +16,6 @@ protected:
 	AbstractSaveBool& operator=(const AbstractSaveBool&) { return *this; }
 	~AbstractSaveBool() {}
 };
-
 
 //! Safe Bool for testability without virtual function: https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Safe_bool 
 template <typename T = void>
@@ -32,10 +31,9 @@ protected:
 	~SafeBool() {}
 };
 
-
 //! Safe Bool for testability with virtual function: https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Safe_bool 
 template<>
-class SafeBool<void> : private AbstractSaveBool{
+class SafeBool<void> : private AbstractSaveBool {
 
 public:
 	operator bool_type() const {

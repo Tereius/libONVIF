@@ -1,3 +1,18 @@
+/* Copyright(C) 2018 Björn Stresing
+ *
+ * This program is free software : you can redistribute it and / or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.If not, see < http://www.gnu.org/licenses/>.
+ */
 #include "OnvifRecordingClient.h"
 #include "soapRecordingBindingProxy.h"
 
@@ -27,13 +42,13 @@ Response<_trc__GetServiceCapabilitiesResponse> OnvifRecordingClient::GetServiceC
 
 	_trc__GetServiceCapabilitiesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetServiceCapabilities(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__GetServiceCapabilitiesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -41,13 +56,13 @@ Response<_trc__CreateRecordingResponse> OnvifRecordingClient::CreateRecording(Re
 
 	_trc__CreateRecordingResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.CreateRecording(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__CreateRecordingResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -55,13 +70,13 @@ Response<_trc__DeleteRecordingResponse> OnvifRecordingClient::DeleteRecording(Re
 
 	_trc__DeleteRecordingResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.DeleteRecording(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__DeleteRecordingResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -69,13 +84,13 @@ Response<_trc__GetRecordingsResponse> OnvifRecordingClient::GetRecordings(Reques
 
 	_trc__GetRecordingsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetRecordings(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__GetRecordingsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -83,13 +98,13 @@ Response<_trc__SetRecordingConfigurationResponse> OnvifRecordingClient::SetRecor
 
 	_trc__SetRecordingConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetRecordingConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__SetRecordingConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -97,13 +112,13 @@ Response<_trc__GetRecordingConfigurationResponse> OnvifRecordingClient::GetRecor
 
 	_trc__GetRecordingConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetRecordingConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__GetRecordingConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -111,13 +126,13 @@ Response<_trc__GetRecordingOptionsResponse> OnvifRecordingClient::GetRecordingOp
 
 	_trc__GetRecordingOptionsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetRecordingOptions(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__GetRecordingOptionsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -125,13 +140,13 @@ Response<_trc__CreateTrackResponse> OnvifRecordingClient::CreateTrack(Request<_t
 
 	_trc__CreateTrackResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.CreateTrack(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__CreateTrackResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -139,13 +154,13 @@ Response<_trc__DeleteTrackResponse> OnvifRecordingClient::DeleteTrack(Request<_t
 
 	_trc__DeleteTrackResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.DeleteTrack(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__DeleteTrackResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -153,13 +168,13 @@ Response<_trc__GetTrackConfigurationResponse> OnvifRecordingClient::GetTrackConf
 
 	_trc__GetTrackConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetTrackConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__GetTrackConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -167,13 +182,13 @@ Response<_trc__SetTrackConfigurationResponse> OnvifRecordingClient::SetTrackConf
 
 	_trc__SetTrackConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetTrackConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__SetTrackConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -181,13 +196,13 @@ Response<_trc__CreateRecordingJobResponse> OnvifRecordingClient::CreateRecording
 
 	_trc__CreateRecordingJobResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.CreateRecordingJob(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__CreateRecordingJobResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -195,13 +210,13 @@ Response<_trc__DeleteRecordingJobResponse> OnvifRecordingClient::DeleteRecording
 
 	_trc__DeleteRecordingJobResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.DeleteRecordingJob(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__DeleteRecordingJobResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -209,13 +224,13 @@ Response<_trc__GetRecordingJobsResponse> OnvifRecordingClient::GetRecordingJobs(
 
 	_trc__GetRecordingJobsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetRecordingJobs(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__GetRecordingJobsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -223,13 +238,13 @@ Response<_trc__SetRecordingJobConfigurationResponse> OnvifRecordingClient::SetRe
 
 	_trc__SetRecordingJobConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetRecordingJobConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__SetRecordingJobConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -237,13 +252,13 @@ Response<_trc__GetRecordingJobConfigurationResponse> OnvifRecordingClient::GetRe
 
 	_trc__GetRecordingJobConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetRecordingJobConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__GetRecordingJobConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -251,13 +266,13 @@ Response<_trc__SetRecordingJobModeResponse> OnvifRecordingClient::SetRecordingJo
 
 	_trc__SetRecordingJobModeResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetRecordingJobMode(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__SetRecordingJobModeResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -265,13 +280,13 @@ Response<_trc__GetRecordingJobStateResponse> OnvifRecordingClient::GetRecordingJ
 
 	_trc__GetRecordingJobStateResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetRecordingJobState(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__GetRecordingJobStateResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -279,13 +294,13 @@ Response<_trc__ExportRecordedDataResponse> OnvifRecordingClient::ExportRecordedD
 
 	_trc__ExportRecordedDataResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.ExportRecordedData(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__ExportRecordedDataResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -293,13 +308,13 @@ Response<_trc__StopExportRecordedDataResponse> OnvifRecordingClient::StopExportR
 
 	_trc__StopExportRecordedDataResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.StopExportRecordedData(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__StopExportRecordedDataResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -307,12 +322,12 @@ Response<_trc__GetExportRecordedDataStateResponse> OnvifRecordingClient::GetExpo
 
 	_trc__GetExportRecordedDataStateResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetExportRecordedDataState(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_trc__GetExportRecordedDataStateResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }

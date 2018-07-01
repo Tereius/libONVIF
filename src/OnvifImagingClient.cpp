@@ -1,3 +1,18 @@
+/* Copyright(C) 2018 Björn Stresing
+ *
+ * This program is free software : you can redistribute it and / or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.If not, see < http://www.gnu.org/licenses/>.
+ */
 #include "OnvifImagingClient.h"
 #include "soapImagingBindingProxy.h"
 
@@ -26,13 +41,13 @@ Response<_timg__GetServiceCapabilitiesResponse> OnvifImagingClient::GetServiceCa
 
 	_timg__GetServiceCapabilitiesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetServiceCapabilities(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_timg__GetServiceCapabilitiesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -40,13 +55,13 @@ Response<_timg__GetImagingSettingsResponse> OnvifImagingClient::GetImagingSettin
 
 	_timg__GetImagingSettingsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetImagingSettings(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_timg__GetImagingSettingsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -54,13 +69,13 @@ Response<_timg__SetImagingSettingsResponse> OnvifImagingClient::SetImagingSettin
 
 	_timg__SetImagingSettingsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetImagingSettings(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_timg__SetImagingSettingsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -68,13 +83,13 @@ Response<_timg__GetOptionsResponse> OnvifImagingClient::GetOptions(Request<_timg
 
 	_timg__GetOptionsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetOptions(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_timg__GetOptionsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -82,13 +97,13 @@ Response<_timg__MoveResponse> OnvifImagingClient::Move(Request<_timg__Move> &rRe
 
 	_timg__MoveResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.Move(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_timg__MoveResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -96,13 +111,13 @@ Response<_timg__StopResponse> OnvifImagingClient::Stop(Request<_timg__Stop> &rRe
 
 	_timg__StopResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.Stop(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_timg__StopResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -110,13 +125,13 @@ Response<_timg__GetStatusResponse> OnvifImagingClient::GetStatus(Request<_timg__
 
 	_timg__GetStatusResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetStatus(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_timg__GetStatusResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -124,13 +139,13 @@ Response<_timg__GetMoveOptionsResponse> OnvifImagingClient::GetMoveOptions(Reque
 
 	_timg__GetMoveOptionsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetMoveOptions(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_timg__GetMoveOptionsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -138,13 +153,13 @@ Response<_timg__GetPresetsResponse> OnvifImagingClient::GetPresets(Request<_timg
 
 	_timg__GetPresetsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetPresets(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_timg__GetPresetsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -152,13 +167,13 @@ Response<_timg__GetCurrentPresetResponse> OnvifImagingClient::GetCurrentPreset(R
 
 	_timg__GetCurrentPresetResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetCurrentPreset(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_timg__GetCurrentPresetResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -166,12 +181,12 @@ Response<_timg__SetCurrentPresetResponse> OnvifImagingClient::SetCurrentPreset(R
 
 	_timg__SetCurrentPresetResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetCurrentPreset(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_timg__SetCurrentPresetResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }

@@ -1,3 +1,18 @@
+/* Copyright(C) 2018 Björn Stresing
+ *
+ * This program is free software : you can redistribute it and / or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.If not, see < http://www.gnu.org/licenses/>.
+ */
 #include "SoapCtx.h"
 #include "QMutexLocker"
 #include "httpda.h"
@@ -36,29 +51,61 @@ size_t frecv(struct soap *soap, char *s, size_t n) {
 	return length;
 }
 
-SoapCtx::SoapCtx() :
-	mpSoap(soap_new()),
-	mMutex(QMutex::Recursive),
-	mIsSaved(false) {
+struct CtxPrivate {
+	CtxPrivate(SoapCtx *pQ) :
+		mpQ(pQ),
+		mpSoap(nullptr),
+		mMutex(QMutex::Recursive),
+		mIsSaved(false),
+		mIModeSaved(),
+		mOModeSaved(),
+		mConnectTimeoutSaved(),
+		mSendTimeout(),
+		mReceiveTimeout(),
+		mSoFlags(),
+		mConFlags(),
+		mBindFlags(),
+		mAcceptFlags() {
 
-	soap_init2(mpSoap, SOAP_NEW_IO_DEFAULT, SOAP_NEW_IO_DEFAULT);
+	}
+
+	SoapCtx *mpQ;
+	soap *mpSoap;
+	QMutex mMutex;
+	bool mIsSaved;
+	soap_mode mIModeSaved;
+	soap_mode mOModeSaved;
+	int mConnectTimeoutSaved;
+	int mSendTimeout;
+	int mReceiveTimeout;
+	int mSoFlags;
+	int mConFlags;
+	int mBindFlags;
+	int mAcceptFlags;
+};
+
+SoapCtx::SoapCtx() :
+	mpD(new CtxPrivate(this)) {
+
+	mpD->mpSoap = soap_new();
+	soap_init2(mpD->mpSoap, SOAP_NEW_IO_DEFAULT, SOAP_NEW_IO_DEFAULT);
 	InitCtx();
 }
 
 SoapCtx::SoapCtx(soap_mode imode, soap_mode omode) :
-	mpSoap(soap_new()),
-	mMutex(QMutex::Recursive),
-	mIsSaved(false) {
+	mpD(new CtxPrivate(this)) {
 
-	soap_init2(mpSoap, imode, omode);
+	mpD->mpSoap = soap_new();
+	soap_init2(mpD->mpSoap, imode, omode);
 	InitCtx();
 }
 
 SoapCtx::~SoapCtx() {
 
-	delete (arbData*)mpSoap->user;
-	mpSoap->user = nullptr;
-	soap_free(mpSoap);
+	delete (arbData*)mpD->mpSoap->user;
+	mpD->mpSoap->user = nullptr;
+	soap_free(mpD->mpSoap);
+	delete mpD;
 }
 
 
@@ -69,44 +116,44 @@ const Namespace* SoapCtx::GetDefaultNamespaces() {
 
 void SoapCtx::SoapDelete(void *p) {
 
-	QMutexLocker locker(&mMutex);
-	soap_delete(mpSoap, p);
+	QMutexLocker locker(&mpD->mMutex);
+	soap_delete(mpD->mpSoap, p);
 }
 
 void SoapCtx::SoapDealloc(void *p) {
 
-	QMutexLocker locker(&mMutex);
-	soap_dealloc(mpSoap, p);
+	QMutexLocker locker(&mpD->mMutex);
+	soap_dealloc(mpD->mpSoap, p);
 }
 
 void SoapCtx::SoapUnlink(void *p) {
 
-	QMutexLocker locker(&mMutex);
-	soap_unlink(mpSoap, p);
+	QMutexLocker locker(&mpD->mMutex);
+	soap_unlink(mpD->mpSoap, p);
 }
 
 void SoapCtx::SoapFreeTemp() {
 
-	QMutexLocker locker(&mMutex);
-	soap_free_temp(mpSoap);
+	QMutexLocker locker(&mpD->mMutex);
+	soap_free_temp(mpD->mpSoap);
 }
 
 void SoapCtx::SetIMode(soap_mode imode) {
 
-	QMutexLocker locker(&mMutex);
-	soap_imode(mpSoap, imode);
+	QMutexLocker locker(&mpD->mMutex);
+	soap_imode(mpD->mpSoap, imode);
 }
 
 void SoapCtx::SetOMode(soap_mode omode) {
 
-	QMutexLocker locker(&mMutex);
-	soap_omode(mpSoap, omode);
+	QMutexLocker locker(&mpD->mMutex);
+	soap_omode(mpD->mpSoap, omode);
 }
 
 void SoapCtx::EnableIModeFlags(soap_mode imode) {
 
-	QMutexLocker locker(&mMutex);
-	soap_set_imode(mpSoap, imode);
+	QMutexLocker locker(&mpD->mMutex);
+	soap_set_imode(mpD->mpSoap, imode);
 }
 
 void SoapCtx::EnableModeFlags(soap_mode mode) {
@@ -117,14 +164,14 @@ void SoapCtx::EnableModeFlags(soap_mode mode) {
 
 void SoapCtx::EnableOModeFlags(soap_mode omode) {
 
-	QMutexLocker locker(&mMutex);
-	soap_set_omode(mpSoap, omode);
+	QMutexLocker locker(&mpD->mMutex);
+	soap_set_omode(mpD->mpSoap, omode);
 }
 
 void SoapCtx::DisableIModeFlags(soap_mode imode) {
 
-	QMutexLocker locker(&mMutex);
-	soap_clr_imode(mpSoap, imode);
+	QMutexLocker locker(&mpD->mMutex);
+	soap_clr_imode(mpD->mpSoap, imode);
 }
 
 void SoapCtx::DisableModeFlags(soap_mode mode) {
@@ -135,111 +182,111 @@ void SoapCtx::DisableModeFlags(soap_mode mode) {
 
 void SoapCtx::DisableOModeFlags(soap_mode omode) {
 
-	QMutexLocker locker(&mMutex);
-	soap_clr_omode(mpSoap, omode);
+	QMutexLocker locker(&mpD->mMutex);
+	soap_clr_omode(mpD->mpSoap, omode);
 }
 
 soap* SoapCtx::Acquire() {
 
-	mMutex.lock();
-	return mpSoap;
+	mpD->mMutex.lock();
+	return mpD->mpSoap;
 }
 
 void SoapCtx::Release() {
 
-	mMutex.unlock();
+	mpD->mMutex.unlock();
 }
 
-soap* SoapCtx::TryAcquire(int timeout) {
+soap* SoapCtx::TryAcquire(int timeoutMs) {
 
-	bool locked = mMutex.tryLock(timeout);
-	if(locked) return mpSoap;
+	bool locked = mpD->mMutex.tryLock(timeoutMs);
+	if(locked) return mpD->mpSoap;
 	return nullptr;
 }
 
 void SoapCtx::InitCtx() {
 
-	soap_register_plugin(mpSoap, http_da);
-	soap_register_plugin(mpSoap, soap_wsa);
+	soap_register_plugin(mpD->mpSoap, http_da);
+	soap_register_plugin(mpD->mpSoap, soap_wsa);
 
-	mpSoap->connect_timeout = SOAP_DEFAULT_CONNECT_TIMEOUT * -1000;
-	mpSoap->recv_timeout = SOAP_DEFAULT_RECEIVE_TIMEOUT * -1000;
-	mpSoap->send_timeout = SOAP_DEFAULT_SEND_TIMEOUT * -1000;
-	soap_set_namespaces(mpSoap, SoapCtx::GetDefaultNamespaces());
+	mpD->mpSoap->connect_timeout = SOAP_DEFAULT_CONNECT_TIMEOUT * -1000;
+	mpD->mpSoap->recv_timeout = SOAP_DEFAULT_RECEIVE_TIMEOUT * -1000;
+	mpD->mpSoap->send_timeout = SOAP_DEFAULT_SEND_TIMEOUT * -1000;
+	soap_set_namespaces(mpD->mpSoap, SoapCtx::GetDefaultNamespaces());
 
 	int(*pFsend)(struct soap *, const char *, size_t);
 	pFsend = &fsend;
 	size_t(*pFrecv)(struct soap *soap, char *s, size_t n);
 	pFrecv = &frecv;
 	auto ud = new arbData();
-	ud->frecv = mpSoap->frecv;
-	ud->fsend = mpSoap->fsend;
-	mpSoap->user = ud;
-	mpSoap->frecv = pFrecv;
-	mpSoap->fsend = pFsend;
+	ud->frecv = mpD->mpSoap->frecv;
+	ud->fsend = mpD->mpSoap->fsend;
+	mpD->mpSoap->user = ud;
+	mpD->mpSoap->frecv = pFrecv;
+	mpD->mpSoap->fsend = pFsend;
 }
 
 void SoapCtx::SetConnectTimeout(int timeoutMs) {
 
-	QMutexLocker locker(&mMutex);
-	mpSoap->connect_timeout = timeoutMs * -1000;
+	QMutexLocker locker(&mpD->mMutex);
+	mpD->mpSoap->connect_timeout = timeoutMs * -1000;
 }
 
 void SoapCtx::SetSendTimeout(int timeoutMs) {
 
-	QMutexLocker locker(&mMutex);
-	mpSoap->send_timeout = timeoutMs * -1000;
+	QMutexLocker locker(&mpD->mMutex);
+	mpD->mpSoap->send_timeout = timeoutMs * -1000;
 }
 
 void SoapCtx::SetReceiveTimeout(int timeoutMs) {
 
-	QMutexLocker locker(&mMutex);
-	mpSoap->recv_timeout = timeoutMs * -1000;
+	QMutexLocker locker(&mpD->mMutex);
+	mpD->mpSoap->recv_timeout = timeoutMs * -1000;
 }
 
 void SoapCtx::ForceSocketClose() {
 
 	// Not mutex lock here. This should be non blocking.
-	soap_force_closesock(mpSoap);
+	soap_force_closesock(mpD->mpSoap);
 }
 
 void SoapCtx::Save() {
 
-	QMutexLocker locker(&mMutex);
-	mIModeSaved = mpSoap->imode;
-	mOModeSaved = mpSoap->omode;
-	mConnectTimeoutSaved = mpSoap->connect_timeout;
-	mReceiveTimeout = mpSoap->recv_timeout;
-	mSendTimeout = mpSoap->send_timeout;
-	mSoFlags = mpSoap->socket_flags;
-	mConFlags = mpSoap->connect_flags;
-	mBindFlags = mpSoap->bind_flags;
-	mAcceptFlags = mpSoap->accept_flags;
-	mIsSaved = true;
+	QMutexLocker locker(&mpD->mMutex);
+	mpD->mIModeSaved = mpD->mpSoap->imode;
+	mpD->mOModeSaved = mpD->mpSoap->omode;
+	mpD->mConnectTimeoutSaved = mpD->mpSoap->connect_timeout;
+	mpD->mReceiveTimeout = mpD->mpSoap->recv_timeout;
+	mpD->mSendTimeout = mpD->mpSoap->send_timeout;
+	mpD->mSoFlags = mpD->mpSoap->socket_flags;
+	mpD->mConFlags = mpD->mpSoap->connect_flags;
+	mpD->mBindFlags = mpD->mpSoap->bind_flags;
+	mpD->mAcceptFlags = mpD->mpSoap->accept_flags;
+	mpD->mIsSaved = true;
 }
 
 void SoapCtx::Restore() {
 
-	QMutexLocker locker(&mMutex);
-	if(mIsSaved) {
-		soap_set_imode(mpSoap, mIModeSaved);
-		soap_set_omode(mpSoap, mOModeSaved);
-		mpSoap->connect_timeout = mConnectTimeoutSaved;
-		mpSoap->recv_timeout = mReceiveTimeout;
-		mpSoap->send_timeout = mSendTimeout;
-		mpSoap->socket_flags = mSoFlags;
-		mpSoap->connect_flags = mConFlags;
-		mpSoap->bind_flags = mBindFlags;
-		mpSoap->accept_flags = mAcceptFlags;
-		mIsSaved = false;
+	QMutexLocker locker(&mpD->mMutex);
+	if(mpD->mIsSaved) {
+		soap_set_imode(mpD->mpSoap, mpD->mIModeSaved);
+		soap_set_omode(mpD->mpSoap, mpD->mOModeSaved);
+		mpD->mpSoap->connect_timeout = mpD->mConnectTimeoutSaved;
+		mpD->mpSoap->recv_timeout = mpD->mReceiveTimeout;
+		mpD->mpSoap->send_timeout = mpD->mSendTimeout;
+		mpD->mpSoap->socket_flags = mpD->mSoFlags;
+		mpD->mpSoap->connect_flags = mpD->mConFlags;
+		mpD->mpSoap->bind_flags = mpD->mBindFlags;
+		mpD->mpSoap->accept_flags = mpD->mAcceptFlags;
+		mpD->mIsSaved = false;
 	}
 }
 
 bool SoapCtx::EnableSsl() {
 
-	QMutexLocker locker(&mMutex);
+	QMutexLocker locker(&mpD->mMutex);
 	auto result = soap_ssl_client_context(
-		mpSoap,
+		mpD->mpSoap,
 		SOAP_NEW_SSL_DEFAULT,
 		nullptr,
 		nullptr,
@@ -255,13 +302,13 @@ bool SoapCtx::EnableSsl() {
 
 QString SoapCtx::GetFaultString() {
 
-	QMutexLocker locker(&mMutex);
+	QMutexLocker locker(&mpD->mMutex);
 	auto ret = QString();
-	if(mpSoap->error != SOAP_OK) {
-		if(!*soap_faultcode(mpSoap)) soap_set_fault(mpSoap);
-		ret += QString::fromLocal8Bit(*soap_faultcode(mpSoap));
-		if(!*soap_faultstring(mpSoap)) *soap_faultstring(mpSoap) = "";
-		auto faultDetail = QString::fromLocal8Bit(*soap_faultstring(mpSoap));
+	if(mpD->mpSoap->error != SOAP_OK) {
+		if(!*soap_faultcode(mpD->mpSoap)) soap_set_fault(mpD->mpSoap);
+		ret += QString::fromLocal8Bit(*soap_faultcode(mpD->mpSoap));
+		if(!*soap_faultstring(mpD->mpSoap)) *soap_faultstring(mpD->mpSoap) = "";
+		auto faultDetail = QString::fromLocal8Bit(*soap_faultstring(mpD->mpSoap));
 		if(!faultDetail.isEmpty()) {
 			ret += QString(": ") + faultDetail;
 		}
@@ -271,60 +318,60 @@ QString SoapCtx::GetFaultString() {
 
 QString SoapCtx::GetFaultDetail() {
 
-	QMutexLocker locker(&mMutex);
-	if(mpSoap->error != SOAP_OK) {
-		if(*soap_faultdetail(mpSoap)) return QString::fromLocal8Bit(*soap_faultdetail(mpSoap));
+	QMutexLocker locker(&mpD->mMutex);
+	if(mpD->mpSoap->error != SOAP_OK) {
+		if(*soap_faultdetail(mpD->mpSoap)) return QString::fromLocal8Bit(*soap_faultdetail(mpD->mpSoap));
 	}
 	return QString();
 }
 
 void SoapCtx::EnablePrintRawSoap() {
 
-	QMutexLocker locker(&mMutex);
-	((arbData*)mpSoap->user)->enableDebug = true;
+	QMutexLocker locker(&mpD->mMutex);
+	((arbData*)mpD->mpSoap->user)->enableDebug = true;
 }
 
 void SoapCtx::DisablePrintRawSoap() {
 
-	QMutexLocker locker(&mMutex);
-	((arbData*)mpSoap->user)->enableDebug = false;
+	QMutexLocker locker(&mpD->mMutex);
+	((arbData*)mpD->mpSoap->user)->enableDebug = false;
 }
 
 void SoapCtx::SetSocketFlags(int soFlags) {
 
-	QMutexLocker locker(&mMutex);
-	mpSoap->socket_flags = soFlags;
+	QMutexLocker locker(&mpD->mMutex);
+	mpD->mpSoap->socket_flags = soFlags;
 }
 
 void SoapCtx::SetConnectFlags(int conFlags) {
 
-	QMutexLocker locker(&mMutex);
-	mpSoap->connect_flags = conFlags;
+	QMutexLocker locker(&mpD->mMutex);
+	mpD->mpSoap->connect_flags = conFlags;
 }
 
 void SoapCtx::SetBindFlags(int bindFlags) {
 
-	QMutexLocker locker(&mMutex);
-	mpSoap->bind_flags = bindFlags;
+	QMutexLocker locker(&mpD->mMutex);
+	mpD->mpSoap->bind_flags = bindFlags;
 }
 
 void SoapCtx::SetAcceptFlags(int acceptFlags) {
 
-	QMutexLocker locker(&mMutex);
-	mpSoap->accept_flags = acceptFlags;
+	QMutexLocker locker(&mpD->mMutex);
+	mpD->mpSoap->accept_flags = acceptFlags;
 }
 
 int SoapCtx::GetFaultCode() {
 
-	QMutexLocker locker(&mMutex);
-	return mpSoap->error;
+	QMutexLocker locker(&mpD->mMutex);
+	return mpD->mpSoap->error;
 }
 
 QString SoapCtx::GetFaultSubcode() {
 
-	QMutexLocker locker(&mMutex);
-	if(mpSoap->error != SOAP_OK) {
-		if(*soap_faultsubcode(mpSoap)) return QString::fromLocal8Bit(*soap_faultsubcode(mpSoap));
+	QMutexLocker locker(&mpD->mMutex);
+	if(mpD->mpSoap->error != SOAP_OK) {
+		if(*soap_faultsubcode(mpD->mpSoap)) return QString::fromLocal8Bit(*soap_faultsubcode(mpD->mpSoap));
 	}
 	return QString();
 }

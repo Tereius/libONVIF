@@ -27,6 +27,6 @@ For every service exists a class following the naming scheme `Onvif*Client` (\* 
 
 Design thoughts:
 
-- The most of this library is threadsave and should work in a multithreaded environment
+- The most of this library is thread safe and should work in a multithreaded environment
 - gsoap is 'hidden' from the user as much as possible
 - RAII classes `Request<>`, `Response<>` wrapping the RPC parameters are responsible for the memory management

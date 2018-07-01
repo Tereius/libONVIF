@@ -1,3 +1,18 @@
+/* Copyright(C) 2018 Björn Stresing
+ *
+ * This program is free software : you can redistribute it and / or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.If not, see < http://www.gnu.org/licenses/>.
+ */
 #include "OnvifDeviceClient.h"
 #include "soapDeviceBindingProxy.h"
 
@@ -26,13 +41,13 @@ Response<_tds__GetServicesResponse> OnvifDeviceClient::GetServices(Request<_tds_
 
 	_tds__GetServicesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetServices(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetServicesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -40,13 +55,13 @@ Response<_tds__GetServiceCapabilitiesResponse> OnvifDeviceClient::GetServiceCapa
 
 	_tds__GetServiceCapabilitiesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetServiceCapabilities(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetServiceCapabilitiesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -54,13 +69,13 @@ Response<_tds__GetDeviceInformationResponse> OnvifDeviceClient::GetDeviceInforma
 
 	_tds__GetDeviceInformationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetDeviceInformation(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetDeviceInformationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -68,13 +83,13 @@ Response<_tds__SetSystemDateAndTimeResponse> OnvifDeviceClient::SetSystemDateAnd
 
 	_tds__SetSystemDateAndTimeResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetSystemDateAndTime(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetSystemDateAndTimeResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -82,13 +97,13 @@ Response<_tds__GetSystemDateAndTimeResponse> OnvifDeviceClient::GetSystemDateAnd
 
 	_tds__GetSystemDateAndTimeResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetSystemDateAndTime(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetSystemDateAndTimeResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -96,13 +111,13 @@ Response<_tds__SetSystemFactoryDefaultResponse> OnvifDeviceClient::SetSystemFact
 
 	_tds__SetSystemFactoryDefaultResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetSystemFactoryDefault(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetSystemFactoryDefaultResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -110,13 +125,13 @@ Response<_tds__UpgradeSystemFirmwareResponse> OnvifDeviceClient::UpgradeSystemFi
 
 	_tds__UpgradeSystemFirmwareResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.UpgradeSystemFirmware(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__UpgradeSystemFirmwareResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -124,13 +139,13 @@ Response<_tds__SystemRebootResponse> OnvifDeviceClient::SystemReboot(Request<_td
 
 	_tds__SystemRebootResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SystemReboot(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SystemRebootResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -138,13 +153,13 @@ Response<_tds__RestoreSystemResponse> OnvifDeviceClient::RestoreSystem(Request<_
 
 	_tds__RestoreSystemResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.RestoreSystem(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__RestoreSystemResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -152,13 +167,13 @@ Response<_tds__GetSystemBackupResponse> OnvifDeviceClient::GetSystemBackup(Reque
 
 	_tds__GetSystemBackupResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetSystemBackup(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetSystemBackupResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -166,13 +181,13 @@ Response<_tds__GetSystemLogResponse> OnvifDeviceClient::GetSystemLog(Request<_td
 
 	_tds__GetSystemLogResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetSystemLog(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetSystemLogResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -180,13 +195,13 @@ Response<_tds__GetSystemSupportInformationResponse> OnvifDeviceClient::GetSystem
 
 	_tds__GetSystemSupportInformationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetSystemSupportInformation(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetSystemSupportInformationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -194,13 +209,13 @@ Response<_tds__GetScopesResponse> OnvifDeviceClient::GetScopes(Request<_tds__Get
 
 	_tds__GetScopesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetScopes(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetScopesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -208,13 +223,13 @@ Response<_tds__SetScopesResponse> OnvifDeviceClient::SetScopes(Request<_tds__Set
 
 	_tds__SetScopesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetScopes(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetScopesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -222,13 +237,13 @@ Response<_tds__AddScopesResponse> OnvifDeviceClient::AddScopes(Request<_tds__Add
 
 	_tds__AddScopesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.AddScopes(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__AddScopesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -236,13 +251,13 @@ Response<_tds__RemoveScopesResponse> OnvifDeviceClient::RemoveScopes(Request<_td
 
 	_tds__RemoveScopesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.RemoveScopes(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__RemoveScopesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -250,13 +265,13 @@ Response<_tds__GetDiscoveryModeResponse> OnvifDeviceClient::GetDiscoveryMode(Req
 
 	_tds__GetDiscoveryModeResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetDiscoveryMode(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetDiscoveryModeResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -264,13 +279,13 @@ Response<_tds__SetDiscoveryModeResponse> OnvifDeviceClient::SetDiscoveryMode(Req
 
 	_tds__SetDiscoveryModeResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetDiscoveryMode(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetDiscoveryModeResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -278,13 +293,13 @@ Response<_tds__GetRemoteDiscoveryModeResponse> OnvifDeviceClient::GetRemoteDisco
 
 	_tds__GetRemoteDiscoveryModeResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetRemoteDiscoveryMode(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetRemoteDiscoveryModeResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -292,13 +307,13 @@ Response<_tds__SetRemoteDiscoveryModeResponse> OnvifDeviceClient::SetRemoteDisco
 
 	_tds__SetRemoteDiscoveryModeResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetRemoteDiscoveryMode(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetRemoteDiscoveryModeResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -306,13 +321,13 @@ Response<_tds__GetDPAddressesResponse> OnvifDeviceClient::GetDPAddresses(Request
 
 	_tds__GetDPAddressesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetDPAddresses(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetDPAddressesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -320,13 +335,13 @@ Response<_tds__GetEndpointReferenceResponse> OnvifDeviceClient::GetEndpointRefer
 
 	_tds__GetEndpointReferenceResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetEndpointReference(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetEndpointReferenceResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -334,13 +349,13 @@ Response<_tds__GetRemoteUserResponse> OnvifDeviceClient::GetRemoteUser(Request<_
 
 	_tds__GetRemoteUserResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetRemoteUser(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetRemoteUserResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -348,13 +363,13 @@ Response<_tds__SetRemoteUserResponse> OnvifDeviceClient::SetRemoteUser(Request<_
 
 	_tds__SetRemoteUserResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetRemoteUser(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetRemoteUserResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -362,13 +377,13 @@ Response<_tds__GetUsersResponse> OnvifDeviceClient::GetUsers(Request<_tds__GetUs
 
 	_tds__GetUsersResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetUsers(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetUsersResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -376,13 +391,13 @@ Response<_tds__CreateUsersResponse> OnvifDeviceClient::CreateUsers(Request<_tds_
 
 	_tds__CreateUsersResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.CreateUsers(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__CreateUsersResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -390,13 +405,13 @@ Response<_tds__DeleteUsersResponse> OnvifDeviceClient::DeleteUsers(Request<_tds_
 
 	_tds__DeleteUsersResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.DeleteUsers(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__DeleteUsersResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -404,13 +419,13 @@ Response<_tds__SetUserResponse> OnvifDeviceClient::SetUser(Request<_tds__SetUser
 
 	_tds__SetUserResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetUser(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetUserResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -418,13 +433,13 @@ Response<_tds__GetWsdlUrlResponse> OnvifDeviceClient::GetWsdlUrl(Request<_tds__G
 
 	_tds__GetWsdlUrlResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetWsdlUrl(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetWsdlUrlResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -432,13 +447,13 @@ Response<_tds__GetCapabilitiesResponse> OnvifDeviceClient::GetCapabilities(Reque
 
 	_tds__GetCapabilitiesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetCapabilities(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetCapabilitiesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -446,13 +461,13 @@ Response<_tds__SetDPAddressesResponse> OnvifDeviceClient::SetDPAddresses(Request
 
 	_tds__SetDPAddressesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetDPAddresses(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetDPAddressesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -460,13 +475,13 @@ Response<_tds__GetHostnameResponse> OnvifDeviceClient::GetHostname(Request<_tds_
 
 	_tds__GetHostnameResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetHostname(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetHostnameResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -474,13 +489,13 @@ Response<_tds__SetHostnameResponse> OnvifDeviceClient::SetHostname(Request<_tds_
 
 	_tds__SetHostnameResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetHostname(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetHostnameResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -488,13 +503,13 @@ Response<_tds__SetHostnameFromDHCPResponse> OnvifDeviceClient::SetHostnameFromDH
 
 	_tds__SetHostnameFromDHCPResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetHostnameFromDHCP(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetHostnameFromDHCPResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -502,13 +517,13 @@ Response<_tds__GetDNSResponse> OnvifDeviceClient::GetDNS(Request<_tds__GetDNS> &
 
 	_tds__GetDNSResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetDNS(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetDNSResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -516,13 +531,13 @@ Response<_tds__SetDNSResponse> OnvifDeviceClient::SetDNS(Request<_tds__SetDNS> &
 
 	_tds__SetDNSResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetDNS(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetDNSResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -530,13 +545,13 @@ Response<_tds__GetNTPResponse> OnvifDeviceClient::GetNTP(Request<_tds__GetNTP> &
 
 	_tds__GetNTPResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetNTP(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetNTPResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -544,13 +559,13 @@ Response<_tds__SetNTPResponse> OnvifDeviceClient::SetNTP(Request<_tds__SetNTP> &
 
 	_tds__SetNTPResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetNTP(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetNTPResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -558,13 +573,13 @@ Response<_tds__GetDynamicDNSResponse> OnvifDeviceClient::GetDynamicDNS(Request<_
 
 	_tds__GetDynamicDNSResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetDynamicDNS(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetDynamicDNSResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -572,13 +587,13 @@ Response<_tds__SetDynamicDNSResponse> OnvifDeviceClient::SetDynamicDNS(Request<_
 
 	_tds__SetDynamicDNSResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetDynamicDNS(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetDynamicDNSResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -586,13 +601,13 @@ Response<_tds__GetNetworkInterfacesResponse> OnvifDeviceClient::GetNetworkInterf
 
 	_tds__GetNetworkInterfacesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetNetworkInterfaces(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetNetworkInterfacesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -600,13 +615,13 @@ Response<_tds__SetNetworkInterfacesResponse> OnvifDeviceClient::SetNetworkInterf
 
 	_tds__SetNetworkInterfacesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetNetworkInterfaces(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetNetworkInterfacesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -614,13 +629,13 @@ Response<_tds__GetNetworkProtocolsResponse> OnvifDeviceClient::GetNetworkProtoco
 
 	_tds__GetNetworkProtocolsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetNetworkProtocols(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetNetworkProtocolsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -628,13 +643,13 @@ Response<_tds__SetNetworkProtocolsResponse> OnvifDeviceClient::SetNetworkProtoco
 
 	_tds__SetNetworkProtocolsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetNetworkProtocols(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetNetworkProtocolsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -642,13 +657,13 @@ Response<_tds__GetNetworkDefaultGatewayResponse> OnvifDeviceClient::GetNetworkDe
 
 	_tds__GetNetworkDefaultGatewayResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetNetworkDefaultGateway(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetNetworkDefaultGatewayResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -656,13 +671,13 @@ Response<_tds__SetNetworkDefaultGatewayResponse> OnvifDeviceClient::SetNetworkDe
 
 	_tds__SetNetworkDefaultGatewayResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetNetworkDefaultGateway(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetNetworkDefaultGatewayResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -670,13 +685,13 @@ Response<_tds__GetZeroConfigurationResponse> OnvifDeviceClient::GetZeroConfigura
 
 	_tds__GetZeroConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetZeroConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetZeroConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -684,13 +699,13 @@ Response<_tds__SetZeroConfigurationResponse> OnvifDeviceClient::SetZeroConfigura
 
 	_tds__SetZeroConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetZeroConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetZeroConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -698,13 +713,13 @@ Response<_tds__GetIPAddressFilterResponse> OnvifDeviceClient::GetIPAddressFilter
 
 	_tds__GetIPAddressFilterResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetIPAddressFilter(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetIPAddressFilterResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -712,13 +727,13 @@ Response<_tds__SetIPAddressFilterResponse> OnvifDeviceClient::SetIPAddressFilter
 
 	_tds__SetIPAddressFilterResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetIPAddressFilter(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetIPAddressFilterResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -726,13 +741,13 @@ Response<_tds__AddIPAddressFilterResponse> OnvifDeviceClient::AddIPAddressFilter
 
 	_tds__AddIPAddressFilterResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.AddIPAddressFilter(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__AddIPAddressFilterResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -740,13 +755,13 @@ Response<_tds__RemoveIPAddressFilterResponse> OnvifDeviceClient::RemoveIPAddress
 
 	_tds__RemoveIPAddressFilterResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.RemoveIPAddressFilter(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__RemoveIPAddressFilterResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -754,13 +769,13 @@ Response<_tds__GetAccessPolicyResponse> OnvifDeviceClient::GetAccessPolicy(Reque
 
 	_tds__GetAccessPolicyResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetAccessPolicy(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetAccessPolicyResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -768,13 +783,13 @@ Response<_tds__SetAccessPolicyResponse> OnvifDeviceClient::SetAccessPolicy(Reque
 
 	_tds__SetAccessPolicyResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetAccessPolicy(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetAccessPolicyResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -782,13 +797,13 @@ Response<_tds__CreateCertificateResponse> OnvifDeviceClient::CreateCertificate(R
 
 	_tds__CreateCertificateResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.CreateCertificate(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__CreateCertificateResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -796,13 +811,13 @@ Response<_tds__GetCertificatesResponse> OnvifDeviceClient::GetCertificates(Reque
 
 	_tds__GetCertificatesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetCertificates(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetCertificatesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -810,13 +825,13 @@ Response<_tds__GetCertificatesStatusResponse> OnvifDeviceClient::GetCertificates
 
 	_tds__GetCertificatesStatusResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetCertificatesStatus(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetCertificatesStatusResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -824,13 +839,13 @@ Response<_tds__SetCertificatesStatusResponse> OnvifDeviceClient::SetCertificates
 
 	_tds__SetCertificatesStatusResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetCertificatesStatus(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetCertificatesStatusResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -838,13 +853,13 @@ Response<_tds__DeleteCertificatesResponse> OnvifDeviceClient::DeleteCertificates
 
 	_tds__DeleteCertificatesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.DeleteCertificates(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__DeleteCertificatesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -852,13 +867,13 @@ Response<_tds__GetPkcs10RequestResponse> OnvifDeviceClient::GetPkcs10Request(Req
 
 	_tds__GetPkcs10RequestResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetPkcs10Request(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetPkcs10RequestResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -866,13 +881,13 @@ Response<_tds__LoadCertificatesResponse> OnvifDeviceClient::LoadCertificates(Req
 
 	_tds__LoadCertificatesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.LoadCertificates(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__LoadCertificatesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -880,13 +895,13 @@ Response<_tds__GetClientCertificateModeResponse> OnvifDeviceClient::GetClientCer
 
 	_tds__GetClientCertificateModeResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetClientCertificateMode(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetClientCertificateModeResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -894,13 +909,13 @@ Response<_tds__SetClientCertificateModeResponse> OnvifDeviceClient::SetClientCer
 
 	_tds__SetClientCertificateModeResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetClientCertificateMode(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetClientCertificateModeResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -908,13 +923,13 @@ Response<_tds__GetRelayOutputsResponse> OnvifDeviceClient::GetRelayOutputs(Reque
 
 	_tds__GetRelayOutputsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetRelayOutputs(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetRelayOutputsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -922,13 +937,13 @@ Response<_tds__SetRelayOutputSettingsResponse> OnvifDeviceClient::SetRelayOutput
 
 	_tds__SetRelayOutputSettingsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetRelayOutputSettings(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetRelayOutputSettingsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -936,13 +951,13 @@ Response<_tds__SetRelayOutputStateResponse> OnvifDeviceClient::SetRelayOutputSta
 
 	_tds__SetRelayOutputStateResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetRelayOutputState(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetRelayOutputStateResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -950,13 +965,13 @@ Response<_tds__SendAuxiliaryCommandResponse> OnvifDeviceClient::SendAuxiliaryCom
 
 	_tds__SendAuxiliaryCommandResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SendAuxiliaryCommand(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SendAuxiliaryCommandResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -964,13 +979,13 @@ Response<_tds__GetCACertificatesResponse> OnvifDeviceClient::GetCACertificates(R
 
 	_tds__GetCACertificatesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetCACertificates(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetCACertificatesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -978,13 +993,13 @@ Response<_tds__LoadCertificateWithPrivateKeyResponse> OnvifDeviceClient::LoadCer
 
 	_tds__LoadCertificateWithPrivateKeyResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.LoadCertificateWithPrivateKey(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__LoadCertificateWithPrivateKeyResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -992,13 +1007,13 @@ Response<_tds__GetCertificateInformationResponse> OnvifDeviceClient::GetCertific
 
 	_tds__GetCertificateInformationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetCertificateInformation(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetCertificateInformationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1006,13 +1021,13 @@ Response<_tds__LoadCACertificatesResponse> OnvifDeviceClient::LoadCACertificates
 
 	_tds__LoadCACertificatesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.LoadCACertificates(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__LoadCACertificatesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1020,13 +1035,13 @@ Response<_tds__CreateDot1XConfigurationResponse> OnvifDeviceClient::CreateDot1XC
 
 	_tds__CreateDot1XConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.CreateDot1XConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__CreateDot1XConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1034,13 +1049,13 @@ Response<_tds__SetDot1XConfigurationResponse> OnvifDeviceClient::SetDot1XConfigu
 
 	_tds__SetDot1XConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetDot1XConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetDot1XConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1048,13 +1063,13 @@ Response<_tds__GetDot1XConfigurationResponse> OnvifDeviceClient::GetDot1XConfigu
 
 	_tds__GetDot1XConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetDot1XConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetDot1XConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1062,13 +1077,13 @@ Response<_tds__GetDot1XConfigurationsResponse> OnvifDeviceClient::GetDot1XConfig
 
 	_tds__GetDot1XConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetDot1XConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetDot1XConfigurationsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1076,13 +1091,13 @@ Response<_tds__DeleteDot1XConfigurationResponse> OnvifDeviceClient::DeleteDot1XC
 
 	_tds__DeleteDot1XConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.DeleteDot1XConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__DeleteDot1XConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1090,13 +1105,13 @@ Response<_tds__GetDot11CapabilitiesResponse> OnvifDeviceClient::GetDot11Capabili
 
 	_tds__GetDot11CapabilitiesResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetDot11Capabilities(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetDot11CapabilitiesResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1104,13 +1119,13 @@ Response<_tds__GetDot11StatusResponse> OnvifDeviceClient::GetDot11Status(Request
 
 	_tds__GetDot11StatusResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetDot11Status(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetDot11StatusResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1118,13 +1133,13 @@ Response<_tds__ScanAvailableDot11NetworksResponse> OnvifDeviceClient::ScanAvaila
 
 	_tds__ScanAvailableDot11NetworksResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.ScanAvailableDot11Networks(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__ScanAvailableDot11NetworksResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1132,13 +1147,13 @@ Response<_tds__GetSystemUrisResponse> OnvifDeviceClient::GetSystemUris(Request<_
 
 	_tds__GetSystemUrisResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetSystemUris(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetSystemUrisResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1146,13 +1161,13 @@ Response<_tds__StartFirmwareUpgradeResponse> OnvifDeviceClient::StartFirmwareUpg
 
 	_tds__StartFirmwareUpgradeResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.StartFirmwareUpgrade(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__StartFirmwareUpgradeResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1160,13 +1175,13 @@ Response<_tds__StartSystemRestoreResponse> OnvifDeviceClient::StartSystemRestore
 
 	_tds__StartSystemRestoreResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.StartSystemRestore(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__StartSystemRestoreResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1174,13 +1189,13 @@ Response<_tds__GetStorageConfigurationsResponse> OnvifDeviceClient::GetStorageCo
 
 	_tds__GetStorageConfigurationsResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetStorageConfigurations(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetStorageConfigurationsResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1188,13 +1203,13 @@ Response<_tds__CreateStorageConfigurationResponse> OnvifDeviceClient::CreateStor
 
 	_tds__CreateStorageConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.CreateStorageConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__CreateStorageConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1202,13 +1217,13 @@ Response<_tds__GetStorageConfigurationResponse> OnvifDeviceClient::GetStorageCon
 
 	_tds__GetStorageConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetStorageConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetStorageConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1216,13 +1231,13 @@ Response<_tds__SetStorageConfigurationResponse> OnvifDeviceClient::SetStorageCon
 
 	_tds__SetStorageConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetStorageConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetStorageConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1230,13 +1245,13 @@ Response<_tds__DeleteStorageConfigurationResponse> OnvifDeviceClient::DeleteStor
 
 	_tds__DeleteStorageConfigurationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.DeleteStorageConfiguration(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__DeleteStorageConfigurationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1244,13 +1259,13 @@ Response<_tds__GetGeoLocationResponse> OnvifDeviceClient::GetGeoLocation(Request
 
 	_tds__GetGeoLocationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.GetGeoLocation(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__GetGeoLocationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1258,13 +1273,13 @@ Response<_tds__SetGeoLocationResponse> OnvifDeviceClient::SetGeoLocation(Request
 
 	_tds__SetGeoLocationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.SetGeoLocation(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__SetGeoLocationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }
 
@@ -1272,12 +1287,12 @@ Response<_tds__DeleteGeoLocationResponse> OnvifDeviceClient::DeleteGeoLocation(R
 
 	_tds__DeleteGeoLocationResponse responseObject;
 	auto ret = SOAP_OK;
-	auto pSoap = ackquireCtx();
+	auto pSoap = AcquireCtx();
 	do {
 		ret = mpD->mProxy.DeleteGeoLocation(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
-	} while(retry(pSoap));
+	} while(Retry(pSoap));
 	auto response = Response<_tds__DeleteGeoLocationResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
-	releaseCtx(pSoap);
+	ReleaseCtx(pSoap);
 	return response.Build();
 }

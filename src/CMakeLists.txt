@@ -69,7 +69,6 @@ set(src_files
 	gsoap/qstringCompare.cpp
 	SoapCtx.cpp
 	Client.cpp
-	JsonHelper.cpp
 	SoapHelper.cpp
 )
 
@@ -98,7 +97,6 @@ set(public_header_files
 	Client.h
 	SafeBool.h
 	global.h
-	JsonHelper.h
 	SoapHelper.h
 )
 
@@ -454,7 +452,7 @@ set(LIB_INSTALL_DIR "lib")
 configure_package_config_file("${CMAKE_SOURCE_DIR}/CMake/libONVIFConfig.cmake.in" "${CMAKE_BINARY_DIR}/libONVIFConfig.cmake" INSTALL_DESTINATION cmake
                               PATH_VARS INCLUDE_INSTALL_DIR CMAKE_INSTALL_DIR BIN_INSTALL_DIR LIB_INSTALL_DIR)
 
-write_basic_package_version_file("${CMAKE_BINARY_DIR}/libONVIFVersion.cmake" VERSION 1.0.0 COMPATIBILITY SameMajorVersion) # Project version is uses
+write_basic_package_version_file("${CMAKE_BINARY_DIR}/libONVIFVersion.cmake" VERSION ${VERSION_STRING} COMPATIBILITY SameMajorVersion)
 							  
 # add the install target
 install(TARGETS 
@@ -473,6 +471,7 @@ install(TARGETS
 	onvifanalytics
 	EXPORT libONVIFTargets RUNTIME DESTINATION bin ARCHIVE DESTINATION lib LIBRARY DESTINATION lib PUBLIC_HEADER DESTINATION include
 )
+
 install(EXPORT libONVIFTargets DESTINATION cmake)
 
 install(FILES "${CMAKE_BINARY_DIR}/libONVIFConfig.cmake" "${CMAKE_BINARY_DIR}/libONVIFVersion.cmake" DESTINATION cmake)

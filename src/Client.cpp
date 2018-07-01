@@ -1,6 +1,20 @@
+/* Copyright(C) 2018 Björn Stresing
+ *
+ * This program is free software : you can redistribute it and / or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.If not, see < http://www.gnu.org/licenses/>.
+ */
 #include "Client.h"
 #include "soapH.h"
-#include "UserData.h"
 #include "wsseapi-lite.h"
 #include "global.h"
 #include "httpda.h"
@@ -38,8 +52,8 @@ struct ClientPrivate {
 };
 
 Client::Client(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx, QObject *pParent) :
-QObject(pParent),
-mpD(new ClientPrivate(this, rEndpoint, sharedCtx)) {
+	QObject(pParent),
+	mpD(new ClientPrivate(this, rEndpoint, sharedCtx)) {
 
 }
 
@@ -49,21 +63,21 @@ Client::~Client() {
 	delete mpD;
 }
 
-soap* Client::ackquireCtx() {
+soap* Client::AcquireCtx() {
 
 	auto pCtx = mpD->mCtx->Acquire();
 	RestoreAuth(pCtx);
 	return pCtx;
 }
 
-soap* Client::TryAcquireCtx(int timeout /*= 0*/) {
+soap* Client::TryAcquireCtx(int timeoutMs /*= 0*/) {
 
-	auto pCtx = mpD->mCtx->TryAcquire(timeout);
+	auto pCtx = mpD->mCtx->TryAcquire(timeoutMs);
 	if(pCtx) RestoreAuth(pCtx);
 	return pCtx;
 }
 
-void Client::releaseCtx(soap *pCtx) {
+void Client::ReleaseCtx(soap *pCtx) {
 
 	if(pCtx) {
 		soap_destroy(pCtx);
@@ -174,7 +188,7 @@ QSharedPointer<SoapCtx> Client::GetCtx() const {
 	return mpD->mCtx;
 }
 
-int Client::retry(soap *pCtx) {
+int Client::Retry(soap *pCtx) {
 
 	return ProcessAuthFaultAndRetry(pCtx);
 }
