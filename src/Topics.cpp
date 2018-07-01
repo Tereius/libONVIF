@@ -31,7 +31,7 @@ TopicSet TopicSet::FromXml(const wstop__TopicSetType *pTopicSet) {
 				ret.fromDom(topic);
 			}
 			else {
-				qInfo() << "Empty topic -> Skipping";
+				qDebug() << "Empty topic -> Skipping";
 			}
 		}
 	}
