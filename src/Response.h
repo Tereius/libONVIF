@@ -156,7 +156,7 @@ public:
 		return mErrorCode == HTTP_UNAUTHORIZED || (mErrorCode == SOAP_CLI_FAULT && QString::compare(mFaultSubcode, QString("\"http://www.onvif.org/ver10/error\":NotAuthorized")) == 0);
 	}
 	//! Safe bool
-	bool BooleanTest() const { return IsSuccess(); }
+	bool BooleanTest() const override { return IsSuccess(); }
 
 protected:
 
@@ -224,7 +224,7 @@ public:
 
 		if(mpFaultResultObject) soap_del_SOAP_ENV__Detail(mpFaultResultObject);
 		delete mpFaultResultObject;
-		if(mpFaultResultObject) soap_del_SOAP_ENV__Header(mpSoapHeader);
+		if(mpSoapHeader) soap_del_SOAP_ENV__Header(mpSoapHeader);
 		delete mpSoapHeader;
 	}
 
@@ -244,7 +244,7 @@ public:
 		if(mpFaultResultObject) soap_del_SOAP_ENV__Detail(mpFaultResultObject);
 		delete mpFaultResultObject;
 		this->mpFaultResultObject = rOther.mpFaultResultObject ? soap_dup_SOAP_ENV__Detail(nullptr, nullptr, rOther.mpFaultResultObject) : nullptr;
-		if(mpFaultResultObject) soap_del_SOAP_ENV__Header(mpSoapHeader);
+		if(mpSoapHeader) soap_del_SOAP_ENV__Header(mpSoapHeader);
 		delete mpSoapHeader;
 		this->mpSoapHeader = rOther.mpSoapHeader ? soap_dup_SOAP_ENV__Header(nullptr, nullptr, rOther.mpSoapHeader) : nullptr;
 		return *this;
@@ -272,7 +272,7 @@ public:
 	//! Set the soap header object
 	void SetSoapHeader(const SOAP_ENV__Header *pSoapHeader) {
 
-		if(mpFaultResultObject) soap_del_SOAP_ENV__Header(mpSoapHeader);
+		if(mpSoapHeader) soap_del_SOAP_ENV__Header(mpSoapHeader);
 		delete mpSoapHeader;
 		this->mpSoapHeader = pSoapHeader ? soap_dup_SOAP_ENV__Header(nullptr, nullptr, pSoapHeader) : nullptr;
 	}
@@ -419,7 +419,7 @@ public:
 		this->mpResultObject = pResultObject ? mDuplicator(pResultObject) : nullptr;
 	}
 
-	virtual bool IsFault() const { return DetailedResponse::IsFault() || !GetResultObject(); }
+	bool IsFault() const override { return DetailedResponse::IsFault() || !GetResultObject(); }
 
 	/*!
 	 *
