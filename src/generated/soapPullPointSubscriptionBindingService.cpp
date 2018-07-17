@@ -270,11 +270,12 @@ int PullPointSubscriptionBindingService::serve()
 static int serve___tev__PullMessages(struct soap*, PullPointSubscriptionBindingService*);
 static int serve___tev__Seek(struct soap*, PullPointSubscriptionBindingService*);
 static int serve___tev__SetSynchronizationPoint(struct soap*, PullPointSubscriptionBindingService*);
+static int serve___tev__Unsubscribe(struct soap*, PullPointSubscriptionBindingService*);
 static int serve___tev__GetServiceCapabilities(struct soap*, PullPointSubscriptionBindingService*);
 static int serve___tev__CreatePullPointSubscription(struct soap*, PullPointSubscriptionBindingService*);
 static int serve___tev__GetEventProperties(struct soap*, PullPointSubscriptionBindingService*);
 static int serve___tev__Renew(struct soap*, PullPointSubscriptionBindingService*);
-static int serve___tev__Unsubscribe(struct soap*, PullPointSubscriptionBindingService*);
+static int serve___tev__Unsubscribe_(struct soap*, PullPointSubscriptionBindingService*);
 static int serve___tev__Subscribe(struct soap*, PullPointSubscriptionBindingService*);
 static int serve___tev__GetCurrentMessage(struct soap*, PullPointSubscriptionBindingService*);
 static int serve___tev__Notify(struct soap*, PullPointSubscriptionBindingService*);
@@ -283,7 +284,7 @@ static int serve___tev__DestroyPullPoint(struct soap*, PullPointSubscriptionBind
 static int serve___tev__Notify_(struct soap*, PullPointSubscriptionBindingService*);
 static int serve___tev__CreatePullPoint(struct soap*, PullPointSubscriptionBindingService*);
 static int serve___tev__Renew_(struct soap*, PullPointSubscriptionBindingService*);
-static int serve___tev__Unsubscribe_(struct soap*, PullPointSubscriptionBindingService*);
+static int serve___tev__Unsubscribe__(struct soap*, PullPointSubscriptionBindingService*);
 static int serve___tev__PauseSubscription(struct soap*, PullPointSubscriptionBindingService*);
 static int serve___tev__ResumeSubscription(struct soap*, PullPointSubscriptionBindingService*);
 
@@ -302,6 +303,8 @@ int PullPointSubscriptionBindingService::dispatch(struct soap* soap)
 		return serve___tev__Seek(soap, this);
 	if ((!soap->action && !soap_match_tag(soap, soap->tag, "tev:SetSynchronizationPoint")) || (soap->action && !strcmp(soap->action, "http://www.onvif.org/ver10/events/wsdl/PullPointSubscription/SetSynchronizationPointRequest")))
 		return serve___tev__SetSynchronizationPoint(soap, this);
+	if ((!soap->action && !soap_match_tag(soap, soap->tag, "wsnt:Unsubscribe")) || (soap->action && !strcmp(soap->action, "http://docs.oasis-open.org/wsn/bw-2/SubscriptionManager/UnsubscribeRequest")))
+		return serve___tev__Unsubscribe(soap, this);
 	if ((!soap->action && !soap_match_tag(soap, soap->tag, "tev:GetServiceCapabilities")) || (soap->action && !strcmp(soap->action, "http://www.onvif.org/ver10/events/wsdl/EventPortType/GetServiceCapabilitiesRequest")))
 		return serve___tev__GetServiceCapabilities(soap, this);
 	if ((!soap->action && !soap_match_tag(soap, soap->tag, "tev:CreatePullPointSubscription")) || (soap->action && !strcmp(soap->action, "http://www.onvif.org/ver10/events/wsdl/EventPortType/CreatePullPointSubscriptionRequest")))
@@ -311,7 +314,7 @@ int PullPointSubscriptionBindingService::dispatch(struct soap* soap)
 	if ((!soap->action && !soap_match_tag(soap, soap->tag, "wsnt:Renew")) || (soap->action && !strcmp(soap->action, "http://docs.oasis-open.org/wsn/bw-2/SubscriptionManager/RenewRequest")))
 		return serve___tev__Renew(soap, this);
 	if ((!soap->action && !soap_match_tag(soap, soap->tag, "wsnt:Unsubscribe")) || (soap->action && !strcmp(soap->action, "http://docs.oasis-open.org/wsn/bw-2/SubscriptionManager/UnsubscribeRequest")))
-		return serve___tev__Unsubscribe(soap, this);
+		return serve___tev__Unsubscribe_(soap, this);
 	if ((!soap->action && !soap_match_tag(soap, soap->tag, "wsnt:Subscribe")) || (soap->action && !strcmp(soap->action, "http://docs.oasis-open.org/wsn/bw-2/NotificationProducer/SubscribeRequest")))
 		return serve___tev__Subscribe(soap, this);
 	if ((!soap->action && !soap_match_tag(soap, soap->tag, "wsnt:GetCurrentMessage")) || (soap->action && !strcmp(soap->action, "http://docs.oasis-open.org/wsn/bw-2/NotificationProducer/GetCurrentMessageRequest")))
@@ -329,7 +332,7 @@ int PullPointSubscriptionBindingService::dispatch(struct soap* soap)
 	if ((!soap->action && !soap_match_tag(soap, soap->tag, "wsnt:Renew")) || (soap->action && !strcmp(soap->action, "http://docs.oasis-open.org/wsn/bw-2/PausableSubscriptionManager/RenewRequest")))
 		return serve___tev__Renew_(soap, this);
 	if ((!soap->action && !soap_match_tag(soap, soap->tag, "wsnt:Unsubscribe")) || (soap->action && !strcmp(soap->action, "http://docs.oasis-open.org/wsn/bw-2/PausableSubscriptionManager/UnsubscribeRequest")))
-		return serve___tev__Unsubscribe_(soap, this);
+		return serve___tev__Unsubscribe__(soap, this);
 	if ((!soap->action && !soap_match_tag(soap, soap->tag, "wsnt:PauseSubscription")) || (soap->action && !strcmp(soap->action, "http://docs.oasis-open.org/wsn/bw-2/PausableSubscriptionManager/PauseSubscriptionRequest")))
 		return serve___tev__PauseSubscription(soap, this);
 	if ((!soap->action && !soap_match_tag(soap, soap->tag, "wsnt:ResumeSubscription")) || (soap->action && !strcmp(soap->action, "http://docs.oasis-open.org/wsn/bw-2/PausableSubscriptionManager/ResumeSubscriptionRequest")))
@@ -453,6 +456,47 @@ static int serve___tev__SetSynchronizationPoint(struct soap *soap, PullPointSubs
 	 || soap_putheader(soap)
 	 || soap_body_begin_out(soap)
 	 || tev__SetSynchronizationPointResponse.soap_put(soap, "tev:SetSynchronizationPointResponse", "")
+	 || soap_body_end_out(soap)
+	 || soap_envelope_end_out(soap)
+	 || soap_end_send(soap))
+		return soap->error;
+	return soap_closesock(soap);
+}
+
+static int serve___tev__Unsubscribe(struct soap *soap, PullPointSubscriptionBindingService *service)
+{	struct __tev__Unsubscribe soap_tmp___tev__Unsubscribe;
+	_wsnt__UnsubscribeResponse wsnt__UnsubscribeResponse;
+	wsnt__UnsubscribeResponse.soap_default(soap);
+	soap_default___tev__Unsubscribe(soap, &soap_tmp___tev__Unsubscribe);
+	if (!soap_get___tev__Unsubscribe(soap, &soap_tmp___tev__Unsubscribe, "-tev:Unsubscribe", NULL))
+		return soap->error;
+	if (soap_body_end_in(soap)
+	 || soap_envelope_end_in(soap)
+	 || soap_end_recv(soap))
+		return soap->error;
+	soap->error = service->Unsubscribe(soap_tmp___tev__Unsubscribe.wsnt__Unsubscribe, wsnt__UnsubscribeResponse);
+	if (soap->error)
+		return soap->error;
+	soap->encodingStyle = NULL;
+	soap_serializeheader(soap);
+	wsnt__UnsubscribeResponse.soap_serialize(soap);
+	if (soap_begin_count(soap))
+		return soap->error;
+	if (soap->mode & SOAP_IO_LENGTH)
+	{	if (soap_envelope_begin_out(soap)
+		 || soap_putheader(soap)
+		 || soap_body_begin_out(soap)
+		 || wsnt__UnsubscribeResponse.soap_put(soap, "wsnt:UnsubscribeResponse", "")
+		 || soap_body_end_out(soap)
+		 || soap_envelope_end_out(soap))
+			 return soap->error;
+	};
+	if (soap_end_count(soap)
+	 || soap_response(soap, SOAP_OK)
+	 || soap_envelope_begin_out(soap)
+	 || soap_putheader(soap)
+	 || soap_body_begin_out(soap)
+	 || wsnt__UnsubscribeResponse.soap_put(soap, "wsnt:UnsubscribeResponse", "")
 	 || soap_body_end_out(soap)
 	 || soap_envelope_end_out(soap)
 	 || soap_end_send(soap))
@@ -624,18 +668,18 @@ static int serve___tev__Renew(struct soap *soap, PullPointSubscriptionBindingSer
 	return soap_closesock(soap);
 }
 
-static int serve___tev__Unsubscribe(struct soap *soap, PullPointSubscriptionBindingService *service)
-{	struct __tev__Unsubscribe soap_tmp___tev__Unsubscribe;
+static int serve___tev__Unsubscribe_(struct soap *soap, PullPointSubscriptionBindingService *service)
+{	struct __tev__Unsubscribe_ soap_tmp___tev__Unsubscribe_;
 	_wsnt__UnsubscribeResponse wsnt__UnsubscribeResponse;
 	wsnt__UnsubscribeResponse.soap_default(soap);
-	soap_default___tev__Unsubscribe(soap, &soap_tmp___tev__Unsubscribe);
-	if (!soap_get___tev__Unsubscribe(soap, &soap_tmp___tev__Unsubscribe, "-tev:Unsubscribe", NULL))
+	soap_default___tev__Unsubscribe_(soap, &soap_tmp___tev__Unsubscribe_);
+	if (!soap_get___tev__Unsubscribe_(soap, &soap_tmp___tev__Unsubscribe_, "-tev:Unsubscribe", NULL))
 		return soap->error;
 	if (soap_body_end_in(soap)
 	 || soap_envelope_end_in(soap)
 	 || soap_end_recv(soap))
 		return soap->error;
-	soap->error = service->Unsubscribe(soap_tmp___tev__Unsubscribe.wsnt__Unsubscribe, wsnt__UnsubscribeResponse);
+	soap->error = service->Unsubscribe_(soap_tmp___tev__Unsubscribe_.wsnt__Unsubscribe, wsnt__UnsubscribeResponse);
 	if (soap->error)
 		return soap->error;
 	soap->encodingStyle = NULL;
@@ -941,18 +985,18 @@ static int serve___tev__Renew_(struct soap *soap, PullPointSubscriptionBindingSe
 	return soap_closesock(soap);
 }
 
-static int serve___tev__Unsubscribe_(struct soap *soap, PullPointSubscriptionBindingService *service)
-{	struct __tev__Unsubscribe_ soap_tmp___tev__Unsubscribe_;
+static int serve___tev__Unsubscribe__(struct soap *soap, PullPointSubscriptionBindingService *service)
+{	struct __tev__Unsubscribe__ soap_tmp___tev__Unsubscribe__;
 	_wsnt__UnsubscribeResponse wsnt__UnsubscribeResponse;
 	wsnt__UnsubscribeResponse.soap_default(soap);
-	soap_default___tev__Unsubscribe_(soap, &soap_tmp___tev__Unsubscribe_);
-	if (!soap_get___tev__Unsubscribe_(soap, &soap_tmp___tev__Unsubscribe_, "-tev:Unsubscribe", NULL))
+	soap_default___tev__Unsubscribe__(soap, &soap_tmp___tev__Unsubscribe__);
+	if (!soap_get___tev__Unsubscribe__(soap, &soap_tmp___tev__Unsubscribe__, "-tev:Unsubscribe", NULL))
 		return soap->error;
 	if (soap_body_end_in(soap)
 	 || soap_envelope_end_in(soap)
 	 || soap_end_recv(soap))
 		return soap->error;
-	soap->error = service->Unsubscribe_(soap_tmp___tev__Unsubscribe_.wsnt__Unsubscribe, wsnt__UnsubscribeResponse);
+	soap->error = service->Unsubscribe__(soap_tmp___tev__Unsubscribe__.wsnt__Unsubscribe, wsnt__UnsubscribeResponse);
 	if (soap->error)
 		return soap->error;
 	soap->encodingStyle = NULL;

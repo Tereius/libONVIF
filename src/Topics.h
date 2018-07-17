@@ -24,87 +24,82 @@
 class wstop__TopicSetType;
 class tt__MessageDescription;
 struct soap_dom_element;
-
-enum SimpleItemType {
-
-	NONE,
-	KEY,
-	DATA,
-	SOURCE
-};
+struct soap;
 
 
-class SimpleItem {
-
-	Q_GADGET
-		Q_PROPERTY(QString name READ GetName)
-		Q_PROPERTY(QVariant value READ GetValue)
-		Q_PROPERTY(SimpleItemType type READ GetType)
-
-public:
-
-	SimpleItem() :
-		mType(NONE),
-		mName(),
-		mValue() {
-	}
-
-	SimpleItem(const QString &rName, const QVariant &rValue, SimpleItemType type) :
-		mType(type),
-		mName(rName),
-		mValue(rValue) {
-	}
-
-	QString GetName() const { return mName; }
-	void SetName(const QString &rName) { mName = rName; }
-	QVariant GetValue() const { return mValue; }
-	void SetValue(const QVariant &rValue) { mValue = rValue; }
-	SimpleItemType GetType() const { return mType; }
-	void SetType(SimpleItemType type) { mType = type; }
-	bool IsValid() const { return mType != NONE; }
-
-private:
-
-	SimpleItemType mType;
-	QString mName;
-	QVariant mValue;
-};
-
-
+/*!
+*
+* \brief Details of a simple item
+*
+*/
 class ONVIFEVENT_EXPORT SimpleItemInfo {
 
+	Q_GADGET
+
+		Q_PROPERTY(QString name READ GetName)
+		Q_PROPERTY(QString soapType READ GetSoapTypeQname)
+		Q_PROPERTY(PrimitiveType type READ GetPrimitiveType)
+
 public:
 
-	SimpleItemInfo() :
+	enum PrimitiveType {
+
+		PRIMITIVE_UNKNOWN,
+		PRIMITIVE_BOOL,
+		PRIMITIVE_STRING,
+		PRIMITIVE_INTEGER,
+		PRIMITIVE_REAL
+	};
+	Q_ENUM(PrimitiveType)
+
+		enum SimpleItemType {
+
+		NONE,
+		KEY,
+		DATA,
+		SOURCE
+	};
+	Q_ENUM(SimpleItemType)
+
+		SimpleItemInfo() :
 		mName(),
-		mSoapType(),
 		mSoapTypeQname(),
-		mType(NONE) {
+		mType(NONE),
+		mPrimitiveType(PRIMITIVE_UNKNOWN) {
 	}
 
-	SimpleItemInfo(const QString &rName, int soapType, QString soapTypeQname, SimpleItemType type) :
+	SimpleItemInfo(const QString &rName, PrimitiveType primType, QString soapTypeQname, SimpleItemType type) :
 		mName(rName),
-		mSoapType(soapType),
 		mSoapTypeQname(soapTypeQname),
-		mType(type) {
+		mType(type),
+		mPrimitiveType(primType) {
 	}
 
 	QString GetName() const { return mName; }
 	QString GetSoapTypeQname() const { return mSoapTypeQname; }
-	int GetType() const { return mSoapType; }
+	PrimitiveType GetPrimitiveType() const { return mPrimitiveType; }
+	void SetPrimitiveType(PrimitiveType type) { mPrimitiveType = type; }
 
 private:
 
-	const QString mName;
-	const int mSoapType;
-	const QString mSoapTypeQname;
-	const SimpleItemType mType;
+	QString mName;
+	QString mSoapTypeQname;
+	SimpleItemType mType;
+	PrimitiveType mPrimitiveType;
 };
 
 
+/*!
+*
+* \brief A topic which contains details of its simple items
+*
+*/
 class ONVIFEVENT_EXPORT Topic {
 
 	Q_GADGET
+		Q_PROPERTY(QString name READ GetName)
+		Q_PROPERTY(QStringList path READ GetTopicPath)
+		Q_PROPERTY(QList<SimpleItemInfo> items READ GetItems)
 
 public:
 
@@ -115,18 +110,13 @@ public:
 	void SetName(const QString &rName) { mName = rName; };
 	void AppendTopicPath(const QString &rName) { mTopicPath.push_back(rName); }
 
-	QList<SimpleItemInfo> GetItems() const { return mItems; }
-	SimpleItemInfo GetItemByName(const QString &rName) const {
-
-		for(auto item : mItems) {
-			if(item.GetName() == rName) {
-				return item;
-			}
-		}
-		return SimpleItemInfo();
-	}
+	const QList<SimpleItemInfo>& GetItems() const { return mItems; }
+	void SetItemPrimitiveType(SimpleItemInfo::PrimitiveType type, const QString &rName);
+	Q_INVOKABLE SimpleItemInfo GetItemByName(const QString &rName) const;
 
 private:
+
+	static SimpleItemInfo::PrimitiveType GetPrimitiveType(soap *pSoap, const QString &rQname);
 
 	QList<SimpleItemInfo> mItems;
 	QStringList mTopicPath;
@@ -134,14 +124,19 @@ private:
 };
 
 
+/*!
+ *
+ * \brief A topic set holding all topics a devices provides
+ *
+ */
 class ONVIFEVENT_EXPORT TopicSet {
 
 public:
 
 	TopicSet() : mTopics() {}
 	static TopicSet FromXml(const wstop__TopicSetType *pTopicSet);
-	static int GetTypeId(const QString &rQName);
-	QList<Topic> GetTopics() const { return mTopics; }
+	const QList<Topic>& GetTopics() const { return mTopics; }
+	Topic GetTopicByName(const QString &rTopicName) const;
 
 private:
 	void fromDom(soap_dom_element *pDom, QString topicPath = QString());

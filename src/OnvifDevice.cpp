@@ -35,7 +35,32 @@
 
 struct OnvifDevicePrivate {
 
-	OnvifDevicePrivate(OnvifDevice *pQ) : mpQ(pQ) {
+	OnvifDevicePrivate(OnvifDevice *pQ) :
+		mpQ(pQ),
+		mUserName(),
+		mPassword(),
+		mAnalyticsEndpoint(),
+		mDeviceEndpoint(),
+		mDiscoveryEndpoint(),
+		mDisplayEndpoint(),
+		mEventEndpoint(),
+		mImagingEndpoint(),
+		mMediaEndpoint(),
+		mPtzEndpoint(),
+		mReceiverEndpoint(),
+		mRecordingEndpoint(),
+		mReplayEndpoint(),
+		mpOnvifAnalyticsClient(nullptr),
+		mpOnvifDeviceClient(nullptr),
+		mpOnvifDiscoveryClient(nullptr),
+		mpOnvifDisplayClient(nullptr),
+		mpOnvifEventClient(nullptr),
+		mpOnvifImagingClient(nullptr),
+		mpOnvifMediaClient(nullptr),
+		mpOnvifPtzClient(nullptr),
+		mpOnvifReceiverClient(nullptr),
+		mpOnvifRecordingClient(nullptr),
+		mpOnvifReplayClient(nullptr) {
 
 	}
 
@@ -208,28 +233,47 @@ SimpleResponse OnvifDevice::Initialize() {
 
 SimpleResponse OnvifDevice::InitializeTopicSet() {
 
-	Request<_tev__GetEventProperties> request;
-	auto response = mpD->mpOnvifEventClient->GetParsedEventProperties(request);
-	if(response) {
-		for(auto topic : response.GetResultObject().GetTopics()) {
-			auto topicPath = topic.GetTopicPath().join("/");
-			if(topicPath.isEmpty()) topicPath.append("/");
-			qDebug() << "\nTopic name" << topic.GetName();
-			qDebug() << "Topic path" << topicPath;
-			for(auto item : topic.GetItems()) {
-				if(item.GetType() == 0) {
-					qDebug() << "    Unknown Item" << item.GetName() << "with type" << item.GetSoapTypeQname();
-				}
-				else {
-					qDebug() << "    Item" << item.GetName() << "gsoap type" << item.GetType();
+	if(mpD->mpOnvifEventClient) {
+		Request<_tev__GetEventProperties> request;
+		auto response = mpD->mpOnvifEventClient->GetParsedEventProperties(request);
+		if(response) {
+			for(auto topic : response.GetResultObject().GetTopics()) {
+				auto topicPath = topic.GetTopicPath().join("/");
+				if(topicPath.isEmpty()) topicPath.append("/");
+				qDebug() << "\nTopic name" << topic.GetName();
+				qDebug() << "Topic path" << topicPath;
+				for(auto item : topic.GetItems()) {
+					if(item.GetPrimitiveType() == SimpleItemInfo::PRIMITIVE_UNKNOWN) {
+						qDebug() << "    Unknown Item" << item.GetName() << "type" << item.GetSoapTypeQname();
+					}
+					else {
+						QString primitive;
+						switch(item.GetPrimitiveType()) {
+							case SimpleItemInfo::PRIMITIVE_BOOL:
+								primitive = "boolean";
+								break;
+							case SimpleItemInfo::PRIMITIVE_INTEGER:
+								primitive = "integer";
+								break;
+							case SimpleItemInfo::PRIMITIVE_REAL:
+								primitive = "real";
+								break;
+							case SimpleItemInfo::PRIMITIVE_STRING:
+								primitive = "string";
+								break;
+							default:
+								primitive = "unknown";
+								break;
+						}
+						qDebug() << "    Item" << item.GetName() << "type" << item.GetSoapTypeQname() << "primitive" << primitive;
+					}
 				}
 			}
 		}
+		else {
+			qWarning() << "Couldn't get event properties" << response.GetCompleteFault();
+		}
 	}
-	else {
-		qWarning() << "Couldn't get event properties" << response.GetCompleteFault();
-	}
-
 	return SimpleResponse();
 }
 

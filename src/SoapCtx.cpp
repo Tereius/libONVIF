@@ -114,6 +114,28 @@ const Namespace* SoapCtx::GetDefaultNamespaces() {
 	return namespaces;
 }
 
+QString SoapCtx::GetPrefix(const QString &rNamespace) {
+
+	const struct Namespace *p;
+	for(p = GetDefaultNamespaces(); p && p->id; p++) {
+		if(QString::fromLocal8Bit(p->ns) == rNamespace) {
+			return QString::fromLocal8Bit(p->id);
+		}
+	}
+	return QString();
+}
+
+QString SoapCtx::GetNamespace(const QString &rPrefix) {
+
+	const struct Namespace *p;
+	for(p = GetDefaultNamespaces(); p && p->id; p++) {
+		if(QString::fromLocal8Bit(p->id) == rPrefix) {
+			return QString::fromLocal8Bit(p->ns);
+		}
+	}
+	return QString();
+}
+
 void SoapCtx::SoapDelete(void *p) {
 
 	QMutexLocker locker(&mpD->mMutex);

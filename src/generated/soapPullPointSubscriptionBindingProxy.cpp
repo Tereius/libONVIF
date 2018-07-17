@@ -350,6 +350,58 @@ int PullPointSubscriptionBindingProxy::SetSynchronizationPoint(const char *endpo
 	return soap_closesock(soap);
 }
 
+int PullPointSubscriptionBindingProxy::Unsubscribe(const char *endpoint, const char *soap_action, _wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse)
+{	struct soap *soap = this->soap;
+	struct __tev__Unsubscribe soap_tmp___tev__Unsubscribe;
+	if (endpoint)
+		soap_endpoint = endpoint;
+	if (soap_action == NULL)
+		soap_action = "http://docs.oasis-open.org/wsn/bw-2/SubscriptionManager/UnsubscribeRequest";
+	soap_tmp___tev__Unsubscribe.wsnt__Unsubscribe = wsnt__Unsubscribe;
+	soap_begin(soap);
+	soap->encodingStyle = NULL;
+	soap_serializeheader(soap);
+	soap_serialize___tev__Unsubscribe(soap, &soap_tmp___tev__Unsubscribe);
+	if (soap_begin_count(soap))
+		return soap->error;
+	if (soap->mode & SOAP_IO_LENGTH)
+	{	if (soap_envelope_begin_out(soap)
+		 || soap_putheader(soap)
+		 || soap_body_begin_out(soap)
+		 || soap_put___tev__Unsubscribe(soap, &soap_tmp___tev__Unsubscribe, "-tev:Unsubscribe", "")
+		 || soap_body_end_out(soap)
+		 || soap_envelope_end_out(soap))
+			 return soap->error;
+	}
+	if (soap_end_count(soap))
+		return soap->error;
+	if (soap_connect(soap, soap_endpoint, soap_action)
+	 || soap_envelope_begin_out(soap)
+	 || soap_putheader(soap)
+	 || soap_body_begin_out(soap)
+	 || soap_put___tev__Unsubscribe(soap, &soap_tmp___tev__Unsubscribe, "-tev:Unsubscribe", "")
+	 || soap_body_end_out(soap)
+	 || soap_envelope_end_out(soap)
+	 || soap_end_send(soap))
+		return soap_closesock(soap);
+	if (!static_cast<_wsnt__UnsubscribeResponse*>(&wsnt__UnsubscribeResponse)) // NULL ref?
+		return soap_closesock(soap);
+	wsnt__UnsubscribeResponse.soap_default(soap);
+	if (soap_begin_recv(soap)
+	 || soap_envelope_begin_in(soap)
+	 || soap_recv_header(soap)
+	 || soap_body_begin_in(soap))
+		return soap_closesock(soap);
+	wsnt__UnsubscribeResponse.soap_get(soap, "wsnt:UnsubscribeResponse", NULL);
+	if (soap->error)
+		return soap_recv_fault(soap, 0);
+	if (soap_body_end_in(soap)
+	 || soap_envelope_end_in(soap)
+	 || soap_end_recv(soap))
+		return soap_closesock(soap);
+	return soap_closesock(soap);
+}
+
 int PullPointSubscriptionBindingProxy::GetServiceCapabilities(const char *endpoint, const char *soap_action, _tev__GetServiceCapabilities *tev__GetServiceCapabilities, _tev__GetServiceCapabilitiesResponse &tev__GetServiceCapabilitiesResponse)
 {	struct soap *soap = this->soap;
 	struct __tev__GetServiceCapabilities soap_tmp___tev__GetServiceCapabilities;
@@ -558,25 +610,25 @@ int PullPointSubscriptionBindingProxy::Renew(const char *endpoint, const char *s
 	return soap_closesock(soap);
 }
 
-int PullPointSubscriptionBindingProxy::Unsubscribe(const char *endpoint, const char *soap_action, _wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse)
+int PullPointSubscriptionBindingProxy::Unsubscribe_(const char *endpoint, const char *soap_action, _wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse)
 {	struct soap *soap = this->soap;
-	struct __tev__Unsubscribe soap_tmp___tev__Unsubscribe;
+	struct __tev__Unsubscribe_ soap_tmp___tev__Unsubscribe_;
 	if (endpoint)
 		soap_endpoint = endpoint;
 	if (soap_action == NULL)
 		soap_action = "http://docs.oasis-open.org/wsn/bw-2/SubscriptionManager/UnsubscribeRequest";
-	soap_tmp___tev__Unsubscribe.wsnt__Unsubscribe = wsnt__Unsubscribe;
+	soap_tmp___tev__Unsubscribe_.wsnt__Unsubscribe = wsnt__Unsubscribe;
 	soap_begin(soap);
 	soap->encodingStyle = NULL;
 	soap_serializeheader(soap);
-	soap_serialize___tev__Unsubscribe(soap, &soap_tmp___tev__Unsubscribe);
+	soap_serialize___tev__Unsubscribe_(soap, &soap_tmp___tev__Unsubscribe_);
 	if (soap_begin_count(soap))
 		return soap->error;
 	if (soap->mode & SOAP_IO_LENGTH)
 	{	if (soap_envelope_begin_out(soap)
 		 || soap_putheader(soap)
 		 || soap_body_begin_out(soap)
-		 || soap_put___tev__Unsubscribe(soap, &soap_tmp___tev__Unsubscribe, "-tev:Unsubscribe", "")
+		 || soap_put___tev__Unsubscribe_(soap, &soap_tmp___tev__Unsubscribe_, "-tev:Unsubscribe", "")
 		 || soap_body_end_out(soap)
 		 || soap_envelope_end_out(soap))
 			 return soap->error;
@@ -587,7 +639,7 @@ int PullPointSubscriptionBindingProxy::Unsubscribe(const char *endpoint, const c
 	 || soap_envelope_begin_out(soap)
 	 || soap_putheader(soap)
 	 || soap_body_begin_out(soap)
-	 || soap_put___tev__Unsubscribe(soap, &soap_tmp___tev__Unsubscribe, "-tev:Unsubscribe", "")
+	 || soap_put___tev__Unsubscribe_(soap, &soap_tmp___tev__Unsubscribe_, "-tev:Unsubscribe", "")
 	 || soap_body_end_out(soap)
 	 || soap_envelope_end_out(soap)
 	 || soap_end_send(soap))
@@ -1040,25 +1092,25 @@ int PullPointSubscriptionBindingProxy::Renew_(const char *endpoint, const char *
 	return soap_closesock(soap);
 }
 
-int PullPointSubscriptionBindingProxy::Unsubscribe_(const char *endpoint, const char *soap_action, _wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse)
+int PullPointSubscriptionBindingProxy::Unsubscribe__(const char *endpoint, const char *soap_action, _wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse)
 {	struct soap *soap = this->soap;
-	struct __tev__Unsubscribe_ soap_tmp___tev__Unsubscribe_;
+	struct __tev__Unsubscribe__ soap_tmp___tev__Unsubscribe__;
 	if (endpoint)
 		soap_endpoint = endpoint;
 	if (soap_action == NULL)
 		soap_action = "http://docs.oasis-open.org/wsn/bw-2/PausableSubscriptionManager/UnsubscribeRequest";
-	soap_tmp___tev__Unsubscribe_.wsnt__Unsubscribe = wsnt__Unsubscribe;
+	soap_tmp___tev__Unsubscribe__.wsnt__Unsubscribe = wsnt__Unsubscribe;
 	soap_begin(soap);
 	soap->encodingStyle = NULL;
 	soap_serializeheader(soap);
-	soap_serialize___tev__Unsubscribe_(soap, &soap_tmp___tev__Unsubscribe_);
+	soap_serialize___tev__Unsubscribe__(soap, &soap_tmp___tev__Unsubscribe__);
 	if (soap_begin_count(soap))
 		return soap->error;
 	if (soap->mode & SOAP_IO_LENGTH)
 	{	if (soap_envelope_begin_out(soap)
 		 || soap_putheader(soap)
 		 || soap_body_begin_out(soap)
-		 || soap_put___tev__Unsubscribe_(soap, &soap_tmp___tev__Unsubscribe_, "-tev:Unsubscribe", "")
+		 || soap_put___tev__Unsubscribe__(soap, &soap_tmp___tev__Unsubscribe__, "-tev:Unsubscribe", "")
 		 || soap_body_end_out(soap)
 		 || soap_envelope_end_out(soap))
 			 return soap->error;
@@ -1069,7 +1121,7 @@ int PullPointSubscriptionBindingProxy::Unsubscribe_(const char *endpoint, const 
 	 || soap_envelope_begin_out(soap)
 	 || soap_putheader(soap)
 	 || soap_body_begin_out(soap)
-	 || soap_put___tev__Unsubscribe_(soap, &soap_tmp___tev__Unsubscribe_, "-tev:Unsubscribe", "")
+	 || soap_put___tev__Unsubscribe__(soap, &soap_tmp___tev__Unsubscribe__, "-tev:Unsubscribe", "")
 	 || soap_body_end_out(soap)
 	 || soap_envelope_end_out(soap)
 	 || soap_end_send(soap))

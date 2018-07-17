@@ -50,8 +50,20 @@ if(ENABLE_CODESYNTHESIS)
 	http://www.onvif.org/onvif/ver10/device/wsdl/devicemgmt.wsdl
 	http://www.onvif.org/onvif/ver20/analytics/wsdl/analytics.wsdl
 	COMMAND ${Gsoap_soapcpp2_PATH} -Ed -Ec -c++11 -a -j -L -x -n -d ${CMAKE_SOURCE_DIR}/src/generated -I ${GSOAP_DIRS} generated.h
+	COMMAND $<TARGET_FILE:headerParser> generated.h
+	COMMAND ${CMAKE_COMMAND} -E copy GsoapResolver.h ${CMAKE_SOURCE_DIR}/src/generated
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/wsdl VERBATIM)
+
+	add_dependencies(Synthesis headerParser)
 endif()
+
+# -------------------------------Header parser-------------------------------
+
+set(src_files
+	headerParser/main.cpp
+)
+
+add_executable(headerParser ${src_files})
 
 # -------------------------------ONVIF Common-------------------------------
 set(src_files 
@@ -275,6 +287,7 @@ set(src_files
 	OnvifEventClient.cpp
 	OnvifPullPoint.cpp
 	Topics.cpp
+	NotificationFilter.cpp
 )
 
 # private header
@@ -288,6 +301,7 @@ set(public_header_files
 	OnvifEventClient.h
 	OnvifPullPoint.h
 	Topics.h
+	NotificationFilter.h
 )
 
 add_library(onvifevent ${src_files} ${private_header_files} ${public_header_files})

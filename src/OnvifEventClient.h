@@ -46,6 +46,7 @@ public:
 	Response<_tev__SetSynchronizationPointResponse> SetSynchronizationPoint(Request<_tev__SetSynchronizationPoint> &rRequest);
 	Response<_tev__GetServiceCapabilitiesResponse> GetServiceCapabilities(Request<_tev__GetServiceCapabilities> &rRequest);
 	Response<_tev__GetEventPropertiesResponse> GetEventProperties(Request<_tev__GetEventProperties> &rRequest);
+	//! Get a parsed version of a topic set
 	ArbitraryResponse<TopicSet> GetParsedEventProperties(Request<_tev__GetEventProperties> &rRequest);
 	Response<_wsnt__SubscribeResponse> Subscribe(Request<_wsnt__Subscribe> &rRequest);
 	Response<_wsnt__GetCurrentMessageResponse> GetCurrentMessage(Request<_wsnt__GetCurrentMessage> &rRequest);

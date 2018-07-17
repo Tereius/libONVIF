@@ -16,11 +16,10 @@
 #include "Topics.h"
 #include "soapStub.h"
 #include "SoapCtx.h"
+#include "GsoapResolver.h"
 #include <QDebug>
 #include <string>
 
-
-static SoapCtx ctx;
 
 TopicSet TopicSet::FromXml(const wstop__TopicSetType *pTopicSet) {
 
@@ -41,6 +40,16 @@ TopicSet TopicSet::FromXml(const wstop__TopicSetType *pTopicSet) {
 	return ret;
 }
 
+Topic TopicSet::GetTopicByName(const QString &rTopicName) const {
+
+	for(auto topic : mTopics) {
+		if(topic.GetName() == rTopicName) {
+			return topic;
+		}
+	}
+	return Topic();
+}
+
 void TopicSet::fromDom(soap_dom_element *pDom, QString topicPath /*= QString()*/) {
 
 	topicPath.append("/");
@@ -52,7 +61,9 @@ void TopicSet::fromDom(soap_dom_element *pDom, QString topicPath /*= QString()*/
 		Topic topic;
 		topic.SetName(QString::fromUtf8(pDom->tag()));
 		topic.SetTopicPath(topicPath.split("/", QString::SkipEmptyParts));
-		topic.PopulateItems((tt__MessageDescription*)messageDescrChild->get_node(SOAP_TYPE_tt__MessageDescription));
+		auto pMessageDescr = (tt__MessageDescription*)messageDescrChild->get_node(SOAP_TYPE_tt__MessageDescription);
+		pMessageDescr->soap = pDom->soap;
+		topic.PopulateItems(pMessageDescr);
 		mTopics.push_back(topic);
 	}
 	else if(isTopicAttr && isTopicAttr->is_true()) {
@@ -63,51 +74,24 @@ void TopicSet::fromDom(soap_dom_element *pDom, QString topicPath /*= QString()*/
 	}
 }
 
-int TopicSet::GetTypeId(const QString &rQName) {
-
-	// TODO: Very hacky! Is there a better option?
-	QString typeStr = rQName;
-	ctx.EnableModeFlags(SOAP_XML_IGNORENS);
-	auto pSoap = ctx.Acquire();
-	auto peekBackup = pSoap->peeked;
-	auto otherBackup = pSoap->other;
-	//char typeBackup[SOAP_TAGLEN];
-	//char tagBackup[SOAP_TAGLEN];
-	//strcpy(typeBackup, pSoap->type);
-	//strcpy(tagBackup, pSoap->tag);
-	pSoap->peeked = true;
-	pSoap->other = 1;
-	pSoap->type[0] = '\0';
-	strcpy(pSoap->tag, qPrintable(typeStr));
-	int type = 0;
-	soap_getelement(pSoap, &type);
-	pSoap->peeked = peekBackup;
-	pSoap->other = otherBackup;
-	//strcpy(pSoap->type, typeBackup);
-	//strcpy(pSoap->tag, tagBackup);
-	ctx.Release();
-	ctx.DisableIModeFlags(SOAP_XML_IGNORENS);
-	return type;
-}
-
 void Topic::PopulateItems(const tt__MessageDescription *pMessageDescr) {
 
 	if(pMessageDescr) {
 		if(pMessageDescr->Key) {
 			for(auto item : pMessageDescr->Key->SimpleItemDescription) {
-				auto futureItem = SimpleItemInfo(item.Name, TopicSet::GetTypeId(QString(item.Type.c_str())), QString(item.Type.c_str()), KEY);
+				auto futureItem = SimpleItemInfo(item.Name, GetPrimitiveType(pMessageDescr->soap, QString::fromLocal8Bit(item.Type.c_str())), QString(item.Type.c_str()), SimpleItemInfo::KEY);
 				mItems.push_back(futureItem);
 			}
 		}
 		if(pMessageDescr->Source) {
 			for(auto item : pMessageDescr->Source->SimpleItemDescription) {
-				auto futureItem = SimpleItemInfo(item.Name, TopicSet::GetTypeId(QString(item.Type.c_str())), QString(item.Type.c_str()), SOURCE);
+				auto futureItem = SimpleItemInfo(item.Name, GetPrimitiveType(pMessageDescr->soap, QString::fromLocal8Bit(item.Type.c_str())), QString(item.Type.c_str()), SimpleItemInfo::SOURCE);
 				mItems.push_back(futureItem);
 			}
 		}
 		if(pMessageDescr->Data) {
 			for(auto item : pMessageDescr->Data->SimpleItemDescription) {
-				auto futureItem = SimpleItemInfo(item.Name, TopicSet::GetTypeId(QString(item.Type.c_str())), QString(item.Type.c_str()), DATA);
+				auto futureItem = SimpleItemInfo(item.Name, GetPrimitiveType(pMessageDescr->soap, QString::fromLocal8Bit(item.Type.c_str())), QString(item.Type.c_str()), SimpleItemInfo::DATA);
 				mItems.push_back(futureItem);
 			}
 		}
@@ -116,3 +100,56 @@ void Topic::PopulateItems(const tt__MessageDescription *pMessageDescr) {
 		qWarning() << "Couldn't populate items from empty xml";
 	}
 }
+
+void Topic::SetItemPrimitiveType(SimpleItemInfo::PrimitiveType type, const QString &rName) {
+	for(auto &item : mItems) {
+		if(item.GetName() == rName) {
+			return item.SetPrimitiveType(type);
+			break;
+		}
+	}
+}
+
+SimpleItemInfo Topic::GetItemByName(const QString &rName) const {
+	for(auto item : mItems) {
+		if(item.GetName() == rName) {
+			return item;
+		}
+	}
+	return SimpleItemInfo();
+}
+
+SimpleItemInfo::PrimitiveType Topic::GetPrimitiveType(soap *pSoap, const QString &rQname) {
+
+	if(pSoap) {
+		auto test = soap_lookup_ns(pSoap, qPrintable(rQname), rQname.indexOf(':'));
+		if(test) {
+
+			auto qName = rQname;
+			if(test->ns) {
+				// The prefixes don't match. Find the prefix by namespace
+				auto prefix = SoapCtx::GetPrefix(QString::fromLocal8Bit(test->ns));
+				qName.replace(0, qName.indexOf(':'), prefix);
+			}
+
+			if(GsoapResolver::isStringDerived(qName)) {
+				return SimpleItemInfo::PRIMITIVE_STRING;
+			}
+			else if(qName == "xsd:boolean") {
+				return SimpleItemInfo::PRIMITIVE_BOOL;
+			}
+			else if(qName == "xsd:integer"
+							|| qName == "xsd:nonNegativeInteger"
+							|| qName == "xsd:nonPositiveInteger"
+							|| qName == "xsd:positiveInteger"
+							|| qName == "xsd:negativeInteger") {
+				return SimpleItemInfo::PRIMITIVE_INTEGER;
+			}
+			else if(qName == "xsd:decimal") {
+				return SimpleItemInfo::PRIMITIVE_REAL;
+			}
+		}
+	}
+	return SimpleItemInfo::PRIMITIVE_UNKNOWN;
+}
+

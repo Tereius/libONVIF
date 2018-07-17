@@ -102,6 +102,8 @@ A commercial use license is available from Genivia Inc., contact@genivia.com
         virtual int Seek(_tev__Seek *tev__Seek, _tev__SeekResponse &tev__SeekResponse) SOAP_PURE_VIRTUAL;
         /// Web service operation 'SetSynchronizationPoint' (returns SOAP_OK or error code)
         virtual int SetSynchronizationPoint(_tev__SetSynchronizationPoint *tev__SetSynchronizationPoint, _tev__SetSynchronizationPointResponse &tev__SetSynchronizationPointResponse) SOAP_PURE_VIRTUAL;
+        /// Web service operation 'Unsubscribe' (returns SOAP_OK or error code)
+        virtual int Unsubscribe(_wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse) SOAP_PURE_VIRTUAL;
         /// Web service operation 'GetServiceCapabilities' (returns SOAP_OK or error code)
         virtual int GetServiceCapabilities(_tev__GetServiceCapabilities *tev__GetServiceCapabilities, _tev__GetServiceCapabilitiesResponse &tev__GetServiceCapabilitiesResponse) SOAP_PURE_VIRTUAL;
         /// Web service operation 'CreatePullPointSubscription' (returns SOAP_OK or error code)
@@ -111,7 +113,7 @@ A commercial use license is available from Genivia Inc., contact@genivia.com
         /// Web service operation 'Renew' (returns SOAP_OK or error code)
         virtual int Renew(_wsnt__Renew *wsnt__Renew, _wsnt__RenewResponse &wsnt__RenewResponse) SOAP_PURE_VIRTUAL;
         /// Web service operation 'Unsubscribe' (returns SOAP_OK or error code)
-        virtual int Unsubscribe(_wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse) SOAP_PURE_VIRTUAL;
+        virtual int Unsubscribe_(_wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse) SOAP_PURE_VIRTUAL;
         /// Web service operation 'Subscribe' (returns SOAP_OK or error code)
         virtual int Subscribe(_wsnt__Subscribe *wsnt__Subscribe, _wsnt__SubscribeResponse &wsnt__SubscribeResponse) SOAP_PURE_VIRTUAL;
         /// Web service operation 'GetCurrentMessage' (returns SOAP_OK or error code)
@@ -133,7 +135,7 @@ A commercial use license is available from Genivia Inc., contact@genivia.com
         /// Web service operation 'Renew' (returns SOAP_OK or error code)
         virtual int Renew_(_wsnt__Renew *wsnt__Renew, _wsnt__RenewResponse &wsnt__RenewResponse) SOAP_PURE_VIRTUAL;
         /// Web service operation 'Unsubscribe' (returns SOAP_OK or error code)
-        virtual int Unsubscribe_(_wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse) SOAP_PURE_VIRTUAL;
+        virtual int Unsubscribe__(_wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse) SOAP_PURE_VIRTUAL;
         /// Web service operation 'PauseSubscription' (returns SOAP_OK or error code)
         virtual int PauseSubscription(_wsnt__PauseSubscription *wsnt__PauseSubscription, _wsnt__PauseSubscriptionResponse &wsnt__PauseSubscriptionResponse) SOAP_PURE_VIRTUAL;
         /// Web service operation 'ResumeSubscription' (returns SOAP_OK or error code)

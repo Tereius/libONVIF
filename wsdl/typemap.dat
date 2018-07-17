@@ -160,7 +160,7 @@
 #	Remember: type bindings are given on a single line (use \ to continue
 #	with the next line). Here is an example binding for the XSD int type
 #	that maps to an 'int':
-# xsd__int	= | int
+xsd__int = | int
 
 #	To use regular char* strings instead of std::string, use:
 # xsd__string	= | char* | char*
@@ -178,14 +178,14 @@
 # xsd__integer = #import "custom/int128.h" | xsd__integer
 #
 #	Or if the xsd:integer value range is bounded to int64_t, then:
-# xsd__integer = typedef LONG64 xsd__integer;
+xsd__integer = typedef LONG64 xsd__integer;
 #
 #	Also, to enable XSD integer types that are restrictions of xsd:integer
 #	to be mapped to int128 or LONG64, uncomment:
-# xsd__nonNegativeInteger = typedef xsd__integer xsd__nonNegativeInteger 0 :   ;
-# xsd__nonPositiveInteger = typedef xsd__integer xsd__nonPositiveInteger   : 0 ;
-# xsd__positiveInteger    = typedef xsd__integer xsd__positiveInteger    1 :   ;
-# xsd__negativeInteger    = typedef xsd__integer xsd__negativeInteger      : -1;
+xsd__nonNegativeInteger = typedef xsd__integer xsd__nonNegativeInteger 0 :   ;
+xsd__nonPositiveInteger = typedef xsd__integer xsd__nonPositiveInteger   : 0 ;
+xsd__positiveInteger    = typedef xsd__integer xsd__positiveInteger    1 :   ;
+xsd__negativeInteger    = typedef xsd__integer xsd__negativeInteger      : -1;
 
 #	Uncomment the line below to use long double for xsd:decimal instead of
 #	mapping xsd:decimal to string.
@@ -196,7 +196,7 @@
 # xsd__decimal = #import "custom/float128.h" | xsd__decimal
 #
 #	Or if the xsd:decimal value range is bounded to double, then:
-# xsd__decimal = typedef double xsd__decimal;
+xsd__decimal = typedef double xsd__decimal;
 
 #	Uncomment the line below to use struct tm instead of time_t xsd:dateTime
 #	Then rerun wsdl2h and also compile and link custom/struct_tm.c.
@@ -543,30 +543,30 @@ vprop	= "http://docs.oasis-open.org/wsbpel/2.0/varprop"
 #	http://www.onvif.org/onvif/ver10/analyticsdevice.wsdl	
 #	http://www.onvif.org/onvif/ver10/schema/onvif.xsd
 
-tds	= "http://www.onvif.org/ver10/device/wsdl"
-tev	= "http://www.onvif.org/ver10/events/wsdl"
-tls	= "http://www.onvif.org/ver10/display/wsdl"
-tmd	= "http://www.onvif.org/ver10/deviceIO/wsdl"
-timg	= "http://www.onvif.org/ver20/imaging/wsdl"
-trt	= "http://www.onvif.org/ver10/media/wsdl"
-tptz	= "http://www.onvif.org/ver20/ptz/wsdl"
-trv	= "http://www.onvif.org/ver10/receiver/wsdl"
-trc	= "http://www.onvif.org/ver10/recording/wsdl"
-tse	= "http://www.onvif.org/ver10/search/wsdl"
-trp	= "http://www.onvif.org/ver10/replay/wsdl"
-tan	= "http://www.onvif.org/ver20/analytics/wsdl"
-tad	= "http://www.onvif.org/ver10/analyticsdevice/wsdl"
-tdn	= "http://www.onvif.org/ver10/network/wsdl"
-tt	= "http://www.onvif.org/ver10/schema"
+tds	 = "http://www.onvif.org/ver10/device/wsdl"
+tev	 = "http://www.onvif.org/ver10/events/wsdl"
+tls	 = "http://www.onvif.org/ver10/display/wsdl"
+tmd	 = "http://www.onvif.org/ver10/deviceIO/wsdl"
+timg = "http://www.onvif.org/ver20/imaging/wsdl"
+trt	 = "http://www.onvif.org/ver10/media/wsdl"
+tptz = "http://www.onvif.org/ver20/ptz/wsdl"
+trv	 = "http://www.onvif.org/ver10/receiver/wsdl"
+trc	 = "http://www.onvif.org/ver10/recording/wsdl"
+tse	 = "http://www.onvif.org/ver10/search/wsdl"
+trp	 = "http://www.onvif.org/ver10/replay/wsdl"
+tan	 = "http://www.onvif.org/ver20/analytics/wsdl"
+tad	 = "http://www.onvif.org/ver10/analyticsdevice/wsdl"
+tdn	 = "http://www.onvif.org/ver10/network/wsdl"
+tt	 = "http://www.onvif.org/ver10/schema"
 
 #	OASIS recommended prefixes
 
-wsnt	= "http://docs.oasis-open.org/wsn/b-2"
-wsntw	= "http://docs.oasis-open.org/wsn/bw-2"
-wsrfbf	= "http://docs.oasis-open.org/wsrf/bf-2"
-wsrfr	= "http://docs.oasis-open.org/wsrf/r-2"
-wsrfrw  = "http://docs.oasis-open.org/wsrf/rw-2"
-wstop	= "http://docs.oasis-open.org/wsn/t-1"
+wsnt   = "http://docs.oasis-open.org/wsn/b-2"
+wsntw  = "http://docs.oasis-open.org/wsn/bw-2"
+wsrfbf = "http://docs.oasis-open.org/wsrf/bf-2"
+wsrfr  = "http://docs.oasis-open.org/wsrf/r-2"
+wsrfrw = "http://docs.oasis-open.org/wsrf/rw-2"
+wstop  = "http://docs.oasis-open.org/wsn/t-1"
 
 #	TR-069 recommended prefixes
 

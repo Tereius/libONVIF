@@ -119,6 +119,10 @@ public:
 	void Release();
 	//! Get the default namespace map
 	static const Namespace* GetDefaultNamespaces();
+	//! Get the prefix of namespace from default namespace map
+	static QString GetPrefix(const QString &rNamespace);
+	//! Get the namespace of prefix from default namespace map
+	static QString GetNamespace(const QString &rPrefix);
 
 	/*!
 	*

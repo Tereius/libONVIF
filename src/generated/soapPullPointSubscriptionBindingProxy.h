@@ -87,6 +87,10 @@ A commercial use license is available from Genivia Inc., contact@genivia.com
         virtual int SetSynchronizationPoint(_tev__SetSynchronizationPoint *tev__SetSynchronizationPoint, _tev__SetSynchronizationPointResponse &tev__SetSynchronizationPointResponse)
         { return this->SetSynchronizationPoint(NULL, NULL, tev__SetSynchronizationPoint, tev__SetSynchronizationPointResponse); }
         virtual int SetSynchronizationPoint(const char *soap_endpoint, const char *soap_action, _tev__SetSynchronizationPoint *tev__SetSynchronizationPoint, _tev__SetSynchronizationPointResponse &tev__SetSynchronizationPointResponse);
+        /// Web service operation 'Unsubscribe' (returns SOAP_OK or error code)
+        virtual int Unsubscribe(_wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse)
+        { return this->Unsubscribe(NULL, NULL, wsnt__Unsubscribe, wsnt__UnsubscribeResponse); }
+        virtual int Unsubscribe(const char *soap_endpoint, const char *soap_action, _wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse);
         /// Web service operation 'GetServiceCapabilities' (returns SOAP_OK or error code)
         virtual int GetServiceCapabilities(_tev__GetServiceCapabilities *tev__GetServiceCapabilities, _tev__GetServiceCapabilitiesResponse &tev__GetServiceCapabilitiesResponse)
         { return this->GetServiceCapabilities(NULL, NULL, tev__GetServiceCapabilities, tev__GetServiceCapabilitiesResponse); }
@@ -104,9 +108,9 @@ A commercial use license is available from Genivia Inc., contact@genivia.com
         { return this->Renew(NULL, NULL, wsnt__Renew, wsnt__RenewResponse); }
         virtual int Renew(const char *soap_endpoint, const char *soap_action, _wsnt__Renew *wsnt__Renew, _wsnt__RenewResponse &wsnt__RenewResponse);
         /// Web service operation 'Unsubscribe' (returns SOAP_OK or error code)
-        virtual int Unsubscribe(_wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse)
-        { return this->Unsubscribe(NULL, NULL, wsnt__Unsubscribe, wsnt__UnsubscribeResponse); }
-        virtual int Unsubscribe(const char *soap_endpoint, const char *soap_action, _wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse);
+        virtual int Unsubscribe_(_wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse)
+        { return this->Unsubscribe_(NULL, NULL, wsnt__Unsubscribe, wsnt__UnsubscribeResponse); }
+        virtual int Unsubscribe_(const char *soap_endpoint, const char *soap_action, _wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse);
         /// Web service operation 'Subscribe' (returns SOAP_OK or error code)
         virtual int Subscribe(_wsnt__Subscribe *wsnt__Subscribe, _wsnt__SubscribeResponse &wsnt__SubscribeResponse)
         { return this->Subscribe(NULL, NULL, wsnt__Subscribe, wsnt__SubscribeResponse); }
@@ -168,9 +172,9 @@ A commercial use license is available from Genivia Inc., contact@genivia.com
         { return this->Renew_(NULL, NULL, wsnt__Renew, wsnt__RenewResponse); }
         virtual int Renew_(const char *soap_endpoint, const char *soap_action, _wsnt__Renew *wsnt__Renew, _wsnt__RenewResponse &wsnt__RenewResponse);
         /// Web service operation 'Unsubscribe' (returns SOAP_OK or error code)
-        virtual int Unsubscribe_(_wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse)
-        { return this->Unsubscribe_(NULL, NULL, wsnt__Unsubscribe, wsnt__UnsubscribeResponse); }
-        virtual int Unsubscribe_(const char *soap_endpoint, const char *soap_action, _wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse);
+        virtual int Unsubscribe__(_wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse)
+        { return this->Unsubscribe__(NULL, NULL, wsnt__Unsubscribe, wsnt__UnsubscribeResponse); }
+        virtual int Unsubscribe__(const char *soap_endpoint, const char *soap_action, _wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse &wsnt__UnsubscribeResponse);
         /// Web service operation 'PauseSubscription' (returns SOAP_OK or error code)
         virtual int PauseSubscription(_wsnt__PauseSubscription *wsnt__PauseSubscription, _wsnt__PauseSubscriptionResponse &wsnt__PauseSubscriptionResponse)
         { return this->PauseSubscription(NULL, NULL, wsnt__PauseSubscription, wsnt__PauseSubscriptionResponse); }

@@ -16,6 +16,61 @@
 #include "OnvifEventClient.h"
 #include "soapPullPointSubscriptionBindingProxy.h"
 #include "wsaapi.h"
+#include <functional>
+
+
+ // TODO: Ugly - copied from proxy class to inject a functor before the namespace map is deallocated in soap_end_recv()
+int GetEventPropertiesOther(soap *soap, std::function<int(_tev__GetEventPropertiesResponse &)> nsLookup, const char *endpoint, const char *soap_action, _tev__GetEventProperties *tev__GetEventProperties, _tev__GetEventPropertiesResponse &tev__GetEventPropertiesResponse) {
+
+	struct __tev__GetEventProperties soap_tmp___tev__GetEventProperties;
+	auto soap_endpoint = endpoint;
+	if(soap_action == NULL)
+		soap_action = "http://www.onvif.org/ver10/events/wsdl/EventPortType/GetEventPropertiesRequest";
+	soap_tmp___tev__GetEventProperties.tev__GetEventProperties = tev__GetEventProperties;
+	soap_begin(soap);
+	soap->encodingStyle = NULL;
+	soap_serializeheader(soap);
+	soap_serialize___tev__GetEventProperties(soap, &soap_tmp___tev__GetEventProperties);
+	if(soap_begin_count(soap))
+		return soap->error;
+	if(soap->mode & SOAP_IO_LENGTH) {
+		if(soap_envelope_begin_out(soap)
+			 || soap_putheader(soap)
+			 || soap_body_begin_out(soap)
+			 || soap_put___tev__GetEventProperties(soap, &soap_tmp___tev__GetEventProperties, "-tev:GetEventProperties", "")
+			 || soap_body_end_out(soap)
+			 || soap_envelope_end_out(soap))
+			return soap->error;
+	}
+	if(soap_end_count(soap))
+		return soap->error;
+	if(soap_connect(soap, soap_endpoint, soap_action)
+		 || soap_envelope_begin_out(soap)
+		 || soap_putheader(soap)
+		 || soap_body_begin_out(soap)
+		 || soap_put___tev__GetEventProperties(soap, &soap_tmp___tev__GetEventProperties, "-tev:GetEventProperties", "")
+		 || soap_body_end_out(soap)
+		 || soap_envelope_end_out(soap)
+		 || soap_end_send(soap))
+		return soap_closesock(soap);
+	if(!static_cast<_tev__GetEventPropertiesResponse*>(&tev__GetEventPropertiesResponse)) // NULL ref?
+		return soap_closesock(soap);
+	tev__GetEventPropertiesResponse.soap_default(soap);
+	if(soap_begin_recv(soap)
+		 || soap_envelope_begin_in(soap)
+		 || soap_recv_header(soap)
+		 || soap_body_begin_in(soap))
+		return soap_closesock(soap);
+	tev__GetEventPropertiesResponse.soap_get(soap, "tev:GetEventPropertiesResponse", NULL);
+	if(soap->error)
+		return soap_recv_fault(soap, 0);
+	if(soap_body_end_in(soap)
+		 || soap_envelope_end_in(soap)
+		 || nsLookup(tev__GetEventPropertiesResponse) // ---------------------------------------> inject ns lookups befor they are removed
+		 || soap_end_recv(soap))
+		return soap_closesock(soap);
+	return soap_closesock(soap);
+}
 
 
 struct OnvifEventClientPrivate {
@@ -172,11 +227,16 @@ ArbitraryResponse<TopicSet> OnvifEventClient::GetParsedEventProperties(Request<_
 	auto action = "http://www.onvif.org/ver10/events/wsdl/EventPortType/GetEventPropertiesRequest";
 	auto ret = SOAP_OK;
 	auto pSoap = AcquireCtx();
+	TopicSet topicSet;
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
-		ret = mpD->mProxy.GetEventProperties(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
+		ret = GetEventPropertiesOther(pSoap, [pSoap, &topicSet](_tev__GetEventPropertiesResponse &tev__GetEventPropertiesResponse) {
+
+			tev__GetEventPropertiesResponse.wstop__TopicSet->soap = pSoap;
+			topicSet = TopicSet::FromXml(tev__GetEventPropertiesResponse.wstop__TopicSet);
+			return 0;
+		}, qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(Retry(pSoap));
-	TopicSet topicSet = TopicSet::FromXml(responseObject.wstop__TopicSet);
 	auto response = ArbitraryResponse<TopicSet>::Builder();
 	response.From(GetCtx(), topicSet);
 	ReleaseCtx(pSoap);
