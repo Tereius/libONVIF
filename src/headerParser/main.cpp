@@ -7,10 +7,10 @@
 
 void findDerived(std::vector<std::string> &result, const std::map<std::string, std::string> &map, std::string derivedFrom) {
 
-	for(std::pair<std::string, std::string> type : map) {
-		if(type.second.compare(derivedFrom) == 0) {
-			result.push_back(type.first);
-			findDerived(result, map, type.first);
+	for(std::map<std::string, std::string>::const_iterator it = map.begin(); it != map.end(); ++it) {
+		if(it->second.compare(derivedFrom) == 0) {
+			result.push_back(it->first);
+			findDerived(result, map, it->first);
 		}
 	}
 }
@@ -50,7 +50,7 @@ int main(int argc, const char **argv) {
 				prefix.erase(remove_if(prefix.begin(), prefix.end(), isspace), prefix.end());
 
 				std::string ns = line.substr(posNsBegin + 1, line.size() - posNsBegin - 2);
-				nsMap.insert_or_assign(prefix, ns);
+				nsMap[prefix] = ns;
 			}
 		}
 
@@ -79,7 +79,7 @@ int main(int argc, const char **argv) {
 							fromType.erase(remove_if(fromType.begin(), fromType.end(), isspace), fromType.end());
 							std::string toType = line.substr(posFromBegin, posFromEnd - posFromBegin);
 							toType.erase(remove_if(toType.begin(), toType.end(), isspace), toType.end());
-							typedefs.insert_or_assign(toType, fromType);
+							typedefs[toType] = fromType;
 						}
 					}
 				}
@@ -105,10 +105,10 @@ int main(int argc, const char **argv) {
 
 		ofs << "	static bool isStringDerived(const QString &rQname) {" << std::endl;
 		ofs << "		if(rQname.isEmpty()) return false;" << std::endl;
-		for(std::string fullType : stringDerivedTypes) {
-			size_t posTypeEnd = fullType.find("__");
-			std::string name = fullType.substr(posTypeEnd + 2, fullType.size() - posTypeEnd);
-			std::string type = fullType.substr(0, posTypeEnd);
+		for(std::vector<std::string>::const_iterator it = stringDerivedTypes.begin(); it != stringDerivedTypes.end(); ++it) {
+			size_t posTypeEnd = it->find("__");
+			std::string name = it->substr(posTypeEnd + 2, it->size() - posTypeEnd);
+			std::string type = it->substr(0, posTypeEnd);
 			ofs << "		else if(rQname == \"" << type << ":"  << name << "\") return true;" << std::endl;
 		}
 		ofs << "		else return false;" << std::endl;
