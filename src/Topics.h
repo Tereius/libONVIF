@@ -51,7 +51,7 @@ public:
 		PRIMITIVE_INTEGER,
 		PRIMITIVE_REAL
 	};
-	Q_ENUM(PrimitiveType)
+	QML_ENUM(PrimitiveType)
 
 		enum SimpleItemType {
 
@@ -60,7 +60,7 @@ public:
 		DATA,
 		SOURCE
 	};
-	Q_ENUM(SimpleItemType)
+	QML_ENUM(SimpleItemType)
 
 		SimpleItemInfo() :
 		mName(),

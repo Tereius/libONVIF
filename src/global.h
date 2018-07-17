@@ -16,11 +16,13 @@
 #pragma once
 #include <qglobal.h>
 
-#if QT_VERSION < 0x050500
+#if QT_VERSION < QT_VERSION_CHECK(5,5,0)
 #define QML_ENUM Q_ENUMS
+#else
+#define QML_ENUM Q_ENUM
 #endif
 
-#if QT_VERSION < 0x050400
+#if QT_VERSION < QT_VERSION_CHECK(5,4,0)
 #define qUtf8Printable(string) QString(string).toUtf8().constData()
 #endif
 
