@@ -14,6 +14,7 @@
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
 #pragma once
+#include "global.h"
 #include "soapH.h"
 #include "OnvifCommonExport.h"
 #include <QMutex>

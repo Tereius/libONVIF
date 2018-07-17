@@ -16,7 +16,6 @@
 #include "Client.h"
 #include "soapH.h"
 #include "wsseapi-lite.h"
-#include "global.h"
 #include "httpda.h"
 #include <QDebug>
 #include <QObject>

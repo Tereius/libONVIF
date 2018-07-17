@@ -14,6 +14,15 @@
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
 #pragma once
+#include <qglobal.h>
+
+#if QT_VERSION < 0x050500
+#define QML_ENUM Q_ENUMS
+#endif
+
+#if QT_VERSION < 0x050400
+#define qUtf8Printable(string) QString(string).toUtf8().constData()
+#endif
 
 #define HTTP_CONTINUE 100
 #define HTTP_SWITCHING_PROTOCOLS 101

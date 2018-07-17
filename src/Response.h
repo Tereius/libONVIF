@@ -17,7 +17,6 @@
 #include "soapH.h"
 #include "SafeBool.h"
 #include "SoapCtx.h"
-#include "global.h"
 #include <QString>
 #include <QDebug>
 

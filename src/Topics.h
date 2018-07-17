@@ -14,11 +14,12 @@
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
 #pragma once
+#include "global.h"
+#include "OnvifEventExport.h"
 #include <QVariant>
 #include <QString>
 #include <QList>
 #include <QStringList>
-#include "OnvifEventExport.h"
 
 
 class wstop__TopicSetType;
