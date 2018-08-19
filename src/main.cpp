@@ -13,16 +13,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
-#include "OnvifDevice.h"
 #include "CmdLineParser.h"
+#include "OnvifDevice.h"
 #include "OnvifDiscoveryClient.h"
 #include "SoapHelper.h"
 #include <QCoreApplication>
+#include <QDateTime>
+#include <QDebug>
 #include <QRunnable>
 #include <QThreadPool>
-#include <QDebug>
 #include <QTimer>
-#include <QDateTime>
 
 
 int main(int argc, char **argv) {
@@ -38,6 +38,10 @@ int main(int argc, char **argv) {
 	parser.process(app);
 	auto response = CmdLineParser::parse(parser);
 	if(response) {
+#ifndef WITH_OPENSSL
+		qDebug() << "WARNING: This binary was compiled without OpenSSL: SSL/TLS and http digest auth are disabled. Your password will be "
+		            "send as plaintext.";
+#endif // WITH_OPENSSL
 		auto options = response.GetResultObject();
 		if(options.discover) {
 			auto ctxBuilder = SoapCtx::Builder();
@@ -89,26 +93,24 @@ int main(int argc, char **argv) {
 									}
 								}
 							}
-						}
-						else {
+						} else {
 							qDebug() << "Skipping non related message with id:" << relatesTo;
 						}
 					}
 				}
 				qDebug() << "Found" << (foundMatches == 0 ? "no" : QString::number(foundMatches)) << (foundMatches > 1 ? "matches" : "match");
+			} else {
+				if(!probeResponseOne)
+					qDebug() << probeResponseOne.GetCompleteFault();
+				else
+					qDebug() << probeResponseTwo.GetCompleteFault();
 			}
-			else {
-				if(!probeResponseOne) qDebug() << probeResponseOne.GetCompleteFault();
-				else qDebug() << probeResponseTwo.GetCompleteFault();
-			}
-		}
-		else {
+		} else {
 			auto device = new OnvifDevice(response.GetResultObject().endpointUrl, &app);
 			device->SetAuth(response.GetResultObject().user, response.GetResultObject().pwd);
 			device->Initialize();
 		}
-	}
-	else {
+	} else {
 		qCritical() << response.GetCompleteFault();
 	}
 
@@ -125,13 +127,13 @@ int main(int argc, char **argv) {
 
 	QString eventUrl = "";
 	if(servicesResponse) {
-		for(auto service : servicesResponse.getResultObject()->Service) {
-			qDebug() << "namespace:" << service->Namespace.toStdString().c_str() << "Url:" << service->XAddr.toStdString().c_str();
-			if(service->Namespace == "http://www.onvif.org/ver10/events/wsdl") {
-				onvifEvent = new OnvifEventClient(QUrl(service->XAddr.toStdString().c_str()), ctx);
-				onvifEvent->SetAuth("admin", "admin", AUTO);
-			}
-		}
+	 for(auto service : servicesResponse.getResultObject()->Service) {
+	  qDebug() << "namespace:" << service->Namespace.toStdString().c_str() << "Url:" << service->XAddr.toStdString().c_str();
+	  if(service->Namespace == "http://www.onvif.org/ver10/events/wsdl") {
+	   onvifEvent = new OnvifEventClient(QUrl(service->XAddr.toStdString().c_str()), ctx);
+	   onvifEvent->SetAuth("admin", "admin", AUTO);
+	  }
+	 }
 	}
 	*/
 	// 	Request<_tev__GetEventProperties> req;
@@ -148,18 +150,18 @@ int main(int argc, char **argv) {
 	// 			}
 	// 		}
 	// 	}
-/*
-	if(onvifEvent) {
-		Request<_tev__CreatePullPointSubscription> request;
-		request.InitialTerminationTime = new AbsoluteOrRelativeTime(60000);
-		auto response = onvifEvent->CreatePullPointSubscription(request);
-		if(response && response.GetResultObject()) {
-			response.GetResultObject()->Start();
-			for(auto i = 0; i < 60; i++) {
-				QThread::currentThread()->msleep(10000);
-			}
-		}
-	}
-	*/
+	/*
+	 if(onvifEvent) {
+	  Request<_tev__CreatePullPointSubscription> request;
+	  request.InitialTerminationTime = new AbsoluteOrRelativeTime(60000);
+	  auto response = onvifEvent->CreatePullPointSubscription(request);
+	  if(response && response.GetResultObject()) {
+	   response.GetResultObject()->Start();
+	   for(auto i = 0; i < 60; i++) {
+	    QThread::currentThread()->msleep(10000);
+	   }
+	  }
+	 }
+	 */
 	return 0;
 }

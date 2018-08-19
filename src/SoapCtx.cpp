@@ -15,26 +15,28 @@
  */
 #include "SoapCtx.h"
 #include "QMutexLocker"
+#ifdef WITH_OPENSSL
 #include "httpda.h"
-#include "wsaapi.h"
+#endif // WITH_OPENSSL
 #include "namespaces.nsmap"
-#include <QString>
+#include "wsaapi.h"
 #include <QDebug>
 #include <QPointer>
+#include <QString>
 
 
 struct arbData {
 
 	bool enableDebug = false;
-	int(*fsend)(struct soap*, const char*, size_t);
-	size_t(*frecv)(struct soap*, char*, size_t);
+	int (*fsend)(struct soap *, const char *, size_t);
+	size_t (*frecv)(struct soap *, char *, size_t);
 	QPointer<QObject> pObject = nullptr;
 };
 
 int fsend(struct soap *soap, const char *s, size_t n) {
 
-	auto ret = ((arbData*)soap->user)->fsend(soap, s, n);
-	if(((arbData*)soap->user)->enableDebug) {
+	auto ret = ((arbData *)soap->user)->fsend(soap, s, n);
+	if(((arbData *)soap->user)->enableDebug) {
 		auto out = QString::fromUtf8(s, n).trimmed();
 		if(!out.isEmpty()) qDebug() << qUtf8Printable(out);
 	}
@@ -43,8 +45,8 @@ int fsend(struct soap *soap, const char *s, size_t n) {
 
 size_t frecv(struct soap *soap, char *s, size_t n) {
 
-	auto length = ((arbData*)soap->user)->frecv(soap, s, n);
-	if(((arbData*)soap->user)->enableDebug) {
+	auto length = ((arbData *)soap->user)->frecv(soap, s, n);
+	if(((arbData *)soap->user)->enableDebug) {
 		auto out = QString::fromUtf8(s, length).trimmed();
 		if(!out.isEmpty()) qDebug() << qUtf8Printable(out);
 	}
@@ -53,21 +55,19 @@ size_t frecv(struct soap *soap, char *s, size_t n) {
 
 struct CtxPrivate {
 	CtxPrivate(SoapCtx *pQ) :
-		mpQ(pQ),
-		mpSoap(nullptr),
-		mMutex(QMutex::Recursive),
-		mIsSaved(false),
-		mIModeSaved(),
-		mOModeSaved(),
-		mConnectTimeoutSaved(),
-		mSendTimeout(),
-		mReceiveTimeout(),
-		mSoFlags(),
-		mConFlags(),
-		mBindFlags(),
-		mAcceptFlags() {
-
-	}
+	 mpQ(pQ),
+	 mpSoap(nullptr),
+	 mMutex(QMutex::Recursive),
+	 mIsSaved(false),
+	 mIModeSaved(),
+	 mOModeSaved(),
+	 mConnectTimeoutSaved(),
+	 mSendTimeout(),
+	 mReceiveTimeout(),
+	 mSoFlags(),
+	 mConFlags(),
+	 mBindFlags(),
+	 mAcceptFlags() {}
 
 	SoapCtx *mpQ;
 	soap *mpSoap;
@@ -84,16 +84,14 @@ struct CtxPrivate {
 	int mAcceptFlags;
 };
 
-SoapCtx::SoapCtx() :
-	mpD(new CtxPrivate(this)) {
+SoapCtx::SoapCtx() : mpD(new CtxPrivate(this)) {
 
 	mpD->mpSoap = soap_new();
 	soap_init2(mpD->mpSoap, SOAP_NEW_IO_DEFAULT, SOAP_NEW_IO_DEFAULT);
 	InitCtx();
 }
 
-SoapCtx::SoapCtx(soap_mode imode, soap_mode omode) :
-	mpD(new CtxPrivate(this)) {
+SoapCtx::SoapCtx(soap_mode imode, soap_mode omode) : mpD(new CtxPrivate(this)) {
 
 	mpD->mpSoap = soap_new();
 	soap_init2(mpD->mpSoap, imode, omode);
@@ -102,14 +100,14 @@ SoapCtx::SoapCtx(soap_mode imode, soap_mode omode) :
 
 SoapCtx::~SoapCtx() {
 
-	delete (arbData*)mpD->mpSoap->user;
+	delete(arbData *)mpD->mpSoap->user;
 	mpD->mpSoap->user = nullptr;
 	soap_free(mpD->mpSoap);
 	delete mpD;
 }
 
 
-const Namespace* SoapCtx::GetDefaultNamespaces() {
+const Namespace *SoapCtx::GetDefaultNamespaces() {
 
 	return namespaces;
 }
@@ -208,7 +206,7 @@ void SoapCtx::DisableOModeFlags(soap_mode omode) {
 	soap_clr_omode(mpD->mpSoap, omode);
 }
 
-soap* SoapCtx::Acquire() {
+soap *SoapCtx::Acquire() {
 
 	mpD->mMutex.lock();
 	return mpD->mpSoap;
@@ -219,7 +217,7 @@ void SoapCtx::Release() {
 	mpD->mMutex.unlock();
 }
 
-soap* SoapCtx::TryAcquire(int timeoutMs) {
+soap *SoapCtx::TryAcquire(int timeoutMs) {
 
 	bool locked = mpD->mMutex.tryLock(timeoutMs);
 	if(locked) return mpD->mpSoap;
@@ -228,7 +226,9 @@ soap* SoapCtx::TryAcquire(int timeoutMs) {
 
 void SoapCtx::InitCtx() {
 
+#ifdef WITH_OPENSSL
 	soap_register_plugin(mpD->mpSoap, http_da);
+#endif // WITH_OPENSSL
 	soap_register_plugin(mpD->mpSoap, soap_wsa);
 
 	mpD->mpSoap->connect_timeout = SOAP_DEFAULT_CONNECT_TIMEOUT * -1000;
@@ -236,9 +236,9 @@ void SoapCtx::InitCtx() {
 	mpD->mpSoap->send_timeout = SOAP_DEFAULT_SEND_TIMEOUT * -1000;
 	soap_set_namespaces(mpD->mpSoap, SoapCtx::GetDefaultNamespaces());
 
-	int(*pFsend)(struct soap *, const char *, size_t);
+	int (*pFsend)(struct soap *, const char *, size_t);
 	pFsend = &fsend;
-	size_t(*pFrecv)(struct soap *soap, char *s, size_t n);
+	size_t (*pFrecv)(struct soap * soap, char *s, size_t n);
 	pFrecv = &frecv;
 	auto ud = new arbData();
 	ud->frecv = mpD->mpSoap->frecv;
@@ -304,23 +304,17 @@ void SoapCtx::Restore() {
 	}
 }
 
+#ifdef WITH_OPENSSL
 bool SoapCtx::EnableSsl() {
 
 	QMutexLocker locker(&mpD->mMutex);
-	auto result = soap_ssl_client_context(
-		mpD->mpSoap,
-		SOAP_NEW_SSL_DEFAULT,
-		nullptr,
-		nullptr,
-		nullptr,
-		nullptr,
-		nullptr
-	);
+	auto result = soap_ssl_client_context(mpD->mpSoap, SOAP_NEW_SSL_DEFAULT, nullptr, nullptr, nullptr, nullptr, nullptr);
 	if(result != SOAP_OK) {
 		qWarning() << GetFaultString();
 	}
 	return result == SOAP_OK;
 }
+#endif // WITH_OPENSSL
 
 QString SoapCtx::GetFaultString() {
 
@@ -350,13 +344,13 @@ QString SoapCtx::GetFaultDetail() {
 void SoapCtx::EnablePrintRawSoap() {
 
 	QMutexLocker locker(&mpD->mMutex);
-	((arbData*)mpD->mpSoap->user)->enableDebug = true;
+	((arbData *)mpD->mpSoap->user)->enableDebug = true;
 }
 
 void SoapCtx::DisablePrintRawSoap() {
 
 	QMutexLocker locker(&mpD->mMutex);
-	((arbData*)mpD->mpSoap->user)->enableDebug = false;
+	((arbData *)mpD->mpSoap->user)->enableDebug = false;
 }
 
 void SoapCtx::SetSocketFlags(int soFlags) {

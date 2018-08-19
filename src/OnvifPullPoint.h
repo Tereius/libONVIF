@@ -15,10 +15,10 @@
  */
 #pragma once
 #include "Client.h"
-#include "Response.h"
 #include "OnvifEventExport.h"
-#include <QThread>
+#include "Response.h"
 #include <QList>
+#include <QThread>
 
 
 class OnvifEventClient;
@@ -29,7 +29,6 @@ class OnvifPullPointWorker : public QThread {
 	Q_OBJECT
 
 public:
-
 	OnvifPullPointWorker(const QUrl &rEndpoint, QObject *pParent = nullptr);
 	virtual ~OnvifPullPointWorker();
 	bool StartListening();
@@ -37,9 +36,11 @@ public:
 
 signals:
 	void MessageReceived(const Response<wsnt__NotificationMessageHolderType> &rResponse);
+	void LostPullPoint(const SimpleResponse &rCause);
+	void ResumedPullPoint();
+	void UnsuccessfulPull(int unsuccessfulPullcount, const SimpleResponse &rCause);
 
 protected:
-
 	void run();
 
 private:
@@ -65,13 +66,13 @@ class ONVIFEVENT_EXPORT OnvifPullPoint : public Client {
 
 public:
 	/*!
-	*
-	* \brief Construct a pull point listener
-	*
-	* \param rEndpoint The WS event endpoint this listener will use for its WS calls
-	* \param pParent A QObject parent
-	*
-	*/
+	 *
+	 * \brief Construct a pull point listener
+	 *
+	 * \param rEndpoint The WS event endpoint this listener will use for its WS calls
+	 * \param pParent A QObject parent
+	 *
+	 */
 	OnvifPullPoint(const QUrl &rEndpoint, QObject *pParent = nullptr);
 	virtual ~OnvifPullPoint();
 	//! Check if the pull point is active and we listen for events
@@ -80,12 +81,16 @@ public:
 signals:
 	//! Emitted if a event occurs holding the message of the event
 	void MessageReceived(const Response<_tev__PullMessagesResponse> &rResponse);
-	//! Emitted if the listener unsubscribed from the pull point
-	void Unsubscribed();
+	//! Emitted as soon as a pull failed
+	void LostPullPoint(const SimpleResponse &rCause);
+	//! Emitted as soon as a successful pull was received after a failed pull
+	void ResumedPullPoint();
+	//! Emitted if a message pull was unsuccessful. Contains the number of consecutive failed pulls
+	void UnsuccessfulPull(int unsuccessfulPullcount, const SimpleResponse &rCause);
 	//! Emitted if the active state changes
-	void ActiveChanged();
+	void ActiveChanged(bool isActive);
 
-	public slots:
+public slots:
 	//! Start listening for events. Non blocking
 	void Start();
 	//! Stop listening for events

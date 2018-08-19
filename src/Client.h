@@ -14,19 +14,17 @@
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
 #pragma once
-#include "SoapCtx.h"
 #include "OnvifCommonExport.h"
+#include "SoapCtx.h"
 #include <QObject>
-#include <QUrl>
 #include <QSharedPointer>
+#include <QUrl>
 
 
 struct soap;
 struct ClientPrivate;
 
-enum AuthMode {
-	NO_AUTH, HTTP_DIGEST, WS_USERNAME_TOKEN, BOTH, AUTO
-};
+enum AuthMode { NO_AUTH, HTTP_DIGEST, WS_USERNAME_TOKEN, BOTH, AUTO };
 
 /*!
  *
@@ -55,16 +53,16 @@ public:
 	Client(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
 	virtual ~Client();
 	/*!
-	*
-	* \brief Enable user authentication for this client
-	*
-	* Previously set credentials will be replaced by the new ones
-	*
-	* \param rUserName The user that is used for authentication
-	* \param rPassword The password that is used for authentication
-	* \param mode The authentication mode
-	*
-	*/
+	 *
+	 * \brief Enable user authentication for this client
+	 *
+	 * Previously set credentials will be replaced by the new ones
+	 *
+	 * \param rUserName The user that is used for authentication
+	 * \param rPassword The password that is used for authentication
+	 * \param mode The authentication mode
+	 *
+	 */
 	virtual void SetAuth(const QString &rUserName, const QString &rPassword, AuthMode mode = AUTO);
 	//! Clear previously set credentials and disable user authentication for this client
 	virtual void DisableAuth();
@@ -89,10 +87,10 @@ public:
 
 protected:
 	//! Service implementations use this to acquire/prepare a raw soap context. releaseCtx must be called afterwards
-	soap* AcquireCtx();
+	soap *AcquireCtx();
 	//! Service implementations use this to acquire/prepare a raw soap context. releaseCtx must be called afterwards if successful.
 	//! (If the timeout is reached before the soap context could be acquired/prepared null is returned)
-	soap* TryAcquireCtx(int timeoutMs = 0);
+	soap *TryAcquireCtx(int timeoutMs = 0);
 	//! Service implementations use this to release a previously acquired raw soap context
 	void ReleaseCtx(soap *pCtx);
 	//! Service implementations use this to find out how many times a service call has to be repeated

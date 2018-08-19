@@ -14,9 +14,9 @@
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
 #pragma once
+#include "OnvifCommonExport.h"
 #include "global.h"
 #include "soapH.h"
-#include "OnvifCommonExport.h"
 #include <QMutex>
 #include <QSharedPointer>
 
@@ -38,19 +38,18 @@ struct CtxPrivate;
 class ONVIFCOMMON_EXPORT SoapCtx {
 
 public:
-
 	/*!
-	*
-	* \brief Construct a soap context with default settings
-	*
-	*/
+	 *
+	 * \brief Construct a soap context with default settings
+	 *
+	 */
 	SoapCtx();
 
 	/*!
-	*
-	* \brief Construct a soap context with custom mode
-	*
-	*/
+	 *
+	 * \brief Construct a soap context with custom mode
+	 *
+	 */
 	SoapCtx(soap_mode imode, soap_mode omode);
 	virtual ~SoapCtx();
 	//! Set the imode
@@ -81,8 +80,10 @@ public:
 	int GetFaultCode();
 	//! Get the soap fault code of the last WS call
 	QString GetFaultSubcode();
+#ifdef WITH_OPENSSL
 	//! Enable SSL support
 	bool EnableSsl();
+#endif // WITH_OPENSSL
 	//! Deletes an object from gsoap memory space
 	void SoapDelete(void *p);
 	//! Deallocates an object from gsoap memory space
@@ -112,43 +113,62 @@ public:
 	//! Restore the previously saved state of the soap context
 	void Restore();
 	//! Acquire the raw soap ctx. Release must be called afterwards
-	soap* Acquire();
+	soap *Acquire();
 	//! Acquire the raw soap ctx. Release must be called afterwards
 	//! (If the timeout is reached before the soap context could be acquired null is returned)
-	soap* TryAcquire(int timeoutMs = 0);
+	soap *TryAcquire(int timeoutMs = 0);
 	//! Release a previously acquired raw soap context
 	void Release();
 	//! Get the default namespace map
-	static const Namespace* GetDefaultNamespaces();
+	static const Namespace *GetDefaultNamespaces();
 	//! Get the prefix of namespace from default namespace map
 	static QString GetPrefix(const QString &rNamespace);
 	//! Get the namespace of prefix from default namespace map
 	static QString GetNamespace(const QString &rPrefix);
 
 	/*!
-	*
-	* \brief Builds a soap context
-	*
-	*/
+	 *
+	 * \brief Builds a soap context
+	 *
+	 */
 	class Builder {
 
 	public:
-		Builder() :
-			mpResult(QSharedPointer<SoapCtx>::create()) {}
+		Builder() : mpResult(QSharedPointer<SoapCtx>::create()) {}
 
-		Builder& SetConnectTimeout(int timeoutMs) { mpResult->SetConnectTimeout(timeoutMs); return *this; }
-		Builder& SetSendTimeout(int timeoutMs) { mpResult->SetSendTimeout(timeoutMs); return *this; }
-		Builder& SetReceiveTimeout(int timeoutMs) { mpResult->SetReceiveTimeout(timeoutMs); return *this; }
-		Builder& EnableIMode(soap_mode timeoutMs) { mpResult->EnableIModeFlags(timeoutMs); return *this; }
-		Builder& EnableOMode(soap_mode timeoutMs) { mpResult->EnableOModeFlags(timeoutMs); return *this; }
-		Builder& EnablePrintRawSoap() { mpResult->EnablePrintRawSoap(); return *this; }
+		Builder &SetConnectTimeout(int timeoutMs) {
+			mpResult->SetConnectTimeout(timeoutMs);
+			return *this;
+		}
+		Builder &SetSendTimeout(int timeoutMs) {
+			mpResult->SetSendTimeout(timeoutMs);
+			return *this;
+		}
+		Builder &SetReceiveTimeout(int timeoutMs) {
+			mpResult->SetReceiveTimeout(timeoutMs);
+			return *this;
+		}
+		Builder &EnableIMode(soap_mode timeoutMs) {
+			mpResult->EnableIModeFlags(timeoutMs);
+			return *this;
+		}
+		Builder &EnableOMode(soap_mode timeoutMs) {
+			mpResult->EnableOModeFlags(timeoutMs);
+			return *this;
+		}
+		Builder &EnablePrintRawSoap() {
+			mpResult->EnablePrintRawSoap();
+			return *this;
+		}
 #ifdef WITH_OPENSSL
-		Builder& EnableSsl() { mpResult->EnableSsl(); return *this; }
+		Builder &EnableSsl() {
+			mpResult->EnableSsl();
+			return *this;
+		}
 #endif // WITH_OPENSSL
-		const QSharedPointer<SoapCtx>& Build() const { return mpResult; }
+		const QSharedPointer<SoapCtx> &Build() const { return mpResult; }
 
 	private:
-
 		QSharedPointer<SoapCtx> mpResult;
 	};
 

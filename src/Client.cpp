@@ -16,27 +16,32 @@
 #include "Client.h"
 #include "soapH.h"
 #include "wsseapi-lite.h"
+#ifdef WITH_OPENSSL
 #include "httpda.h"
+#endif // WITH_OPENSSL
 #include <QDebug>
 #include <QObject>
 
 
 #define CheckIfDigestAuthFault(pSoap) (pSoap->error == HTTP_UNAUTHORIZED)
-#define CheckIfWsTokenAuthFault(pSoap) (pSoap->error == SOAP_CLI_FAULT && QString::compare(QString::fromLocal8Bit(*soap_faultsubcode(pSoap)), QString("\"http://www.onvif.org/ver10/error\":NotAuthorized)")) != 0)
+#define CheckIfWsTokenAuthFault(pSoap)                                                                  \
+	(pSoap->error == SOAP_CLI_FAULT && QString::compare(QString::fromLocal8Bit(*soap_faultsubcode(pSoap)), \
+	                                                    QString("\"http://www.onvif.org/ver10/error\":NotAuthorized)")) != 0)
 #define CheckIfAuthFault(pSoap) (CheckIfWsTokenAuthFault(pSoap) || CheckIfDigestAuthFault(pSoap))
 
 struct ClientPrivate {
 	ClientPrivate(Client *pQ, const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx) :
-		mpQ(pQ),
-		mCtx(sharedCtx),
-		mEndpoint(rEndpoint),
-		mAuthmode(NO_AUTH),
-		mUserName(),
-		mPassword(),
-		mDigest(),
-		mDigestStore(),
-		mAuthProcessed(false) {
-
+	 mpQ(pQ),
+	 mCtx(sharedCtx),
+	 mEndpoint(rEndpoint),
+	 mAuthmode(NO_AUTH),
+	 mUserName(),
+	 mPassword(),
+	 mDigest(),
+#ifdef WITH_OPENSSL
+	 mDigestStore(),
+#endif // WITH_OPENSSL
+	 mAuthProcessed(false) {
 	}
 
 	Client *mpQ;
@@ -46,15 +51,15 @@ struct ClientPrivate {
 	QString mUserName;
 	QString mPassword;
 	QString mDigest;
+#ifdef WITH_OPENSSL
 	http_da_info mDigestStore;
+#endif // WITH_OPENSSL
 	bool mAuthProcessed;
 };
 
 Client::Client(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx, QObject *pParent) :
-	QObject(pParent),
-	mpD(new ClientPrivate(this, rEndpoint, sharedCtx)) {
-
-}
+ QObject(pParent),
+ mpD(new ClientPrivate(this, rEndpoint, sharedCtx)) {}
 
 Client::~Client() {
 
@@ -62,14 +67,14 @@ Client::~Client() {
 	delete mpD;
 }
 
-soap* Client::AcquireCtx() {
+soap *Client::AcquireCtx() {
 
 	auto pCtx = mpD->mCtx->Acquire();
 	RestoreAuth(pCtx);
 	return pCtx;
 }
 
-soap* Client::TryAcquireCtx(int timeoutMs /*= 0*/) {
+soap *Client::TryAcquireCtx(int timeoutMs /*= 0*/) {
 
 	auto pCtx = mpD->mCtx->TryAcquire(timeoutMs);
 	if(pCtx) RestoreAuth(pCtx);
@@ -93,7 +98,9 @@ bool Client::ProcessAuthFaultAndRetry(soap *pCtx) {
 			// HTTP digest auth.
 			if(mpD->mAuthmode == AUTO) mpD->mAuthmode = HTTP_DIGEST;
 			mpD->mDigest = QString::fromLocal8Bit(pCtx->authrealm);
+#ifdef WITH_OPENSSL
 			http_da_save(pCtx, &mpD->mDigestStore, pCtx->authrealm, qPrintable(mpD->mUserName), qPrintable(mpD->mPassword));
+#endif // WITH_OPENSSL
 		}
 		if(mpD->mAuthmode == WS_USERNAME_TOKEN || mpD->mAuthmode == BOTH || mpD->mAuthmode == AUTO) {
 			// WS token auth.
@@ -108,13 +115,14 @@ void Client::RestoreAuth(soap *pCtx) {
 
 	if(mpD->mAuthProcessed == true) {
 		if(mpD->mAuthmode == HTTP_DIGEST || mpD->mAuthmode == BOTH) {
+#ifdef WITH_OPENSSL
 			if(mpD->mDigestStore.authrealm) {
 				http_da_restore(pCtx, &mpD->mDigestStore);
-			}
-			else {
+			} else {
 				qWarning() << "The authrealm is missing in http_da_restore. Falling back to WS token auth.";
 				mpD->mAuthmode = WS_USERNAME_TOKEN;
 			}
+#endif // WITH_OPENSSL
 		}
 		if(mpD->mAuthmode == WS_USERNAME_TOKEN || mpD->mAuthmode == BOTH) {
 			soap_wsse_delete_Security(pCtx);
@@ -133,10 +141,16 @@ void Client::DisableAuth() {
 	mpD->mCtx->Release();
 }
 
-void Client::SetAuth(const QString &rUserName, const QString &rPassword, AuthMode mode) {
+void Client::SetAuth(const QString &rUserName, const QString &rPassword, AuthMode mode /* = AUTO */) {
 
 	auto pCtx = mpD->mCtx->Acquire();
 	mpD->mAuthProcessed = false;
+#ifndef WITH_OPENSSL
+	if(mode != NO_AUTH && mode != WS_USERNAME_TOKEN) {
+		mode = WS_USERNAME_TOKEN;
+		qWarning() << "This build doesn't support http digest auth. Switching back to ws token";
+	}
+#endif // WITH_OPENSSL
 	mpD->mAuthmode = mode;
 	mpD->mUserName = rUserName;
 	mpD->mPassword = rPassword;
@@ -147,9 +161,11 @@ void Client::SetAuth(const QString &rUserName, const QString &rPassword, AuthMod
 void Client::FreeAuthData() {
 
 	auto pCtx = mpD->mCtx->Acquire();
+#ifdef WITH_OPENSSL
 	if(mpD->mDigestStore.authrealm) {
 		http_da_release(pCtx, &mpD->mDigestStore);
 	}
+#endif // WITH_OPENSSL
 	soap_wsse_delete_Security(pCtx);
 	mpD->mCtx->Release();
 }

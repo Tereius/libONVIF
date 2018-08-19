@@ -1,21 +1,28 @@
 cmake_minimum_required(VERSION 2.8.12)
+# Set a default search path for CMake modules
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
+include(JSONParser)
 
-#------------global variables------------
-project(libONVIF)
-# The version number.
-set(VERSION_MAJOR 1)
-set(VERSION_MINOR 0)
-set(VERSION_PATCH 0)
-set(VERSION_STRING ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
-set(PROJECT_VENDOR "Björn Stresing")
-set(PROJECT_COPYRIGHT_YEAR "2018")
-set(PROJECT_DOMAIN_FIRST "com")
-set(PROJECT_DOMAIN_SECOND "github")
-set(PROJECT_DOMAIN_THIRD "Tereius")
-set(PROJECT_CONTACT "bjoern.stresing@gmx.de")
-set(PROJECT_DOMAIN "${PROJECT_DOMAIN_FIRST}.${PROJECT_DOMAIN_SECOND}.${PROJECT_DOMAIN_THIRD}")
-set(PROJECT_DESCRIPTION "A client side ONVIF library")
-#----------------------------------------
+# Configure a header file to pass some of the CMake settings to the source code.
+include_directories("${PROJECT_BINARY_DIR}/src")
+# Parse the info.json and write a info.h file
+file(READ info.json jsonInfo)
+sbeParseJson(info jsonInfo)
+file(WRITE "${PROJECT_BINARY_DIR}/src/info.h" "")
+foreach(var ${info})
+	string(TOUPPER "${var}" UPPER_VAR)
+	string(REPLACE "." "_" UPPER_VAR "${UPPER_VAR}")
+	if (${${var}} MATCHES "^[0-9]+$")
+		file(APPEND info.h "#define ${UPPER_VAR} ${${var}}\n")
+	else()
+		file(APPEND info.h "#define ${UPPER_VAR} \"${${var}}\"\n")
+	endif()
+endforeach()
+
+project(${info.projectName})
+
+# The beakon will be replaced by conan if used
+### CONAN_BEACON ###
 
 # If build type is empty and there is no multi-configuration generator (like Visual Studio) choose release build.
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -28,9 +35,6 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "Default Targets")
 # Handle RPATH stuff
 if (UNIX)
 	set(RPATH_ORIGIN false CACHE BOOL "Set the RPATH to $ORIGIN? Helpful for bundles")
-
-	# Set a default search path for CMake modules
-	set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
 
 	# Use, i.e. don't skip the full RPATH for the build tree
 	set(CMAKE_SKIP_BUILD_RPATH  OFF)
@@ -53,10 +57,6 @@ if (UNIX)
 		endif()
 	endif()
 endif()
-
-# Configure a header file to pass some of the CMake settings to the source code.
-configure_file("${CMAKE_SOURCE_DIR}/src/info.in" "${PROJECT_BINARY_DIR}/src/info.h")
-include_directories("${PROJECT_BINARY_DIR}/src")
 
 # Handle doxygen stuff
 find_package(Doxygen QUIET)
@@ -88,14 +88,14 @@ elseif(ANDROID)
 	set(CPACK_GENERATOR STGZ;TGZ)
 else()
 endif()
-set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_DESCRIPTION}")
-set(CPACK_PACKAGE_VENDOR "${PROJECT_VENDOR}")
-set(CPACK_PACKAGE_CONTACT "${PROJECT_CONTACT}")
+set(CPACK_PACKAGE_NAME "${info.projectName}")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${info.projectDescription}")
+set(CPACK_PACKAGE_VENDOR "${info.vendor}")
+set(CPACK_PACKAGE_CONTACT "${info.contact}")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
+set(CPACK_PACKAGE_VERSION_MAJOR ${info.version.major})
+set(CPACK_PACKAGE_VERSION_MINOR ${info.version.minor})
+set(CPACK_PACKAGE_VERSION_PATCH ${info.version.patch})
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_PACKAGE_INSTALL_DIRECTORY ${PROJECT_NAME}{CTL_MAJOR_VERSION}.${CTL_MINOR_VERSION})
 set(CPACK_PACKAGE_FILE_NAME  ${PROJECT_NAME})

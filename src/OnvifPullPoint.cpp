@@ -45,6 +45,7 @@ void OnvifPullPointWorker::run() {
 	int messageLimit = PULL_POINT_DEFAULT_MSG_LIMIT;
 	int timeoutLimit = PULL_POINT_DEFAULT_TIMEOUT; // 1 h
 	int pullFaultCount = 0;
+	bool failedPullHandled = false;
 	bool shortPull = true; // The first pull should have a short timeout so we can check if it's working.
 
 	qDebug() << "Starting new Pull Point:" << mpClient->GetEndpointString();
@@ -69,6 +70,11 @@ void OnvifPullPointWorker::run() {
 			for(auto it : resp.GetResultObject()->wsnt__NotificationMessage) {
 				emit MessageReceived(Response<wsnt__NotificationMessageHolderType>(it));
 			}
+
+			if(failedPullHandled) {
+				emit ResumedPullPoint();
+				failedPullHandled = false;
+			}
 		}
 		else {
 			pullFaultCount++;
@@ -90,6 +96,12 @@ void OnvifPullPointWorker::run() {
 				// Sleeping
 				for(auto i = 1; i <= 10 && !QThread::isInterruptionRequested(); ++i) QThread::msleep(1000);
 			}
+
+			if(!failedPullHandled && pullFaultCount >= 2) {
+				failedPullHandled = true;
+				emit LostPullPoint(resp);
+			}
+			emit UnsuccessfulPull(pullFaultCount, resp);
 		}
 	}
 	mpClient->GetCtx()->Restore();
@@ -172,13 +184,16 @@ void OnvifPullPoint::Start() {
 	mpD->mMutex.lock();
 	if(!mpD->mpWorker) {
 		mpD->mpWorker = new OnvifPullPointWorker(mpD->mEndpoint, this);
+		connect(mpD->mpWorker, SIGNAL(UnsuccessfulPull(int, const SimpleResponse &)), this, SLOT(UnsuccessfulPull(int, const SimpleResponse &)));
+		connect(mpD->mpWorker, SIGNAL(LostPullPoint(const SimpleResponse &)), this, SLOT(LostPullPoint(const SimpleResponse &)));
+		connect(mpD->mpWorker, SIGNAL(ResumedPullPoint()), this, SLOT(ResumedPullPoint()));
 		mpD->mActive = mpD->mpWorker->StartListening();
 		if(!mpD->mActive) {
 			Stop();
 		}
 	}
 	mpD->mMutex.unlock();
-	if(activeBackup != mpD->mActive) emit ActiveChanged();
+	if(activeBackup != mpD->mActive) emit ActiveChanged(mpD->mActive);
 }
 
 void OnvifPullPoint::Stop() {
@@ -192,7 +207,7 @@ void OnvifPullPoint::Stop() {
 		mpD->mActive = false;
 	}
 	mpD->mMutex.unlock();
-	if(activeBackup != mpD->mActive) emit ActiveChanged();
+	if(activeBackup != mpD->mActive) emit ActiveChanged(mpD->mActive);
 }
 
 bool OnvifPullPoint::Active() {

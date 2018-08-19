@@ -15,15 +15,24 @@ set(CMAKE_AUTOMOC ON)
 set(BUILD_SHARED_LIBS true CACHE BOOL "Build shared or static lib?")
 set(ENABLE_CODESYNTHESIS false CACHE BOOL "Run wsdl2h and soapcpp2?")
 set(CMAKE_DEBUG_POSTFIX d) # Append "d" if debug lib.
+set(HAS_OPENSSL OFF)
+if(OpenSSL_include_DIR AND OpenSSL_cryptro_PATH AND OpenSSL_ssl_PATH)
+	set(HAS_OPENSSL ON)
+endif()
 
 link_directories("${_qt5Core_install_prefix}/lib")
-include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" "${OpenSSL_include_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/generated" "${CMAKE_CURRENT_SOURCE_DIR}/gsoap")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/generated" "${CMAKE_CURRENT_SOURCE_DIR}/gsoap")
+if(HAS_OPENSSL)
+	include_directories("${OpenSSL_include_DIR}")
+	add_definitions(-DWITH_OPENSSL)
+else()
+	message(STATUS "SSL/TLS disabled because of missing OpenSSL library")
+endif()
 
 if(WIN32)
 	add_definitions(-DOS_WIN32)
 endif()
 
-add_definitions(-DWITH_OPENSSL)
 if(MSVC)
 	add_definitions(-DNOMINMAX)
 endif()
@@ -74,8 +83,6 @@ set(src_files
 	gsoap/qstring.cpp
 	gsoap/stdsoap2.cpp
 	gsoap/dom.cpp
-	gsoap/httpda.c
-	gsoap/smdevp.c
 	gsoap/wsaapi.c
 	gsoap/wsseapi-lite.c
 	gsoap/qstringCompare.cpp
@@ -83,6 +90,10 @@ set(src_files
 	Client.cpp
 	SoapHelper.cpp
 )
+
+if(HAS_OPENSSL)
+	set(src_files ${src_files} gsoap/smdevp.c gsoap/httpda.c)
+endif()
 
 set_source_files_properties(${src_files} PROPERTIES LANGUAGE CXX)
 
@@ -96,11 +107,8 @@ set(public_header_files
 	generated/soapStub.h
 	generated/soapH.h
 	gsoap/stdsoap2.h
-	gsoap/httpda.h
-	gsoap/smdevp.h
 	gsoap/wsaapi.h
 	gsoap/wsseapi-lite.h
-	gsoap/threads.h
 	gsoap/AbsoluteOrRelativeTime.h
 	gsoap/qstringCompare.h
 	SoapCtx.h
@@ -112,9 +120,16 @@ set(public_header_files
 	SoapHelper.h
 )
 
+if(HAS_OPENSSL)
+	set(public_header_files ${public_header_files} gsoap/smdevp.h gsoap/httpda.h gsoap/threads.h)
+endif()
+
 add_library(onvifcommon ${src_files} ${private_header_files} ${public_header_files})
 generate_export_header(onvifcommon EXPORT_FILE_NAME OnvifCommonExport.h)
-target_link_libraries(onvifcommon "${OpenSSL_ssl_PATH}" "${OpenSSL_cryptro_PATH}" Qt5::Core)
+target_link_libraries(onvifcommon Qt5::Core)
+if(HAS_OPENSSL)
+	target_link_libraries(onvifcommon "${OpenSSL_ssl_PATH}" "${OpenSSL_cryptro_PATH}")
+endif()
 if(WIN32 AND NOT BUILD_SHARED_LIBS)
 	target_link_libraries(onvifcommon qtpcre2.lib version.lib Winmm.lib Netapi32.lib Userenv.lib)
 endif()
@@ -466,7 +481,7 @@ set(LIB_INSTALL_DIR "lib")
 configure_package_config_file("${CMAKE_SOURCE_DIR}/CMake/libONVIFConfig.cmake.in" "${CMAKE_BINARY_DIR}/libONVIFConfig.cmake" INSTALL_DESTINATION cmake
                               PATH_VARS INCLUDE_INSTALL_DIR CMAKE_INSTALL_DIR BIN_INSTALL_DIR LIB_INSTALL_DIR)
 
-write_basic_package_version_file("${CMAKE_BINARY_DIR}/libONVIFVersion.cmake" VERSION ${VERSION_STRING} COMPATIBILITY SameMajorVersion)
+write_basic_package_version_file("${CMAKE_BINARY_DIR}/libONVIFVersion.cmake" VERSION "${info.version.major}.${info.version.minor}.${info.version.patch}" COMPATIBILITY SameMajorVersion)
 							  
 # add the install target
 install(TARGETS 

@@ -14,32 +14,30 @@
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
 #pragma once
-#include "soapH.h"
 #include "SafeBool.h"
 #include "SoapCtx.h"
-#include <QString>
+#include "soapH.h"
 #include <QDebug>
+#include <QString>
 
 
 #define GENERIC_FAULT 600
 
- //! Deleter functor
-template <class T>
+//! Deleter functor
+template<class T>
 struct SoapDeleter {
 
-	void operator()(T* p) {
+	void operator()(T *p) {
 		if(p) p->soap_del();
 		delete p;
 	}
 };
 
 //! Duplicator functor
-template <class T>
+template<class T>
 struct SoapDuplicator {
 
-	T* operator()(const T *p) {
-		return p->soap_dup();
-	}
+	T *operator()(const T *p) { return p->soap_dup(); }
 };
 
 /*!
@@ -52,44 +50,33 @@ struct SoapDuplicator {
 class SimpleResponse : public SafeBool<void> {
 
 public:
+	/*!
+	 *
+	 * \brief Construct an errorless response
+	 *
+	 */
+	SimpleResponse() : mErrorCode(SOAP_OK), mFault(), mFaultDetail(), mFaultSubcode() {}
 
 	/*!
-	*
-	* \brief Construct an errorless response
-	*
-	*/
-	SimpleResponse() :
-		mErrorCode(SOAP_OK),
-		mFault(),
-		mFaultDetail(),
-		mFaultSubcode() {
-
-	}
-
-	/*!
-	*
-	* \brief Construct a response
-	*
-	*/
+	 *
+	 * \brief Construct a response
+	 *
+	 */
 	SimpleResponse(int errorCode, const QString &rFault = QString(), const QString &rFaultDetail = QString()) :
-		mErrorCode(errorCode),
-		mFault(rFault),
-		mFaultDetail(rFaultDetail),
-		mFaultSubcode() {
-
-	}
+	 mErrorCode(errorCode),
+	 mFault(rFault),
+	 mFaultDetail(rFaultDetail),
+	 mFaultSubcode() {}
 
 	virtual ~SimpleResponse() {}
 
 	SimpleResponse(const SimpleResponse &rOther) :
-		mErrorCode(rOther.mErrorCode),
-		mFault(rOther.mFault),
-		mFaultDetail(rOther.mFaultDetail),
-		mFaultSubcode(rOther.mFaultSubcode) {
+	 mErrorCode(rOther.mErrorCode),
+	 mFault(rOther.mFault),
+	 mFaultDetail(rOther.mFaultDetail),
+	 mFaultSubcode(rOther.mFaultSubcode) {}
 
-	}
-
-	SimpleResponse& operator=(const SimpleResponse &rOther) {
+	SimpleResponse &operator=(const SimpleResponse &rOther) {
 
 		if(&rOther == this) {
 			return *this;
@@ -114,13 +101,20 @@ public:
 		auto whatFault = QString("No Fault");
 		if(IsFault()) {
 			whatFault = "Generic Fault: ";
-			if(IsTcpFault())whatFault = "TCP Fault: ";
-			else if(IsSoapFault()) whatFault = "SOAP Fault: ";
-			else if(IsXmlValidationFault()) whatFault = "XML Val Fault: ";
-			else if(IsSslFault()) whatFault = "SSL Fault: ";
-			else if(IsZlibFault()) whatFault = "Zlib Fault: ";
-			else if(IsHttpFault()) whatFault = "HTTP Fault:";
-			else whatFault = "Generic Fault: ";
+			if(IsTcpFault())
+				whatFault = "TCP Fault: ";
+			else if(IsSoapFault())
+				whatFault = "SOAP Fault: ";
+			else if(IsXmlValidationFault())
+				whatFault = "XML Val Fault: ";
+			else if(IsSslFault())
+				whatFault = "SSL Fault: ";
+			else if(IsZlibFault())
+				whatFault = "Zlib Fault: ";
+			else if(IsHttpFault())
+				whatFault = "HTTP Fault:";
+			else
+				whatFault = "Generic Fault: ";
 			whatFault += GetSoapFault();
 			whatFault += GetSoapFaultDetail();
 		}
@@ -152,13 +146,14 @@ public:
 	bool IsHttpFault() const { return soap_http_error_check(mErrorCode); }
 	//! Check if the origin of the fault (authentication)
 	bool IsAuthFault() const {
-		return mErrorCode == HTTP_UNAUTHORIZED || (mErrorCode == SOAP_CLI_FAULT && QString::compare(mFaultSubcode, QString("\"http://www.onvif.org/ver10/error\":NotAuthorized")) == 0);
+		return mErrorCode == HTTP_UNAUTHORIZED ||
+		       (mErrorCode == SOAP_CLI_FAULT &&
+		        QString::compare(mFaultSubcode, QString("\"http://www.onvif.org/ver10/error\":NotAuthorized")) == 0);
 	}
 	//! Safe bool
 	bool BooleanTest() const override { return IsSuccess(); }
 
 protected:
-
 	virtual void PopulateFromCtx(const QSharedPointer<SoapCtx> &rSoapCtx) {
 
 		auto errorCode = rSoapCtx->GetFaultCode();
@@ -167,8 +162,7 @@ protected:
 			SetFault(rSoapCtx->GetFaultString());
 			SetFaultDetail(rSoapCtx->GetFaultDetail());
 			SetFaultSubcode(rSoapCtx->GetFaultSubcode());
-		}
-		else {
+		} else {
 			SetErrorCode(SOAP_OK);
 			mFault.clear();
 			mFaultDetail.clear();
@@ -177,7 +171,6 @@ protected:
 	}
 
 private:
-
 	int mErrorCode;
 	QString mFault;
 	QString mFaultDetail;
@@ -185,39 +178,32 @@ private:
 };
 
 /*!
-*
-* \brief A detailed response of a WS call
-*
-* Holds an error and a soap fault response object or a soap header
-*
-*/
+ *
+ * \brief A detailed response of a WS call
+ *
+ * Holds an error and a soap fault response object or a soap header
+ *
+ */
 class DetailedResponse : public SimpleResponse {
 
 public:
+	/*!
+	 *
+	 * \brief Construct an errorless response
+	 *
+	 */
+	DetailedResponse() : SimpleResponse(), mpFaultResultObject(nullptr), mpSoapHeader(nullptr) {}
 
 	/*!
-	*
-	* \brief Construct an errorless response
-	*
-	*/
-	DetailedResponse() :
-		SimpleResponse(),
-		mpFaultResultObject(nullptr),
-		mpSoapHeader(nullptr) {
-
-	}
-
-	/*!
-	*
-	* \brief Construct a response
-	*
-	*/
-	DetailedResponse(int errorCode, const QString &rFault = QString(), const QString &rFaultDetail = QString(), const SOAP_ENV__Detail *pFaultObject = nullptr) :
-		SimpleResponse(errorCode, rFault, rFaultDetail),
-		mpFaultResultObject(pFaultObject ? soap_dup_SOAP_ENV__Detail(nullptr, nullptr, pFaultObject) : nullptr),
-		mpSoapHeader(nullptr) {
-
-	}
+	 *
+	 * \brief Construct a response
+	 *
+	 */
+	DetailedResponse(int errorCode, const QString &rFault = QString(), const QString &rFaultDetail = QString(),
+	                 const SOAP_ENV__Detail *pFaultObject = nullptr) :
+	 SimpleResponse(errorCode, rFault, rFaultDetail),
+	 mpFaultResultObject(pFaultObject ? soap_dup_SOAP_ENV__Detail(nullptr, nullptr, pFaultObject) : nullptr),
+	 mpSoapHeader(nullptr) {}
 
 	virtual ~DetailedResponse() {
 
@@ -228,13 +214,11 @@ public:
 	}
 
 	DetailedResponse(const DetailedResponse &rOther) :
-		SimpleResponse(rOther),
-		mpFaultResultObject(rOther.mpFaultResultObject ? soap_dup_SOAP_ENV__Detail(nullptr, nullptr, rOther.mpFaultResultObject) : nullptr),
-		mpSoapHeader(rOther.mpSoapHeader ? soap_dup_SOAP_ENV__Header(nullptr, nullptr, rOther.mpSoapHeader) : nullptr) {
+	 SimpleResponse(rOther),
+	 mpFaultResultObject(rOther.mpFaultResultObject ? soap_dup_SOAP_ENV__Detail(nullptr, nullptr, rOther.mpFaultResultObject) : nullptr),
+	 mpSoapHeader(rOther.mpSoapHeader ? soap_dup_SOAP_ENV__Header(nullptr, nullptr, rOther.mpSoapHeader) : nullptr) {}
 
-	}
-
-	DetailedResponse& operator=(const DetailedResponse &rOther) {
+	DetailedResponse &operator=(const DetailedResponse &rOther) {
 
 		if(&rOther == this) {
 			return *this;
@@ -242,7 +226,8 @@ public:
 		SimpleResponse::operator=(rOther);
 		if(mpFaultResultObject) soap_del_SOAP_ENV__Detail(mpFaultResultObject);
 		delete mpFaultResultObject;
-		this->mpFaultResultObject = rOther.mpFaultResultObject ? soap_dup_SOAP_ENV__Detail(nullptr, nullptr, rOther.mpFaultResultObject) : nullptr;
+		this->mpFaultResultObject =
+		 rOther.mpFaultResultObject ? soap_dup_SOAP_ENV__Detail(nullptr, nullptr, rOther.mpFaultResultObject) : nullptr;
 		if(mpSoapHeader) soap_del_SOAP_ENV__Header(mpSoapHeader);
 		delete mpSoapHeader;
 		this->mpSoapHeader = rOther.mpSoapHeader ? soap_dup_SOAP_ENV__Header(nullptr, nullptr, rOther.mpSoapHeader) : nullptr;
@@ -250,9 +235,10 @@ public:
 	}
 
 	//! Get the soap fault response object
-	template <typename F> F* GetFaultObject() {
+	template<typename F>
+	F *GetFaultObject() {
 		if(mpFaultResultObject && mpFaultResultObject->fault && mpFaultResultObject->__type) {
-			return static_cast<F*>(mpFaultResultObject->fault);
+			return static_cast<F *>(mpFaultResultObject->fault);
 		}
 		return nullptr;
 	}
@@ -266,7 +252,7 @@ public:
 	}
 
 	//! Get the soap header object
-	const SOAP_ENV__Header* const GetSoapHeader() { return mpSoapHeader; }
+	const SOAP_ENV__Header *const GetSoapHeader() { return mpSoapHeader; }
 
 	//! Set the soap header object
 	void SetSoapHeader(const SOAP_ENV__Header *pSoapHeader) {
@@ -313,7 +299,6 @@ public:
 	}
 
 protected:
-
 	virtual void PopulateFromCtx(const QSharedPointer<SoapCtx> &rSoapCtx) override {
 
 		SimpleResponse::PopulateFromCtx(rSoapCtx);
@@ -323,8 +308,7 @@ protected:
 			auto pSoap = rSoapCtx->Acquire();
 			if(pSoap->fault) SetEnvDetail(pSoap->fault->SOAP_ENV__Detail);
 			rSoapCtx->Release();
-		}
-		else {
+		} else {
 			SetEnvDetail(nullptr);
 			auto pSoap = rSoapCtx->Acquire();
 			SetSoapHeader(pSoap->header);
@@ -333,71 +317,55 @@ protected:
 	}
 
 private:
-
-	SOAP_ENV__Detail* mpFaultResultObject;
-	SOAP_ENV__Header* mpSoapHeader;
+	SOAP_ENV__Detail *mpFaultResultObject;
+	SOAP_ENV__Header *mpSoapHeader;
 };
 
 /*!
-*
-* \brief A complete response of a WS call
-*
-* Holds an error and a soap fault response object or a soap header and a soap response object
-*
-*/
-template <class T, class Deleter = SoapDeleter<T>, class Duplicator = SoapDuplicator<T>>
+ *
+ * \brief A complete response of a WS call
+ *
+ * Holds an error and a soap fault response object or a soap header and a soap response object
+ *
+ */
+template<class T, class Deleter = SoapDeleter<T>, class Duplicator = SoapDuplicator<T>>
 class Response : public DetailedResponse {
 
 public:
+	/*!
+	 *
+	 * \brief Construct an errorless response
+	 *
+	 */
+	Response() : DetailedResponse(), mDeleter(), mDuplicator(), mpResultObject(nullptr) {}
 
 	/*!
-	*
-	* \brief Construct an errorless response
-	*
-	*/
-	Response() :
-		DetailedResponse(),
-		mDeleter(),
-		mDuplicator(),
-		mpResultObject(nullptr) {
-
-	}
-
-	/*!
-	*
-	* \brief Construct response
-	*
-	*/
-	Response(int errorCode, const QString &rFault = QString(), const QString &rFaultDetail = QString(), const T *pResultObject = nullptr, const SOAP_ENV__Detail *pFaultObject = nullptr) :
-		DetailedResponse(errorCode, rFault, rFaultDetail, pFaultObject),
-		mDeleter(),
-		mDuplicator(),
-		mpResultObject(pResultObject ? mDuplicator(pResultObject) : nullptr) {
-
-	}
+	 *
+	 * \brief Construct response
+	 *
+	 */
+	Response(int errorCode, const QString &rFault = QString(), const QString &rFaultDetail = QString(), const T *pResultObject = nullptr,
+	         const SOAP_ENV__Detail *pFaultObject = nullptr) :
+	 DetailedResponse(errorCode, rFault, rFaultDetail, pFaultObject),
+	 mDeleter(),
+	 mDuplicator(),
+	 mpResultObject(pResultObject ? mDuplicator(pResultObject) : nullptr) {}
 
 	Response(const T *pResultObject) :
-		DetailedResponse(),
-		mDeleter(),
-		mDuplicator(),
-		mpResultObject(pResultObject ? mDuplicator(pResultObject) : nullptr) {
+	 DetailedResponse(),
+	 mDeleter(),
+	 mDuplicator(),
+	 mpResultObject(pResultObject ? mDuplicator(pResultObject) : nullptr) {}
 
-	}
-
-	virtual ~Response() {
-
-		mDeleter(mpResultObject);
-	}
+	virtual ~Response() { mDeleter(mpResultObject); }
 
 	Response(const Response &rOther) :
-		DetailedResponse(rOther),
-		mDeleter(rOther.mDeleter),
-		mDuplicator(rOther.mDuplicator),
-		mpResultObject(rOther.mpResultObject ? mDuplicator(rOther.mpResultObject) : nullptr) {
+	 DetailedResponse(rOther),
+	 mDeleter(rOther.mDeleter),
+	 mDuplicator(rOther.mDuplicator),
+	 mpResultObject(rOther.mpResultObject ? mDuplicator(rOther.mpResultObject) : nullptr) {}
 
-	}
-
-	Response& operator=(const Response &rOther) {
+	Response &operator=(const Response &rOther) {
 
 		if(&rOther == this) {
 			return *this;
@@ -409,7 +377,7 @@ public:
 	}
 
 	//! Get the result object of a WS response
-	const T* GetResultObject() const { return mpResultObject; }
+	const T *GetResultObject() const { return mpResultObject; }
 
 	//! Set the result object of a WS response
 	void SetResultObject(const T *pResultObject) {
@@ -428,17 +396,15 @@ public:
 	class Builder {
 
 	public:
-		Builder() :
-			mpResult() {}
+		Builder() : mpResult() {}
 
-		Builder& From(const QSharedPointer<SoapCtx> &rSoapCtx, const T *pResultObject = nullptr) {
+		Builder &From(const QSharedPointer<SoapCtx> &rSoapCtx, const T *pResultObject = nullptr) {
 
 			mpResult.PopulateFromCtx(rSoapCtx);
 			auto errorCode = rSoapCtx->GetFaultCode();
 			if(errorCode != SOAP_OK) {
 				mpResult.SetResultObject(nullptr);
-			}
-			else {
+			} else {
 				mpResult.SetResultObject(pResultObject);
 			}
 			return *this;
@@ -451,59 +417,44 @@ public:
 	};
 
 private:
-
 	Deleter mDeleter;
 	Duplicator mDuplicator;
-	T* mpResultObject;
+	T *mpResultObject;
 };
 
 /*!
-*
-* \brief An arbitrary response of a WS call
-*
-* Holds an error and a soap fault response object or a soap header and an arbitrary response object
-*
-*/
-template <class T>
+ *
+ * \brief An arbitrary response of a WS call
+ *
+ * Holds an error and a soap fault response object or a soap header and an arbitrary response object
+ *
+ */
+template<class T>
 class ArbitraryResponse : public DetailedResponse {
 
 public:
+	/*!
+	 *
+	 * \brief Construct an errorless response
+	 *
+	 */
+	ArbitraryResponse() : DetailedResponse(), mResultObject() {}
 
 	/*!
-	*
-	* \brief Construct an errorless response
-	*
-	*/
-	ArbitraryResponse() :
-		DetailedResponse(),
-		mResultObject() {
+	 *
+	 * \brief Construct a response
+	 *
+	 */
+	ArbitraryResponse(int errorCode, const QString &rFault = QString(), const QString &rFaultDetail = QString(),
+	                  const SOAP_ENV__Detail *pFaultObject = nullptr) :
+	 DetailedResponse(errorCode, rFault, rFaultDetail, pFaultObject),
+	 mResultObject() {}
 
-	}
+	ArbitraryResponse(const DetailedResponse &rOther) : DetailedResponse(rOther), mResultObject() {}
 
-	/*!
-	*
-	* \brief Construct a response
-	*
-	*/
-	ArbitraryResponse(int errorCode, const QString &rFault = QString(), const QString &rFaultDetail = QString(), const SOAP_ENV__Detail *pFaultObject = nullptr) :
-		DetailedResponse(errorCode, rFault, rFaultDetail, pFaultObject),
-		mResultObject() {
+	ArbitraryResponse(const ArbitraryResponse &rOther) : DetailedResponse(rOther), mResultObject(rOther.mResultObject) {}
 
-	}
-
-	ArbitraryResponse(const DetailedResponse &rOther) :
-		DetailedResponse(rOther),
-		mResultObject() {
-
-	}
-
-	ArbitraryResponse(const ArbitraryResponse &rOther) :
-		DetailedResponse(rOther),
-		mResultObject(rOther.mResultObject) {
-
-	}
-
-	ArbitraryResponse& operator=(const ArbitraryResponse &rOther) {
+	ArbitraryResponse &operator=(const ArbitraryResponse &rOther) {
 
 		if(&rOther == this) {
 			return *this;
@@ -513,7 +464,7 @@ public:
 		return *this;
 	}
 
-	ArbitraryResponse& operator=(const DetailedResponse &rOther) {
+	ArbitraryResponse &operator=(const DetailedResponse &rOther) {
 
 		if(&rOther == this) {
 			return *this;
@@ -529,17 +480,16 @@ public:
 	void SetResultObject(const T &rResultObject) { mResultObject = rResultObject; }
 
 	/*!
-	*
-	* \brief Builds an arbitrary response object
-	*
-	*/
+	 *
+	 * \brief Builds an arbitrary response object
+	 *
+	 */
 	class Builder {
 
 	public:
-		Builder() :
-			mpResult() {}
+		Builder() : mpResult() {}
 
-		Builder& From(const QSharedPointer<SoapCtx> &rSoapCtx, const T &rResultObject) {
+		Builder &From(const QSharedPointer<SoapCtx> &rSoapCtx, const T &rResultObject) {
 
 			mpResult.PopulateFromCtx(rSoapCtx);
 			auto errorCode = rSoapCtx->GetFaultCode();
@@ -549,7 +499,7 @@ public:
 			return *this;
 		}
 
-		Builder& From(const QSharedPointer<SoapCtx> &rSoapCtx) {
+		Builder &From(const QSharedPointer<SoapCtx> &rSoapCtx) {
 
 			mpResult.PopulateFromCtx(rSoapCtx);
 			return *this;
@@ -562,6 +512,5 @@ public:
 	};
 
 private:
-
 	T mResultObject;
 };

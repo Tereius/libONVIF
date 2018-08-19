@@ -1,0 +1,15 @@
+{
+    "version": {
+        "major": 1,
+        "minor": 0,
+        "patch": 1
+    },
+    "projectName": "libONVIF",
+    "projectDescription": "A client side ONVIF library",
+    "vendor": "Björn Stresing",
+    "contact": "bjoern.stresing@gmx.de",
+    "domain": "com.github.Tereius",
+    "copyrightYear": "2018",
+    "license": "GPLv3",
+    "repository": "https://github.com/Tereius/libONVIF"
+}
