@@ -3,11 +3,14 @@ cmake_minimum_required(VERSION 2.8.12)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
 include(JSONParser)
 
-# Configure a header file to pass some of the CMake settings to the source code.
-include_directories("${PROJECT_BINARY_DIR}/src")
 # Parse the info.json and write a info.h file
 file(READ info.json jsonInfo)
 sbeParseJson(info jsonInfo)
+
+project(${info.projectName})
+
+# Configure a header file to pass some of the CMake settings to the source code.
+include_directories("${PROJECT_BINARY_DIR}/src")
 file(WRITE "${PROJECT_BINARY_DIR}/src/info.h" "")
 foreach(var ${info})
 	string(TOUPPER "${var}" UPPER_VAR)
@@ -18,8 +21,6 @@ foreach(var ${info})
 		file(APPEND info.h "#define ${UPPER_VAR} \"${${var}}\"\n")
 	endif()
 endforeach()
-
-project(${info.projectName})
 
 # The beakon will be replaced by conan if used
 ### CONAN_BEACON ###
