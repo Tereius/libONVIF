@@ -3,9 +3,13 @@ How to build and install libONVIF binaries
 
 This projects uses CMake (see www.cmake.org).
 
+### outdated ###
 You may want to use "CommonLibs" (https://github.com/Tereius/CommonLibs) to build the dependencies (OpenSSL, Qt5).
 This is especially useful for Windows hosts which lack a package manager like "apt". "CommonLibs" is an optional
 dependency and CMake won't fail if "CommonLibs" is missing.
+################
+
+You may want to use conan.io (https://conan.io/) to build the dependencies (OpenSSL, Qt5). Just run "conan install . --build missing" in the git root dir (where the conanfile.py is located).
 
 The minimal project setup for "Unix Makefiles" would be:
 
