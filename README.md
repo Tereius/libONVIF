@@ -1,7 +1,11 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/craw12co0chie6hn?svg=true)](https://ci.appveyor.com/project/Tereius/libonvif)
-[![Build Status](https://travis-ci.org/Tereius/libONVIF.svg?branch=master)](https://travis-ci.org/Tereius/libONVIF)
-
 # libONVIF
+| os | os_build | Status |
+|---|---|---|
+| Android | Linux | [![Build Status](https://dev.azure.com/bjoernstresing/bjoernstresing/_apis/build/status/Tereius.libONVIF?branchName=master&jobName=Android&configuration=Android%20Linux)](https://dev.azure.com/bjoernstresing/bjoernstresing/_build/latest?definitionId=7&branchName=master) |
+| Android | Windows | [![Build Status](https://dev.azure.com/bjoernstresing/bjoernstresing/_apis/build/status/Tereius.libONVIF?branchName=master&jobName=Android&configuration=Android%20Windows)](https://dev.azure.com/bjoernstresing/bjoernstresing/_build/latest?definitionId=7&branchName=master) |
+| Linux | Linux | [![Build Status](https://dev.azure.com/bjoernstresing/bjoernstresing/_apis/build/status/Tereius.libONVIF?branchName=master&jobName=Linux)](https://dev.azure.com/bjoernstresing/bjoernstresing/_build/latest?definitionId=7&branchName=master) |
+| Windows | Windows | [![Build Status](https://dev.azure.com/bjoernstresing/bjoernstresing/_apis/build/status/Tereius.libONVIF?branchName=master&jobName=Windows)](https://dev.azure.com/bjoernstresing/bjoernstresing/_build/latest?definitionId=7&branchName=master) |
+| Macos | Macos | [![Build Status](https://dev.azure.com/bjoernstresing/bjoernstresing/_apis/build/status/Tereius.libONVIF?branchName=master&jobName=Macos)](https://dev.azure.com/bjoernstresing/bjoernstresing/_build/latest?definitionId=7&branchName=master)
 
 ### Yet another ONVIF library
 
