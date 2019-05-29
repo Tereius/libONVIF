@@ -36,12 +36,6 @@ jobs:
       }
 
 - job: Linux
-  strategy:
-    matrix:
-      Debug:
-        buildType: "Debug"
-      Release:
-        buildType: "Release"
   pool:
     vmImage: "ubuntu-16.04"
   timeoutInMinutes: 0
@@ -52,7 +46,7 @@ jobs:
         CONAN_USERNAME: "tereius",
         CONAN_CHANNEL: "stable",
         CONAN_REMOTES: "https://api.bintray.com/conan/tereius/public-conan",
-        CONAN_BASE_PROFILE_BUILDTYPE: "$(buildType)",
+        CONAN_BASE_PROFILE_BUILDTYPE: "Release",
         CONAN_BASE_PROFILE_OS: "Linux",
         CONAN_BASE_PROFILE_ARCH: "x86_64",
         CONAN_BASE_PROFILE_OSBUILD: "Linux",
@@ -63,12 +57,6 @@ jobs:
       }
 
 - job: Windows
-  strategy:
-    matrix:
-      Debug:
-        buildType: "Debug"
-      Release:
-        buildType: "Release"
   pool:
     vmImage: "vs2017-win2016"
   timeoutInMinutes: 0
@@ -79,7 +67,7 @@ jobs:
         CONAN_USERNAME: "tereius",
         CONAN_CHANNEL: "stable",
         CONAN_REMOTES: "https://api.bintray.com/conan/tereius/public-conan",
-        CONAN_BASE_PROFILE_BUILDTYPE: "$(buildType)",
+        CONAN_BASE_PROFILE_BUILDTYPE: "Release",
         CONAN_BASE_PROFILE_OS: "Windows",
         CONAN_BASE_PROFILE_ARCH: "x86_64",
         CONAN_BASE_PROFILE_OSBUILD: "Windows",
@@ -89,12 +77,6 @@ jobs:
       }
       
 - job: Macos
-  strategy:
-    matrix:
-      Debug:
-        buildType: "Debug"
-      Release:
-        buildType: "Release"
   pool:
     vmImage: "macOS-10.14"
   timeoutInMinutes: 0
@@ -105,7 +87,7 @@ jobs:
         CONAN_USERNAME: "tereius",
         CONAN_CHANNEL: "stable",
         CONAN_REMOTES: "https://api.bintray.com/conan/tereius/public-conan",
-        CONAN_BASE_PROFILE_BUILDTYPE: "$(buildType)",
+        CONAN_BASE_PROFILE_BUILDTYPE: "Release",
         CONAN_BASE_PROFILE_OS: "Macos",
         CONAN_BASE_PROFILE_OS_VERSION: "10.14",
         CONAN_BASE_PROFILE_ARCH: "x86_64",
