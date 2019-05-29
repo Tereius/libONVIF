@@ -1,25 +1,24 @@
 How to build and install libONVIF binaries
 ===========================================
 
-This projects uses CMake (see www.cmake.org).
+This projects uses CMake (see www.cmake.org). Make sure that cmake is properly installed.
 
-### outdated ###
-You may want to use "CommonLibs" (https://github.com/Tereius/CommonLibs) to build the dependencies (OpenSSL, Qt5).
-This is especially useful for Windows hosts which lack a package manager like "apt". "CommonLibs" is an optional
-dependency and CMake won't fail if "CommonLibs" is missing.
-################
+You may want to use conan.io (https://conan.io/) to build the dependencies (OpenSSL, Qt5). This step is optional: You can build the dependencies via conan yourself (recommended for Windows) or obtain them using a package manager (like apt or yum).
+To build the dependencies yourself you have to add two conan repositories first:
 
-You may want to use conan.io (https://conan.io/) to build the dependencies (OpenSSL, Qt5). Just run "conan install . --build missing" in the git root dir (where the conanfile.py is located).
+    conan remote add tereius https://api.bintray.com/conan/tereius/public-conan
+    conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+    
+After that just run following command in the git root dir (where the conanfile.py is located):
 
-The minimal project setup for "Unix Makefiles" would be:
+    conan install ./ -o build_type=Debug --build missing
 
-    cd /opt
-    git clone https://github.com/Tereius/libONVIF.git
-    mkdir /opt/build_libonvif
-    cd /opt/build_libonvif
-    cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE:STRING=Debug /opt/libONVIF
-    make
-    make install
+To compile libONVIF the minimal project setup for "Unix Makefiles" would be:
+
+    cd <build_path>
+    cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE:STRING=Debug <src_path>
+    cmake --build ./
+    cmake --build ./ --target install
 
 If CMake is missing a dependency you have to set the variable (pointing to a path) manually e.g. for OpenSSL:
 
