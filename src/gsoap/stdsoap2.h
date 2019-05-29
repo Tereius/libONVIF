@@ -607,7 +607,9 @@ extern intmax_t __strtoull(const char*, char**, int);
 #  define HAVE_STRTOUL
 #  define HAVE_STRTOLL
 #  define HAVE_STRTOULL
+# ifndef __ANDROID__
 #  define HAVE_SYS_TIMEB_H
+# endif
 #  define HAVE_FTIME
 #  define HAVE_RAND_R
 #  define HAVE_GETHOSTBYNAME_R

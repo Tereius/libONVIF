@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 
-import json, os
-from conans import ConanFile, CMake, tools, AutoToolsBuildEnvironment
+import json
+from conans import ConanFile, CMake, tools
 
 
 class LibonvifConan(ConanFile):
@@ -16,42 +16,36 @@ class LibonvifConan(ConanFile):
     author = jsonInfo["vendor"]
     homepage = jsonInfo["repository"]
     requires = "Qt/[>=5.4]@tereius/stable"
-    settings = "os", "compiler", "build_type", "arch", "os_build", "arch_build"
+    settings = {"os": ["Windows", "Linux", "Android", "Macos"], "compiler": None, "build_type": None, "arch": None}
     options = {"shared": [True, False], "openssl": [True, False]}
-    default_options = "shared=True", "openssl=True", "OpenSSL:shared=True"
+    default_options = "shared=True", "openssl=True"
     generators = "cmake"
     exports = "info.json"
     exports_sources = "*"
 
     def requirements(self):
         if self.options.openssl:
-            self.requires("OpenSSL/1.1.0g@conan/stable")
+            self.requires("OpenSSL/1.1.1b@tereius/stable")
+            self.options["OpenSSL"].shared = True
+            self.options["OpenSSL"].no_zlib = True
 
     def build_requirements(self):
         if self.settings.os == 'Android':
             self.build_requires("android-ndk/r17b@tereius/stable")
-            if self.settings.os_build == 'Windows':
+            #self.build_requires_options["android-ndk"].makeStandalone=True
+            if tools.os_info.is_windows == 'Windows':
                 self.build_requires("msys2/20161025@tereius/stable")
 
     def build(self):
-        tools.replace_in_file(os.path.join(self.build_folder, "CMakeLists.txt"), "### CONAN_BEACON ###", 'include(%s)\n%s' % (os.path.join(self.install_folder, "conanbuildinfo.cmake").replace("\\", "/"), "conan_basic_setup()"), strict=False)
         if self.settings.os == 'Android':
-            autotools = AutoToolsBuildEnvironment(self, win_bash=True)
-            environment = autotools.vars
-            #environment["CC"] = self.deps_env_info['android-ndk'].CC
-            #environment["CXX"] = self.deps_env_info['android-ndk'].CXX
-            while tools.environment_append(autotools.vars):
-                self.run("whereis cmake", win_bash=True)
-                cmake = CMake(self, generator="Unix Makefiles")
-                self.run('cmake "%s" %s -DCMAKE_C_COMPILER=%s -DCMAKE_CXX_COMPILER=%s' % (self.source_folder, cmake.command_line, tools.unix_path(self.deps_env_info['android-ndk'].CC), tools.unix_path(self.deps_env_info['android-ndk'].CXX)), win_bash=True)
-                #cmake.configure(defs = {"CMAKE_MAKE_PROGRAM": tools.unix_path(os.path.join(self.deps_env_info['msys2'].MSYS_BIN, "make.exe")), "CMAKE_C_COMPILER": tools.unix_path(self.deps_env_info['android-ndk'].CC), "CMAKE_CXX_COMPILER": tools.unix_path(self.deps_env_info['android-ndk'].CXX)})
-                #cmake.build()
-                #cmake.install()
+            cmake = CMake(self, generator="Unix Makefiles")
+            cmake.definitions["CONAN_LIBCXX"] = ""
+            #cmake.configure(args=["-DCMAKE_TOOLCHAIN_FILE=%s" % os.path.join(self.deps_cpp_info['android-ndk'].builddirs[0], 'cmake', 'android.toolchain.cmake'), "-DCONAN_DISABLE_CHECK_COMPILER=YES"] )
         else:
             cmake = CMake(self)
-            cmake.configure()
-            cmake.build()
-            cmake.install()
+        cmake.configure()
+        cmake.build()
+        cmake.install()
 
     def package_info(self):
         self.cpp_info.builddirs = ['cmake']

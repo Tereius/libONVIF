@@ -22,8 +22,14 @@ foreach(var ${info})
 	endif()
 endforeach()
 
-# The beakon will be replaced by conan if used
-### CONAN_BEACON ###
+# Check if we use conan
+if (EXISTS "${CMAKE_SOURCE_DIR}/conanbuildinfo.cmake")
+	include("${CMAKE_SOURCE_DIR}/conanbuildinfo.cmake")
+	conan_basic_setup(KEEP_RPATHS)
+elseif(EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+	include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+	conan_basic_setup(KEEP_RPATHS)
+endif()
 
 # If build type is empty and there is no multi-configuration generator (like Visual Studio) choose release build.
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
