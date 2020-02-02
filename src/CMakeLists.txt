@@ -42,7 +42,7 @@ endif()
 
 # -------------------------------GSOAP synthesis-------------------------------
 
-set(GSOAP_DIRS "${Gsoap_import_DIR}$<SEMICOLON>${Gsoap_import_DIR}/import$<SEMICOLON>${CMAKE_SOURCE_DIR}/src/gsoap")
+set(GSOAP_DIRS "${Gsoap_import_DIR}$<SEMICOLON>${Gsoap_import_DIR}/import$<SEMICOLON>${CMAKE_CURRENT_SOURCE_DIR}/gsoap")
 if(ENABLE_CODESYNTHESIS)
 	add_custom_target(Synthesis
 	COMMAND ${Gsoap_wsdl2h_PATH} -c++11 -d -p -j -t typemap.dat -o generated.h 
@@ -58,10 +58,10 @@ if(ENABLE_CODESYNTHESIS)
 	http://www.onvif.org/onvif/ver10/events/wsdl/event.wsdl
 	http://www.onvif.org/onvif/ver10/device/wsdl/devicemgmt.wsdl
 	http://www.onvif.org/onvif/ver20/analytics/wsdl/analytics.wsdl
-	COMMAND ${Gsoap_soapcpp2_PATH} -Ed -Ec -c++11 -a -j -L -x -n -d ${CMAKE_SOURCE_DIR}/src/generated -I ${GSOAP_DIRS} generated.h
+	COMMAND ${Gsoap_soapcpp2_PATH} -Ed -Ec -c++11 -a -j -L -x -n -d ${CMAKE_CURRENT_SOURCE_DIR}/generated -I ${GSOAP_DIRS} generated.h
 	COMMAND $<TARGET_FILE:headerParser> generated.h
-	COMMAND ${CMAKE_COMMAND} -E copy GsoapResolver.h ${CMAKE_SOURCE_DIR}/src/generated
-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/wsdl VERBATIM)
+	COMMAND ${CMAKE_COMMAND} -E copy GsoapResolver.h ${CMAKE_CURRENT_SOURCE_DIR}/generated
+	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/wsdl VERBATIM)
 
 	add_dependencies(Synthesis headerParser)
 endif()
@@ -478,10 +478,11 @@ set(INCLUDE_INSTALL_DIR "include")
 set(CMAKE_INSTALL_DIR "cmake")
 set(BIN_INSTALL_DIR "bin")
 set(LIB_INSTALL_DIR "lib")
-configure_package_config_file("${CMAKE_SOURCE_DIR}/CMake/libONVIFConfig.cmake.in" "${CMAKE_BINARY_DIR}/libONVIFConfig.cmake" INSTALL_DESTINATION cmake
+
+configure_package_config_file("${PROJECT_SOURCE_DIR}/CMake/libONVIFConfig.cmake.in" "${PROJECT_BINARY_DIR}/libONVIFConfig.cmake" INSTALL_DESTINATION cmake
                               PATH_VARS INCLUDE_INSTALL_DIR CMAKE_INSTALL_DIR BIN_INSTALL_DIR LIB_INSTALL_DIR)
 
-write_basic_package_version_file("${CMAKE_BINARY_DIR}/libONVIFVersion.cmake" VERSION "${info.version.major}.${info.version.minor}.${info.version.patch}" COMPATIBILITY SameMajorVersion)
+write_basic_package_version_file("${PROJECT_BINARY_DIR}/libONVIFVersion.cmake" VERSION "${info.version.major}.${info.version.minor}.${info.version.patch}" COMPATIBILITY SameMajorVersion)
 							  
 # add the install target
 install(TARGETS 
@@ -503,4 +504,4 @@ install(TARGETS
 
 install(EXPORT libONVIFTargets DESTINATION cmake)
 
-install(FILES "${CMAKE_BINARY_DIR}/libONVIFConfig.cmake" "${CMAKE_BINARY_DIR}/libONVIFVersion.cmake" DESTINATION cmake)
+install(FILES "${PROJECT_BINARY_DIR}/libONVIFConfig.cmake" "${PROJECT_BINARY_DIR}/libONVIFVersion.cmake" DESTINATION cmake)

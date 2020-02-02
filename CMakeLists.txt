@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.12)
 # Set a default search path for CMake modules
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake;${CMAKE_MODULE_PATH}")
 include(JSONParser)
 
 # Parse the info.json and write a info.h file
@@ -10,24 +10,24 @@ sbeParseJson(info jsonInfo)
 project(${info.projectName})
 
 # Configure a header file to pass some of the CMake settings to the source code.
-include_directories("${PROJECT_BINARY_DIR}/src")
-file(WRITE "${PROJECT_BINARY_DIR}/src/info.h" "")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/src")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/src/info.h" "")
 foreach(var ${info})
 	string(TOUPPER "${var}" UPPER_VAR)
 	string(REPLACE "." "_" UPPER_VAR "${UPPER_VAR}")
 	if (${${var}} MATCHES "^[0-9]+$")
-		file(APPEND "${PROJECT_BINARY_DIR}/src/info.h" "#define ${UPPER_VAR} ${${var}}\n")
+		file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/src/info.h" "#define ${UPPER_VAR} ${${var}}\n")
 	else()
-		file(APPEND "${PROJECT_BINARY_DIR}/src/info.h" "#define ${UPPER_VAR} \"${${var}}\"\n")
+		file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/src/info.h" "#define ${UPPER_VAR} \"${${var}}\"\n")
 	endif()
 endforeach()
 
 # Check if we use conan
-if (EXISTS "${CMAKE_SOURCE_DIR}/conanbuildinfo.cmake")
-	include("${CMAKE_SOURCE_DIR}/conanbuildinfo.cmake")
+if (EXISTS "${PROJECT_SOURCE_DIR}/conanbuildinfo.cmake")
+	include("${PROJECT_SOURCE_DIR}/conanbuildinfo.cmake")
 	conan_basic_setup(KEEP_RPATHS)
-elseif(EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-	include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+elseif(EXISTS "${PROJECT_BINARY_DIR}/conanbuildinfo.cmake")
+	include("${PROJECT_BINARY_DIR}/conanbuildinfo.cmake")
 	conan_basic_setup(KEEP_RPATHS)
 endif()
 
@@ -68,8 +68,8 @@ endif()
 # Handle doxygen stuff
 find_package(Doxygen QUIET)
 if(DOXYGEN_FOUND)
-	configure_file("${CMAKE_SOURCE_DIR}/src/Doxyfile.in" "${PROJECT_BINARY_DIR}/Doxyfile" @ONLY)
-	add_custom_target(doc "${DOXYGEN_EXECUTABLE}" "${PROJECT_BINARY_DIR}/Doxyfile" WORKING_DIRECTORY "${PROJECT_BINARY_DIR}" COMMENT "Generating API documentation with Doxygen" VERBATIM)
+	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/Doxyfile.in" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" @ONLY)
+	add_custom_target(doc "${DOXYGEN_EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}" COMMENT "Generating API documentation with Doxygen" VERBATIM)
 	message(STATUS "Use target \"doc\" to generate doxygen")
 endif(DOXYGEN_FOUND)
 
