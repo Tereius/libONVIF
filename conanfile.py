@@ -32,15 +32,13 @@ class LibonvifConan(ConanFile):
     def build_requirements(self):
         if self.settings.os == 'Android':
             self.build_requires("android-ndk/r17b@tereius/stable")
-            #self.build_requires_options["android-ndk"].makeStandalone=True
+            self.build_requires_options["android-ndk"].makeStandalone=False
             if tools.os_info.is_windows == 'Windows':
                 self.build_requires("msys2/20161025@tereius/stable")
 
     def build(self):
         if self.settings.os == 'Android':
             cmake = CMake(self, generator="Unix Makefiles")
-            cmake.definitions["CONAN_LIBCXX"] = ""
-            #cmake.configure(args=["-DCMAKE_TOOLCHAIN_FILE=%s" % os.path.join(self.deps_cpp_info['android-ndk'].builddirs[0], 'cmake', 'android.toolchain.cmake'), "-DCONAN_DISABLE_CHECK_COMPILER=YES"] )
         else:
             cmake = CMake(self)
         cmake.configure()
