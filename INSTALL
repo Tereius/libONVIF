@@ -11,7 +11,7 @@ To build the dependencies yourself you have to add two conan repositories first:
     
 After that just run following command in the git root dir (where the conanfile.py is located):
 
-    conan install ./ -o build_type=Debug --build missing
+    conan install ./ -s build_type=Debug --build missing
 
 To compile libONVIF the minimal project setup for "Unix Makefiles" would be:
 
