@@ -13,10 +13,10 @@ After that just run following command in the git root dir (where the conanfile.p
 
     conan install ./ -s build_type=Debug --build missing
 
-To compile libONVIF the minimal project setup for "Unix Makefiles" would be:
+Then create a (build) directory (preferably outside the git root dir). To compile libONVIF the minimal project setup for "Unix Makefiles" would be:
 
-    cd <build_path>
-    cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE:STRING=Debug <src_path>
+    cd <build_dir>
+    cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE:STRING=Debug <git_root_dir>
     cmake --build ./
     cmake --build ./ --target install
 
@@ -26,12 +26,12 @@ If CMake is missing a dependency you have to set the variable (pointing to a pat
 
 To print the relevant variables you may want to change use:
 
-    cd <src_path>
+    cd <git_root_dir>
     cmake -LH
 
 For Windows use a CMake generator like "NMake Makefiles" or "Visual Studio [...]" e.g.:
 
-    cd <build_path>
-    cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE:STRING=Debug <src_path>
+    cd <build_dir>
+    cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE:STRING=Debug <git_root_dir>
     cmake --build ./
     cmake --build ./ --target install
