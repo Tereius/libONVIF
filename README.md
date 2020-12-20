@@ -34,3 +34,10 @@ Design thoughts:
 - The most of this library is thread safe and should work in a multithreaded environment
 - gsoap is 'hidden' from the user as much as possible
 - RAII classes `Request<>`, `Response<>` wrapping the RPC parameters are responsible for the memory management
+
+### Further reading
+
+* The library comes with a small application (named ovifinfo) that does some device-discovery, inspection. You may want to look at the [source code](https://github.com/Tereius/libONVIF/blob/master/src/main.cpp).
+* If you want to learn more about how to use libONVIF in a qml app take a look at the following project [ONVIFMonitor](https://github.com/Tereius/ONVIFMonitor).
+* It is always advisable to look at the at the [ONVIF programmers guide](https://www.onvif.org/wp-content/uploads/2016/12/ONVIF_WG-APG-Application_Programmers_Guide-1.pdf) to learn more about ONVIF.
+
