@@ -244,7 +244,9 @@ A commercial use license is available from Genivia, Inc., contact@genivia.com
 #  define HAVE_SSCANF
 #  define HAVE_STRTOL
 #  define HAVE_STRTOUL
+# ifndef __ANDROID__
 #  define HAVE_SYS_TIMEB_H
+# endif
 #  define HAVE_FTIME
 #  define HAVE_RAND_R
 #  define HAVE_GMTIME_R
