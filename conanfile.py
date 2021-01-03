@@ -47,5 +47,6 @@ class LibonvifConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.builddirs = ['cmake']
+        self.cpp_info.defines = ['WITH_SELF_PIPE']
         if self.options.openssl:
             self.cpp_info.defines = ['WITH_OPENSSL']

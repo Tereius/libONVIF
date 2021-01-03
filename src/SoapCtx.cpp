@@ -269,7 +269,7 @@ void SoapCtx::SetReceiveTimeout(int timeoutMs) {
 void SoapCtx::ForceSocketClose() {
 
 	// Not mutex lock here. This should be non blocking.
-	soap_force_closesock(mpD->mpSoap);
+	soap_close_connection(mpD->mpSoap);
 }
 
 void SoapCtx::Save() {

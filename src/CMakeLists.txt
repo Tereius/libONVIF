@@ -41,14 +41,12 @@ if(WIN32 AND BUILD_SHARED_LIBS)
 	add_definitions(-DSOAP_STD_EXPORTS)
 endif()
 
-add_definitions(-DWITH_SELF_PIPE)
-
 # -------------------------------GSOAP synthesis-------------------------------
 
 set(GSOAP_DIRS "${Gsoap_import_DIR}:${Gsoap_import_DIR}/import:${CMAKE_CURRENT_SOURCE_DIR}/gsoap")
 if(ENABLE_CODESYNTHESIS)
 	add_custom_target(Synthesis
-	COMMAND ${Gsoap_wsdl2h_PATH} -c++11 -z7 -d -p -j -t typemap.dat -o generated.h 
+	COMMAND ${Gsoap_wsdl2h_PATH} -c++11 -z7 -d -p -j -t typemap.dat -o generated.h
 	http://www.onvif.org/onvif/ver10/analyticsdevice.wsdl
 	http://www.onvif.org/onvif/ver10/replay.wsdl
 	http://www.onvif.org/onvif/ver10/search.wsdl
@@ -78,7 +76,7 @@ set(src_files
 add_executable(headerParser ${src_files})
 
 # -------------------------------ONVIF Common-------------------------------
-set(src_files 
+set(src_files
 	generated/soapC.cpp
 	gsoap/duration.c
 	gsoap/qdatetime.cpp
@@ -130,6 +128,7 @@ endif()
 add_library(onvifcommon ${src_files} ${private_header_files} ${public_header_files})
 generate_export_header(onvifcommon EXPORT_FILE_NAME OnvifCommonExport.h)
 target_link_libraries(onvifcommon Qt5::Core)
+target_compile_definitions(onvifcommon PUBLIC WITH_SELF_PIPE)
 if(HAS_OPENSSL)
 	target_link_libraries(onvifcommon "${OpenSSL_ssl_PATH}" "${OpenSSL_cryptro_PATH}")
 endif()
@@ -143,7 +142,7 @@ if(USE_PRECOMPILED_HEADERS)
 endif()
 
 # -------------------------------ONVIF Analytics-------------------------------
-set(src_files 
+set(src_files
 	generated/soapAnalyticsDeviceBindingProxy.cpp
 	#generated/soapAnalyticsDeviceBindingService.cpp
 	OnvifAnalyticsClient.cpp
@@ -169,7 +168,7 @@ if(USE_PRECOMPILED_HEADERS)
 endif()
 
 # -------------------------------ONVIF Device-------------------------------
-set(src_files 
+set(src_files
 	generated/soapDeviceBindingProxy.cpp
 	#generated/soapDeviceBindingService.cpp
 	OnvifDeviceClient.cpp
@@ -195,7 +194,7 @@ if(USE_PRECOMPILED_HEADERS)
 endif()
 
 # -------------------------------ONVIF Display-------------------------------
-set(src_files 
+set(src_files
 	generated/soapDisplayBindingProxy.cpp
 	#generated/soapDisplayBindingService.cpp
 	OnvifDisplayClient.cpp
@@ -221,7 +220,7 @@ if(USE_PRECOMPILED_HEADERS)
 endif()
 
 # -------------------------------ONVIF Imaging-------------------------------
-set(src_files 
+set(src_files
 	generated/soapImagingBindingProxy.cpp
 	#generated/soapImagingBindingService.cpp
 	OnvifImagingClient.cpp
@@ -247,7 +246,7 @@ if(USE_PRECOMPILED_HEADERS)
 endif()
 
 # -------------------------------ONVIF Media-------------------------------
-set(src_files 
+set(src_files
 	generated/soapMediaBindingProxy.cpp
 	#generated/soapMediaBindingService.cpp
 	OnvifMediaClient.cpp
@@ -273,7 +272,7 @@ if(USE_PRECOMPILED_HEADERS)
 endif()
 
 # -------------------------------ONVIF PTZ-------------------------------
-set(src_files 
+set(src_files
 	generated/soapPTZBindingProxy.cpp
 	#generated/soapPTZBindingService.cpp
 	OnvifPtzClient.cpp
@@ -299,7 +298,7 @@ if(USE_PRECOMPILED_HEADERS)
 endif()
 
 # -------------------------------ONVIF Event-------------------------------
-set(src_files 
+set(src_files
 	generated/soapPullPointSubscriptionBindingProxy.cpp
 	#generated/soapPullPointSubscriptionBindingService.cpp
 	OnvifEventClient.cpp
@@ -331,7 +330,7 @@ if(USE_PRECOMPILED_HEADERS)
 endif()
 
 # -------------------------------ONVIF Receiver-------------------------------
-set(src_files 
+set(src_files
 	generated/soapReceiverBindingProxy.cpp
 	#generated/soapReceiverBindingService.cpp
 	OnvifReceiverClient.cpp
@@ -357,7 +356,7 @@ if(USE_PRECOMPILED_HEADERS)
 endif()
 
 # -------------------------------ONVIF Recording-------------------------------
-set(src_files 
+set(src_files
 	generated/soapRecordingBindingProxy.cpp
 	#generated/soapRecordingBindingService.cpp
 	OnvifRecordingClient.cpp
@@ -421,7 +420,7 @@ if(USE_PRECOMPILED_HEADERS)
 endif()
 
 # -------------------------------ONVIF Replay-------------------------------
-set(src_files 
+set(src_files
 	generated/soapReplayBindingProxy.cpp
 	#generated/soapReplayBindingService.cpp
 	OnvifReplayClient.cpp
@@ -486,9 +485,9 @@ configure_package_config_file("${PROJECT_SOURCE_DIR}/CMake/libONVIFConfig.cmake.
                               PATH_VARS INCLUDE_INSTALL_DIR CMAKE_INSTALL_DIR BIN_INSTALL_DIR LIB_INSTALL_DIR)
 
 write_basic_package_version_file("${PROJECT_BINARY_DIR}/libONVIFVersion.cmake" VERSION "${info.version.major}.${info.version.minor}.${info.version.patch}" COMPATIBILITY SameMajorVersion)
-							  
+
 # add the install target
-install(TARGETS 
+install(TARGETS
 	onvifinfo
 	onvifcommon
 	onvifdevice
