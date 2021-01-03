@@ -36,16 +36,19 @@ endif()
 if(MSVC)
 	add_definitions(-DNOMINMAX)
 endif()
+
 if(WIN32 AND BUILD_SHARED_LIBS)
 	add_definitions(-DSOAP_STD_EXPORTS)
 endif()
 
+add_definitions(-DWITH_SELF_PIPE)
+
 # -------------------------------GSOAP synthesis-------------------------------
 
-set(GSOAP_DIRS "${Gsoap_import_DIR}$<SEMICOLON>${Gsoap_import_DIR}/import$<SEMICOLON>${CMAKE_CURRENT_SOURCE_DIR}/gsoap")
+set(GSOAP_DIRS "${Gsoap_import_DIR}:${Gsoap_import_DIR}/import:${CMAKE_CURRENT_SOURCE_DIR}/gsoap")
 if(ENABLE_CODESYNTHESIS)
 	add_custom_target(Synthesis
-	COMMAND ${Gsoap_wsdl2h_PATH} -c++11 -d -p -j -t typemap.dat -o generated.h 
+	COMMAND ${Gsoap_wsdl2h_PATH} -c++11 -z7 -d -p -j -t typemap.dat -o generated.h 
 	http://www.onvif.org/onvif/ver10/analyticsdevice.wsdl
 	http://www.onvif.org/onvif/ver10/replay.wsdl
 	http://www.onvif.org/onvif/ver10/search.wsdl
@@ -58,7 +61,7 @@ if(ENABLE_CODESYNTHESIS)
 	http://www.onvif.org/onvif/ver10/events/wsdl/event.wsdl
 	http://www.onvif.org/onvif/ver10/device/wsdl/devicemgmt.wsdl
 	http://www.onvif.org/onvif/ver20/analytics/wsdl/analytics.wsdl
-	COMMAND ${Gsoap_soapcpp2_PATH} -Ed -Ec -c++11 -a -j -L -x -n -d ${CMAKE_CURRENT_SOURCE_DIR}/generated -I ${GSOAP_DIRS} generated.h
+	COMMAND ${Gsoap_soapcpp2_PATH} -Ed -Ec -c++11 -z4 -a -j -L -x -n -d ${CMAKE_CURRENT_SOURCE_DIR}/generated -I ${GSOAP_DIRS} generated.h
 	COMMAND $<TARGET_FILE:headerParser> generated.h
 	COMMAND ${CMAKE_COMMAND} -E copy GsoapResolver.h ${CMAKE_CURRENT_SOURCE_DIR}/generated
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/wsdl VERBATIM)
@@ -77,7 +80,7 @@ add_executable(headerParser ${src_files})
 # -------------------------------ONVIF Common-------------------------------
 set(src_files 
 	generated/soapC.cpp
-	gsoap/duration.cpp
+	gsoap/duration.c
 	gsoap/qdatetime.cpp
 	gsoap/AbsoluteOrRelativeTimeType.cpp
 	gsoap/qstring.cpp

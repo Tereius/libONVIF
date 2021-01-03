@@ -535,13 +535,12 @@ http_da(struct soap *soap, struct soap_plugin *p, void *arg)
   p->data = (void*)SOAP_MALLOC(soap, sizeof(struct http_da_data));
   p->fcopy = http_da_copy;
   p->fdelete = http_da_delete;
-  if (p->data)
+  if (!p->data)
+    return SOAP_EOM;
+  if (http_da_init(soap, (struct http_da_data*)p->data, (int*)arg))
   {
-    if (http_da_init(soap, (struct http_da_data*)p->data, (int*)arg))
-    {
-      SOAP_FREE(soap, p->data);
-      return SOAP_EOM;
-    }
+    SOAP_FREE(soap, p->data);
+    return SOAP_EOM;
   }
   return SOAP_OK;
 }
@@ -586,7 +585,9 @@ http_da_copy(struct soap *soap, struct soap_plugin *dst, struct soap_plugin *src
 {
   (void)soap;
   dst->data = (void*)SOAP_MALLOC(soap, sizeof(struct http_da_data));
-  soap_memcpy((void*)dst->data, sizeof(struct http_da_data), (const void*)src->data, sizeof(struct http_da_data));
+  if (!dst->data)
+    return SOAP_EOM;
+  (void)soap_memcpy((void*)dst->data, sizeof(struct http_da_data), (const void*)src->data, sizeof(struct http_da_data));
   ((struct http_da_data*)dst->data)->smd_data.ctx = NULL;
   memset((void*)((struct http_da_data*)dst->data)->digest, 0, sizeof(((struct http_da_data*)dst->data)->digest));
   ((struct http_da_data*)dst->data)->nonce = NULL;
@@ -607,8 +608,7 @@ http_da_delete(struct soap *soap, struct soap_plugin *p)
 {
   if (((struct http_da_data*)p->data)->smd_data.ctx)
     soap_smd_final(soap, &((struct http_da_data*)p->data)->smd_data, NULL, NULL);
-  if (p->data)
-    SOAP_FREE(soap, p->data);
+  SOAP_FREE(soap, p->data);
 }
 
 /******************************************************************************\
@@ -946,6 +946,13 @@ http_da_prepareinitsend(struct soap *soap)
       }
       if ((soap->mode & SOAP_IO) == SOAP_IO_CHUNK)
         soap->mode |= SOAP_IO_LENGTH;
+    }
+    else
+    {
+      if (soap->fpreparesend == http_da_preparesend)
+      {
+        soap->fpreparesend = data->fpreparesend;
+      }
     }
   }
 
