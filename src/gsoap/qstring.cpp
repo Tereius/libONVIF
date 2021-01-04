@@ -78,7 +78,7 @@ void soap_default_xsd__string(struct soap *soap, QString *a)
 int soap_out_xsd__string(struct soap *soap, char const *tag, int id, QString const *a, char const *type)
 {
   if (soap_element_begin_out(soap, tag, soap_embedded_id(soap, id, a, SOAP_TYPE_xsd__string), type)
-   || soap_string_out(soap, soap_xsd__string2s(soap, *a), 1))
+   || soap_string_out(soap, soap_xsd__string2s(soap, *a), 0))
     return soap->error;
   return soap_element_end_out(soap, tag);
 }

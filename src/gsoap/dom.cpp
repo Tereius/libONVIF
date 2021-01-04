@@ -1,7 +1,7 @@
 /*
         dom.c[pp]
 
-        DOM API v5 gSOAP 2.8.78
+        DOM API v5 gSOAP 2.8.88
 
         See gsoap/doc/dom/html/index.html for the new DOM API v5 documentation
         Also located in /gsoap/samples/dom/README.md
@@ -50,7 +50,7 @@ A commercial use license is available from Genivia, Inc., contact@genivia.com
 */
 
 /** Compatibility requirement with gSOAP engine version */
-#define GSOAP_LIB_VERSION 20878
+#define GSOAP_LIB_VERSION 20888
 
 #include "stdsoap2.h"
 
@@ -250,13 +250,16 @@ out_element(struct soap *soap, const struct soap_dom_element *node, const char *
         return soap->error = SOAP_EOM;
       (SOAP_SNPRINTF(s, l + 2, l + 1), "%s:%s", prefix, name);
     }
-    for (p = soap->local_namespaces; p && p->id; p++)
+    if (!(soap->mode & SOAP_DOM_ASIS))
     {
-      if (p->ns && soap_push_prefix(soap, p->id, strlen(p->id), p->ns, 1, 0) == NULL)
+      for (p = soap->local_namespaces; p && p->id; p++)
       {
-        if (s)
-          SOAP_FREE(soap, s);
-        return soap->error;
+        if (p->ns && soap_push_prefix(soap, p->id, strlen(p->id), p->ns, 1, 0) == NULL)
+        {
+          if (s)
+            SOAP_FREE(soap, s);
+          return soap->error;
+        }
       }
     }
 #ifdef SOAP_DOM_EXTERNAL_NAMESPACE
@@ -832,6 +835,7 @@ soap_dup_xsd__anyType(struct soap *soap, struct soap_dom_element *d, const struc
       elt = d->elts = soap_dup_xsd__anyType(soap, NULL, a);
     elt->prnt = d;
   }
+  d->soap = soap;
   return d;
 }
 
@@ -906,6 +910,7 @@ soap_dup_xsd__anyAttribute(struct soap *soap, struct soap_dom_attribute *d, cons
       att = att->next;
     }
   }
+  d->soap = soap;
   return d;
 }
 
