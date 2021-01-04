@@ -24,9 +24,9 @@
 
 
 #define CheckIfDigestAuthFault(pSoap) (pSoap->error == HTTP_UNAUTHORIZED)
-#define CheckIfWsTokenAuthFault(pSoap)                                                                  \
-	(pSoap->error == SOAP_CLI_FAULT && QString::compare(QString::fromLocal8Bit(*soap_faultsubcode(pSoap)), \
-	                                                    QString("\"http://www.onvif.org/ver10/error\":NotAuthorized)")) != 0)
+#define CheckIfWsTokenAuthFault(pSoap) \
+	(pSoap->error == SOAP_CLI_FAULT &&    \
+	 QString::compare(QString::fromLocal8Bit(*soap_faultsubcode(pSoap)), QString("\"http://www.onvif.org/ver10/error\":NotAuthorized")) == 0)
 #define CheckIfAuthFault(pSoap) (CheckIfWsTokenAuthFault(pSoap) || CheckIfDigestAuthFault(pSoap))
 
 struct ClientPrivate {
@@ -58,8 +58,7 @@ struct ClientPrivate {
 };
 
 Client::Client(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx, QObject *pParent) :
- QObject(pParent),
- mpD(new ClientPrivate(this, rEndpoint, sharedCtx)) {}
+ QObject(pParent), mpD(new ClientPrivate(this, rEndpoint, sharedCtx)) {}
 
 Client::~Client() {
 
