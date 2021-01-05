@@ -85,6 +85,15 @@ public:
 	//! Returns the WS endpoint url as a string this client was initialized with
 	virtual const QString GetEndpointString();
 
+signals:
+	/*!
+	 *
+	 * \brief If this is connected to a slot as a direct connection or blocking queued connection you have a chance
+	 * to provide new credentials by calling Client::SetAuth. The failed request will then be resent.
+	 *
+	 */
+	void Unauthorized();
+
 protected:
 	//! Service implementations use this to acquire/prepare a raw soap context. releaseCtx must be called afterwards
 	soap *AcquireCtx();

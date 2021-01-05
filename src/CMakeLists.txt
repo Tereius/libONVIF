@@ -90,6 +90,7 @@ set(src_files
 	SoapCtx.cpp
 	Client.cpp
 	SoapHelper.cpp
+    Response.cpp
 )
 
 if(HAS_OPENSSL)

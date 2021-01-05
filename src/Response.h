@@ -63,18 +63,12 @@ public:
 	 *
 	 */
 	SimpleResponse(int errorCode, const QString &rFault = QString(), const QString &rFaultDetail = QString()) :
-	 mErrorCode(errorCode),
-	 mFault(rFault),
-	 mFaultDetail(rFaultDetail),
-	 mFaultSubcode() {}
+	 mErrorCode(errorCode), mFault(rFault), mFaultDetail(rFaultDetail), mFaultSubcode() {}
 
 	virtual ~SimpleResponse() {}
 
 	SimpleResponse(const SimpleResponse &rOther) :
-	 mErrorCode(rOther.mErrorCode),
-	 mFault(rOther.mFault),
-	 mFaultDetail(rOther.mFaultDetail),
-	 mFaultSubcode(rOther.mFaultSubcode) {}
+	 mErrorCode(rOther.mErrorCode), mFault(rOther.mFault), mFaultDetail(rOther.mFaultDetail), mFaultSubcode(rOther.mFaultSubcode) {}
 
 	SimpleResponse &operator=(const SimpleResponse &rOther) {
 
@@ -176,6 +170,8 @@ private:
 	QString mFaultDetail;
 	QString mFaultSubcode;
 };
+
+QDebug operator<<(QDebug debug, const SimpleResponse &rResponse);
 
 /*!
  *
@@ -352,10 +348,7 @@ public:
 	 mpResultObject(pResultObject ? mDuplicator(pResultObject) : nullptr) {}
 
 	Response(const T *pResultObject) :
-	 DetailedResponse(),
-	 mDeleter(),
-	 mDuplicator(),
-	 mpResultObject(pResultObject ? mDuplicator(pResultObject) : nullptr) {}
+	 DetailedResponse(), mDeleter(), mDuplicator(), mpResultObject(pResultObject ? mDuplicator(pResultObject) : nullptr) {}
 
 	virtual ~Response() { mDeleter(mpResultObject); }
 
@@ -447,8 +440,7 @@ public:
 	 */
 	ArbitraryResponse(int errorCode, const QString &rFault = QString(), const QString &rFaultDetail = QString(),
 	                  const SOAP_ENV__Detail *pFaultObject = nullptr) :
-	 DetailedResponse(errorCode, rFault, rFaultDetail, pFaultObject),
-	 mResultObject() {}
+	 DetailedResponse(errorCode, rFault, rFaultDetail, pFaultObject), mResultObject() {}
 
 	ArbitraryResponse(const DetailedResponse &rOther) : DetailedResponse(rOther), mResultObject() {}
 

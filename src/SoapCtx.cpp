@@ -231,6 +231,7 @@ void SoapCtx::InitCtx() {
 #endif // WITH_OPENSSL
 	soap_register_plugin(mpD->mpSoap, soap_wsa);
 
+	mpD->mpSoap->connect_retry = 2;
 	mpD->mpSoap->connect_timeout = SOAP_DEFAULT_CONNECT_TIMEOUT * -1000;
 	mpD->mpSoap->recv_timeout = SOAP_DEFAULT_RECEIVE_TIMEOUT * -1000;
 	mpD->mpSoap->send_timeout = SOAP_DEFAULT_SEND_TIMEOUT * -1000;

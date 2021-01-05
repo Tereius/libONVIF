@@ -24,9 +24,9 @@
 
 
 #define CheckIfDigestAuthFault(pSoap) (pSoap->error == HTTP_UNAUTHORIZED)
-#define CheckIfWsTokenAuthFault(pSoap)                                                                  \
-	(pSoap->error == SOAP_CLI_FAULT && QString::compare(QString::fromLocal8Bit(*soap_faultsubcode(pSoap)), \
-	                                                    QString("\"http://www.onvif.org/ver10/error\":NotAuthorized)")) != 0)
+#define CheckIfWsTokenAuthFault(pSoap) \
+	(pSoap->error == SOAP_CLI_FAULT &&    \
+	 QString::compare(QString::fromLocal8Bit(*soap_faultsubcode(pSoap)), QString("\"http://www.onvif.org/ver10/error\":NotAuthorized")) == 0)
 #define CheckIfAuthFault(pSoap) (CheckIfWsTokenAuthFault(pSoap) || CheckIfDigestAuthFault(pSoap))
 
 struct ClientPrivate {
@@ -58,8 +58,7 @@ struct ClientPrivate {
 };
 
 Client::Client(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx, QObject *pParent) :
- QObject(pParent),
- mpD(new ClientPrivate(this, rEndpoint, sharedCtx)) {}
+ QObject(pParent), mpD(new ClientPrivate(this, rEndpoint, sharedCtx)) {}
 
 Client::~Client() {
 
@@ -93,27 +92,33 @@ void Client::ReleaseCtx(soap *pCtx) {
 bool Client::ProcessAuthFaultAndRetry(soap *pCtx) {
 
 	bool ret = false;
-	if(mpD->mAuthProcessed == false && CheckIfAuthFault(pCtx)) {
-		if((mpD->mAuthmode == HTTP_DIGEST || mpD->mAuthmode == BOTH || mpD->mAuthmode == AUTO) && pCtx->authrealm) {
-			// HTTP digest auth.
-			if(mpD->mAuthmode == AUTO) mpD->mAuthmode = HTTP_DIGEST;
-			mpD->mDigest = QString::fromLocal8Bit(pCtx->authrealm);
+	if(CheckIfAuthFault(pCtx)) {
+		if(!mpD->mAuthProcessed) {
+			if((mpD->mAuthmode == HTTP_DIGEST || mpD->mAuthmode == BOTH || mpD->mAuthmode == AUTO) && pCtx->authrealm) {
+				// HTTP digest auth.
+				if(mpD->mAuthmode == AUTO) mpD->mAuthmode = HTTP_DIGEST;
+				mpD->mDigest = QString::fromLocal8Bit(pCtx->authrealm);
 #ifdef WITH_OPENSSL
-			http_da_save(pCtx, &mpD->mDigestStore, pCtx->authrealm, qPrintable(mpD->mUserName), qPrintable(mpD->mPassword));
+				http_da_save(pCtx, &mpD->mDigestStore, pCtx->authrealm, qPrintable(mpD->mUserName), qPrintable(mpD->mPassword));
 #endif // WITH_OPENSSL
+			}
+			if(mpD->mAuthmode == WS_USERNAME_TOKEN || mpD->mAuthmode == BOTH || mpD->mAuthmode == AUTO) {
+				// WS token auth.
+				if(mpD->mAuthmode == AUTO) mpD->mAuthmode = WS_USERNAME_TOKEN;
+			}
+			ret = mpD->mAuthProcessed = true;
+		} else {
+			emit Unauthorized();
+			// check if new credentials were provided. If so retry
+			ret = !mpD->mAuthProcessed;
 		}
-		if(mpD->mAuthmode == WS_USERNAME_TOKEN || mpD->mAuthmode == BOTH || mpD->mAuthmode == AUTO) {
-			// WS token auth.
-			if(mpD->mAuthmode == AUTO) mpD->mAuthmode = WS_USERNAME_TOKEN;
-		}
-		ret = mpD->mAuthProcessed = true;
 	}
 	return ret;
 }
 
 void Client::RestoreAuth(soap *pCtx) {
 
-	if(mpD->mAuthProcessed == true) {
+	if(mpD->mAuthProcessed) {
 		if(mpD->mAuthmode == HTTP_DIGEST || mpD->mAuthmode == BOTH) {
 #ifdef WITH_OPENSSL
 			if(mpD->mDigestStore.authrealm) {
@@ -205,5 +210,7 @@ QSharedPointer<SoapCtx> Client::GetCtx() const {
 
 int Client::Retry(soap *pCtx) {
 
-	return ProcessAuthFaultAndRetry(pCtx);
+	auto retry = ProcessAuthFaultAndRetry(pCtx);
+	if(retry) RestoreAuth(pCtx);
+	return retry;
 }
