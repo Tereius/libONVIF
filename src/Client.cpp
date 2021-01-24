@@ -15,9 +15,11 @@
  */
 #include "Client.h"
 #include "soapH.h"
-#include "wsseapi-lite.h"
 #ifdef WITH_OPENSSL
+#include "wsseapi.h"
 #include "httpda.h"
+#else
+#include "wsseapi-lite.h"
 #endif // WITH_OPENSSL
 #include <QDebug>
 #include <QObject>
@@ -131,7 +133,11 @@ void Client::RestoreAuth(soap *pCtx) {
 		}
 		if(mpD->mAuthmode == WS_USERNAME_TOKEN || mpD->mAuthmode == BOTH) {
 			soap_wsse_delete_Security(pCtx);
+#ifdef WITH_OPENSSL
+			soap_wsse_add_UsernameTokenDigest(pCtx, nullptr, qPrintable(mpD->mUserName), qPrintable(mpD->mPassword));
+#else
 			soap_wsse_add_UsernameTokenText(pCtx, nullptr, qPrintable(mpD->mUserName), qPrintable(mpD->mPassword));
+#endif
 			soap_wsse_add_Timestamp(pCtx, nullptr, 0);
 		}
 	}
