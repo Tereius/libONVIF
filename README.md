@@ -22,6 +22,7 @@ The idea behind this library is to hide some complexity of gsoap and to provide 
 - ONVIF event http://www.onvif.org/ver10/events/wsdl
 - ONVIF imaging http://www.onvif.org/ver20/imaging/wsdl
 - ONVIF media http://www.onvif.org/ver10/media/wsdl
+- ONVIF media2 http://www.onvif.org/ver20/media/wsdl
 - ONVIF ptz http://www.onvif.org/ver20/ptz/wsdl
 - ONVIF receiver http://www.onvif.org/ver10/receiver/wsdl
 - ONVIF recording http://www.onvif.org/ver10/recording/wsdl

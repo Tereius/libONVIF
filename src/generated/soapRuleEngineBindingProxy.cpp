@@ -107,6 +107,7 @@ void RuleEngineBindingProxy::RuleEngineBindingProxy_init(soap_mode imode, soap_m
         { "timg", "http://www.onvif.org/ver20/imaging/wsdl", NULL, NULL },
         { "tls", "http://www.onvif.org/ver10/display/wsdl", NULL, NULL },
         { "tptz", "http://www.onvif.org/ver20/ptz/wsdl", NULL, NULL },
+        { "tr2", "http://www.onvif.org/ver20/media/wsdl", NULL, NULL },
         { "trc", "http://www.onvif.org/ver10/recording/wsdl", NULL, NULL },
         { "trp", "http://www.onvif.org/ver10/replay/wsdl", NULL, NULL },
         { "trt", "http://www.onvif.org/ver10/media/wsdl", NULL, NULL },

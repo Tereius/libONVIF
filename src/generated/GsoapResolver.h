@@ -7,6 +7,7 @@ public:
 		if(rQname.isEmpty()) return false;
 		else if(rQname == "_xml:lang") return true;
 		else if(rQname == "tds:EAPMethodTypes") return true;
+		else if(rQname == "tr2:EncodingTypes") return true;
 		else if(rQname == "trc:EncodingTypes") return true;
 		else if(rQname == "trt:EncodingTypes") return true;
 		else if(rQname == "tt:AudioClassType") return true;

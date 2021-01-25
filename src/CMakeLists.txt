@@ -54,6 +54,7 @@ if (ENABLE_CODESYNTHESIS)
             http://www.onvif.org/onvif/ver10/receiver.wsdl
             http://www.onvif.org/onvif/ver20/ptz/wsdl/ptz.wsdl
             http://www.onvif.org/onvif/ver10/media/wsdl/media.wsdl
+            http://www.onvif.org/onvif/ver20/media/wsdl/media.wsdl
             http://www.onvif.org/onvif/ver20/imaging/wsdl/imaging.wsdl
             http://www.onvif.org/onvif/ver10/display.wsdl
             http://www.onvif.org/onvif/ver10/events/wsdl/event.wsdl
