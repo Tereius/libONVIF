@@ -275,6 +275,32 @@ if (USE_PRECOMPILED_HEADERS)
     cotire(onvifmedia)
 endif ()
 
+# -------------------------------ONVIF Media2-------------------------------
+set(src_files
+        generated/soapMedia2BindingProxy.cpp
+        #generated/soapMedia2BindingService.cpp
+        OnvifMedia2Client.cpp
+        )
+
+# private header
+set(private_header_files
+        generated/soapMedia2BindingProxy.h
+        #generated/soapMedia2BindingService.h
+        )
+
+# public header
+set(public_header_files
+        OnvifMedia2Client.h
+        )
+
+add_library(onvifmedia2 ${src_files} ${private_header_files} ${public_header_files})
+generate_export_header(onvifmedia2 EXPORT_FILE_NAME OnvifMedia2Export.h)
+target_link_libraries(onvifmedia2 onvifcommon)
+set_target_properties(onvifmedia2 PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifMedia2Export.h")
+if (USE_PRECOMPILED_HEADERS)
+    cotire(onvifmedia2)
+endif ()
+
 # -------------------------------ONVIF PTZ-------------------------------
 set(src_files
         generated/soapPTZBindingProxy.cpp
@@ -465,13 +491,13 @@ set(private_header_files
         )
 
 add_executable(onvifinfo ${src_files} ${private_header_files})
-target_link_libraries(onvifinfo onvifcommon onvifdevice onvifdiscovery onvifreplay onvifrecording onvifreceiver onvifptz onvifmedia onvifimaging onvifevent onvifdisplay onvifanalytics)
+target_link_libraries(onvifinfo onvifcommon onvifdevice onvifdiscovery onvifreplay onvifrecording onvifreceiver onvifptz onvifmedia onvifmedia2 onvifimaging onvifevent onvifdisplay onvifanalytics)
 if (USE_PRECOMPILED_HEADERS)
     cotire(onvifinfo)
 endif ()
 
 if (MSVC)
-    set_target_properties(onvifinfo onvifcommon onvifdevice onvifdiscovery onvifreplay onvifrecording onvifreceiver onvifptz onvifmedia onvifimaging onvifevent onvifdisplay onvifanalytics PROPERTIES COMPILE_FLAGS "/bigobj")
+    set_target_properties(onvifinfo onvifcommon onvifdevice onvifdiscovery onvifreplay onvifrecording onvifreceiver onvifptz onvifmedia onvifmedia2 onvifimaging onvifevent onvifdisplay onvifanalytics PROPERTIES COMPILE_FLAGS "/bigobj")
 endif ()
 
 set(install_root "${CMAKE_INSTALL_PREFIX}")
@@ -501,6 +527,7 @@ install(TARGETS
         onvifreceiver
         onvifptz
         onvifmedia
+        onvifmedia2
         onvifimaging
         onvifevent
         onvifdisplay

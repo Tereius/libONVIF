@@ -1,4 +1,4 @@
-/* Copyright(C) 2018 Björn Stresing
+/* Copyright(C) 2021 Björn Stresing
  *
  * This program is free software : you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,5 @@ public:
 	SimpleResponse InitializeTopicSet();
 
 private:
-
 	OnvifDevicePrivate *mpD;
 };

@@ -1,4 +1,4 @@
-/* Copyright(C) 2018 Björn Stresing
+/* Copyright(C) 2021 Björn Stresing
  *
  * This program is free software : you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,9 @@
 #include "OnvifEventClient.h"
 #include "OnvifImagingClient.h"
 #include "OnvifMediaClient.h"
+#include "OnvifMedia2Client.h"
 #include "OnvifEventClient.h"
 #include "OnvifImagingClient.h"
-#include "OnvifMediaClient.h"
 #include "OnvifPtzClient.h"
 #include "OnvifReceiverClient.h"
 #include "OnvifRecordingClient.h"
@@ -36,33 +36,32 @@
 struct OnvifDevicePrivate {
 
 	OnvifDevicePrivate(OnvifDevice *pQ) :
-		mpQ(pQ),
-		mUserName(),
-		mPassword(),
-		mAnalyticsEndpoint(),
-		mDeviceEndpoint(),
-		mDiscoveryEndpoint(),
-		mDisplayEndpoint(),
-		mEventEndpoint(),
-		mImagingEndpoint(),
-		mMediaEndpoint(),
-		mPtzEndpoint(),
-		mReceiverEndpoint(),
-		mRecordingEndpoint(),
-		mReplayEndpoint(),
-		mpOnvifAnalyticsClient(nullptr),
-		mpOnvifDeviceClient(nullptr),
-		mpOnvifDiscoveryClient(nullptr),
-		mpOnvifDisplayClient(nullptr),
-		mpOnvifEventClient(nullptr),
-		mpOnvifImagingClient(nullptr),
-		mpOnvifMediaClient(nullptr),
-		mpOnvifPtzClient(nullptr),
-		mpOnvifReceiverClient(nullptr),
-		mpOnvifRecordingClient(nullptr),
-		mpOnvifReplayClient(nullptr) {
-
-	}
+	 mpQ(pQ),
+	 mUserName(),
+	 mPassword(),
+	 mAnalyticsEndpoint(),
+	 mDeviceEndpoint(),
+	 mDiscoveryEndpoint(),
+	 mDisplayEndpoint(),
+	 mEventEndpoint(),
+	 mImagingEndpoint(),
+	 mMediaEndpoint(),
+	 mPtzEndpoint(),
+	 mReceiverEndpoint(),
+	 mRecordingEndpoint(),
+	 mReplayEndpoint(),
+	 mpOnvifAnalyticsClient(nullptr),
+	 mpOnvifDeviceClient(nullptr),
+	 mpOnvifDiscoveryClient(nullptr),
+	 mpOnvifDisplayClient(nullptr),
+	 mpOnvifEventClient(nullptr),
+	 mpOnvifImagingClient(nullptr),
+	 mpOnvifMediaClient(nullptr),
+	 mpOnvifMedia2Client(nullptr),
+	 mpOnvifPtzClient(nullptr),
+	 mpOnvifReceiverClient(nullptr),
+	 mpOnvifRecordingClient(nullptr),
+	 mpOnvifReplayClient(nullptr) {}
 
 	OnvifDevice *mpQ;
 	QString mUserName;
@@ -74,6 +73,7 @@ struct OnvifDevicePrivate {
 	QUrl mEventEndpoint;
 	QUrl mImagingEndpoint;
 	QUrl mMediaEndpoint;
+	QUrl mMedia2Endpoint;
 	QUrl mPtzEndpoint;
 	QUrl mReceiverEndpoint;
 	QUrl mRecordingEndpoint;
@@ -85,6 +85,7 @@ struct OnvifDevicePrivate {
 	OnvifEventClient *mpOnvifEventClient;
 	OnvifImagingClient *mpOnvifImagingClient;
 	OnvifMediaClient *mpOnvifMediaClient;
+	OnvifMedia2Client *mpOnvifMedia2Client;
 	OnvifPtzClient *mpOnvifPtzClient;
 	OnvifReceiverClient *mpOnvifReceiverClient;
 	OnvifRecordingClient *mpOnvifRecordingClient;
@@ -92,7 +93,7 @@ struct OnvifDevicePrivate {
 };
 
 OnvifDevice::OnvifDevice(const QUrl &rDeviceEndpoint, QObject *pParent /*= nullptr*/) :
-	QObject(pParent), mpD(new OnvifDevicePrivate(this)) {
+ QObject(pParent), mpD(new OnvifDevicePrivate(this)) {
 
 	mpD->mDeviceEndpoint = rDeviceEndpoint;
 }
@@ -107,10 +108,9 @@ SimpleResponse OnvifDevice::Initialize() {
 	auto builder = SoapCtx::Builder();
 	auto ctx = builder
 #ifndef NDEBUG
-		//.EnableOMode(SOAP_XML_INDENT)
+	//.EnableOMode(SOAP_XML_INDENT)
 #endif
-		.SetConnectTimeout(1000)
-		.Build();
+	            .Build();
 
 
 	qDebug() << "Using device endpoint: " << mpD->mDeviceEndpoint.toString();
@@ -127,14 +127,16 @@ SimpleResponse OnvifDevice::Initialize() {
 	if(servicesResponse) {
 		for(auto service : servicesResponse.GetResultObject()->Service) {
 			if(service->Namespace == OnvifAnalyticsClient::GetServiceNamespace()) {
-				qDebug() << "ONVIF analytics service" << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
+				qDebug() << "ONVIF analytics service"
+				         << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
 				mpD->mpOnvifAnalyticsClient = new OnvifAnalyticsClient(QUrl(qPrintable(service->XAddr)), ctx, this);
 				if(!mpD->mUserName.isNull() || !mpD->mPassword.isNull()) {
 					mpD->mpOnvifAnalyticsClient->SetAuth(mpD->mUserName, mpD->mPassword, AUTO);
 				}
 			}
 			if(service->Namespace == OnvifDeviceClient::GetServiceNamespace()) {
-				qDebug() << "ONVIF device service" << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
+				qDebug() << "ONVIF device service"
+				         << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
 				mpD->mpOnvifDeviceClient = new OnvifDeviceClient(QUrl(qPrintable(service->XAddr)), ctx, this);
 				if(!mpD->mUserName.isNull() || !mpD->mPassword.isNull()) {
 					mpD->mpOnvifDeviceClient->SetAuth(mpD->mUserName, mpD->mPassword, AUTO);
@@ -144,76 +146,83 @@ SimpleResponse OnvifDevice::Initialize() {
 				if(capResp) {
 
 					auto soap = soap_new1(SOAP_C_UTFSTRING | SOAP_XML_INDENT | SOAP_DOM_NODE);
-					auto dom = soap_dom_element(soap, nullptr, "root", (void*)capResp.GetResultObject()->Capabilities, capResp.GetResultObject()->Capabilities->soap_type());
-					dom.set((void*)capResp.GetResultObject()->Capabilities, capResp.GetResultObject()->Capabilities->soap_type());
+					auto dom = soap_dom_element(soap, nullptr, "root", (void *)capResp.GetResultObject()->Capabilities,
+					                            capResp.GetResultObject()->Capabilities->soap_type());
+					dom.set((void *)capResp.GetResultObject()->Capabilities, capResp.GetResultObject()->Capabilities->soap_type());
 					soap_destroy(dom.soap);
 					soap_end(dom.soap);
 					soap_done(dom.soap);
 					free(dom.soap);
 				}
-			}
-			else if(service->Namespace == OnvifDisplayClient::GetServiceNamespace()) {
-				qDebug() << "ONVIF display service" << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
+			} else if(service->Namespace == OnvifDisplayClient::GetServiceNamespace()) {
+				qDebug() << "ONVIF display service"
+				         << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
 				mpD->mpOnvifDisplayClient = new OnvifDisplayClient(QUrl(qPrintable(service->XAddr)), ctx, this);
 				if(!mpD->mUserName.isNull() || !mpD->mPassword.isNull()) {
 					mpD->mpOnvifDisplayClient->SetAuth(mpD->mUserName, mpD->mPassword, AUTO);
 				}
-			}
-			else if(service->Namespace == OnvifEventClient::GetServiceNamespace()) {
-				qDebug() << "ONVIF event service" << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
+			} else if(service->Namespace == OnvifEventClient::GetServiceNamespace()) {
+				qDebug() << "ONVIF event service"
+				         << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
 				mpD->mpOnvifEventClient = new OnvifEventClient(QUrl(qPrintable(service->XAddr)), ctx, this);
 				if(!mpD->mUserName.isNull() || !mpD->mPassword.isNull()) {
 					mpD->mpOnvifEventClient->SetAuth(mpD->mUserName, mpD->mPassword, AUTO);
 				}
-			}
-			else if(service->Namespace == OnvifImagingClient::GetServiceNamespace()) {
-				qDebug() << "ONVIF imaging service" << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
+			} else if(service->Namespace == OnvifImagingClient::GetServiceNamespace()) {
+				qDebug() << "ONVIF imaging service"
+				         << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
 				mpD->mpOnvifImagingClient = new OnvifImagingClient(QUrl(qPrintable(service->XAddr)), ctx, this);
 				if(!mpD->mUserName.isNull() || !mpD->mPassword.isNull()) {
 					mpD->mpOnvifImagingClient->SetAuth(mpD->mUserName, mpD->mPassword, AUTO);
 				}
-			}
-			else if(service->Namespace == OnvifMediaClient::GetServiceNamespace()) {
-				qDebug() << "ONVIF media service" << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
+			} else if(service->Namespace == OnvifMediaClient::GetServiceNamespace()) {
+				qDebug() << "ONVIF media service"
+				         << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
 				mpD->mpOnvifMediaClient = new OnvifMediaClient(QUrl(qPrintable(service->XAddr)), ctx, this);
 				if(!mpD->mUserName.isNull() || !mpD->mPassword.isNull()) {
 					mpD->mpOnvifMediaClient->SetAuth(mpD->mUserName, mpD->mPassword, AUTO);
 				}
-			}
-			else if(service->Namespace == OnvifPtzClient::GetServiceNamespace()) {
-				qDebug() << "ONVIF ptz service" << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
+			} else if(service->Namespace == OnvifMedia2Client::GetServiceNamespace()) {
+				qDebug() << "ONVIF media2 service"
+				         << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
+				mpD->mpOnvifMedia2Client = new OnvifMedia2Client(QUrl(qPrintable(service->XAddr)), ctx, this);
+				if(!mpD->mUserName.isNull() || !mpD->mPassword.isNull()) {
+					mpD->mpOnvifMedia2Client->SetAuth(mpD->mUserName, mpD->mPassword, AUTO);
+				}
+			} else if(service->Namespace == OnvifPtzClient::GetServiceNamespace()) {
+				qDebug() << "ONVIF ptz service"
+				         << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
 				mpD->mpOnvifPtzClient = new OnvifPtzClient(QUrl(qPrintable(service->XAddr)), ctx, this);
 				if(!mpD->mUserName.isNull() || !mpD->mPassword.isNull()) {
 					mpD->mpOnvifPtzClient->SetAuth(mpD->mUserName, mpD->mPassword, AUTO);
 				}
-			}
-			else if(service->Namespace == OnvifReceiverClient::GetServiceNamespace()) {
-				qDebug() << "ONVIF receiver service" << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
+			} else if(service->Namespace == OnvifReceiverClient::GetServiceNamespace()) {
+				qDebug() << "ONVIF receiver service"
+				         << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
 				mpD->mpOnvifReceiverClient = new OnvifReceiverClient(QUrl(qPrintable(service->XAddr)), ctx, this);
 				if(!mpD->mUserName.isNull() || !mpD->mPassword.isNull()) {
 					mpD->mpOnvifReceiverClient->SetAuth(mpD->mUserName, mpD->mPassword, AUTO);
 				}
-			}
-			else if(service->Namespace == OnvifRecordingClient::GetServiceNamespace()) {
-				qDebug() << "ONVIF recording service" << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
+			} else if(service->Namespace == OnvifRecordingClient::GetServiceNamespace()) {
+				qDebug() << "ONVIF recording service"
+				         << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
 				mpD->mpOnvifRecordingClient = new OnvifRecordingClient(QUrl(qPrintable(service->XAddr)), ctx, this);
 				if(!mpD->mUserName.isNull() || !mpD->mPassword.isNull()) {
 					mpD->mpOnvifRecordingClient->SetAuth(mpD->mUserName, mpD->mPassword, AUTO);
 				}
-			}
-			else if(service->Namespace == OnvifReplayClient::GetServiceNamespace()) {
-				qDebug() << "ONVIF replay service" << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
+			} else if(service->Namespace == OnvifReplayClient::GetServiceNamespace()) {
+				qDebug() << "ONVIF replay service"
+				         << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
 				mpD->mpOnvifReplayClient = new OnvifReplayClient(QUrl(qPrintable(service->XAddr)), ctx, this);
 				if(!mpD->mUserName.isNull() || !mpD->mPassword.isNull()) {
 					mpD->mpOnvifReplayClient->SetAuth(mpD->mUserName, mpD->mPassword, AUTO);
 				}
-			}
-			else {
-				qDebug() << "Unknown service" << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
+			} else {
+				qDebug() << "Unknown service"
+				         << "namespace:" << qPrintable(service->Namespace) << "Url:" << qPrintable(service->XAddr);
 			}
 		}
-	}
-	else {
+	} else {
 		qWarning() << "Couldn't receive response: " << servicesResponse.GetCompleteFault();
 	}
 
@@ -222,7 +231,7 @@ SimpleResponse OnvifDevice::Initialize() {
 	if(auto rr = res.GetResultObject()) {
 		auto capa = res.GetResultObject()->Capabilities;
 		if(capa->Device) {
-			//TODO: Print
+			//	TODO: Print
 		}
 	}
 
@@ -245,8 +254,7 @@ SimpleResponse OnvifDevice::InitializeTopicSet() {
 				for(auto item : topic.GetItems()) {
 					if(item.GetPrimitiveType() == SimpleItemInfo::PRIMITIVE_UNKNOWN) {
 						qDebug() << "    Unknown Item" << item.GetName() << "type" << item.GetSoapTypeQname();
-					}
-					else {
+					} else {
 						QString primitive;
 						switch(item.GetPrimitiveType()) {
 							case SimpleItemInfo::PRIMITIVE_BOOL:
@@ -269,8 +277,7 @@ SimpleResponse OnvifDevice::InitializeTopicSet() {
 					}
 				}
 			}
-		}
-		else {
+		} else {
 			qWarning() << "Couldn't get event properties" << response.GetCompleteFault();
 		}
 	}
