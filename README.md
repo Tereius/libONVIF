@@ -14,7 +14,7 @@ __This projects status is "work in progress". Don't expect binary compatibility.
 What does ONVIF stand for:
 > ONVIF (Open Network Video Interface Forum) is a global and open industry forum with the goal of facilitating the development and use of a global open standard for the interface of physical IP-based security products – or, in other words, to create a standard for how IP products within video surveillance and other physical security areas can communicate with each other. [Wikipedia](https://en.wikipedia.org/wiki/ONVIF)
 
-The idea behind this library is to hide some complexity of gsoap and to provide 'high level' classes including QT5 goodness. Currently there are ten client side service methods implemented:
+The idea behind this library is to hide some complexity of gsoap and to provide 'high level' classes including QT5 goodness. Currently there are eleven client side service methods implemented:
 
 - ONVIF analytics http://www.onvif.org/ver20/analytics/wsdl
 - ONVIF device http://www.onvif.org/ver10/device/wsdl
