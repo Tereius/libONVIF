@@ -15,7 +15,7 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/src/info.h" "")
 foreach(var ${info})
 	string(TOUPPER "${var}" UPPER_VAR)
 	string(REPLACE "." "_" UPPER_VAR "${UPPER_VAR}")
-	if (${${var}} MATCHES "^[0-9]+$")
+	if(${${var}} MATCHES "^[0-9]+$")
 		file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/src/info.h" "#define ${UPPER_VAR} ${${var}}\n")
 	else()
 		file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/src/info.h" "#define ${UPPER_VAR} \"${${var}}\"\n")
@@ -23,7 +23,7 @@ foreach(var ${info})
 endforeach()
 
 # Check if we use conan
-if (EXISTS "${PROJECT_SOURCE_DIR}/conanbuildinfo.cmake")
+if(EXISTS "${PROJECT_SOURCE_DIR}/conanbuildinfo.cmake")
 	include("${PROJECT_SOURCE_DIR}/conanbuildinfo.cmake")
 	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 	set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
@@ -46,11 +46,11 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "Default Targets")
 
 # Handle RPATH stuff
-if (UNIX)
+if(UNIX)
 	set(RPATH_ORIGIN false CACHE BOOL "Set the RPATH to $ORIGIN? Helpful for bundles")
 
 	# Use, i.e. don't skip the full RPATH for the build tree
-	set(CMAKE_SKIP_BUILD_RPATH  OFF)
+	set(CMAKE_SKIP_BUILD_RPATH OFF)
 	# When building, don't use the install RPATH already
 	# (but later on when installing)
 	set(CMAKE_BUILD_WITH_INSTALL_RPATH OFF)
@@ -71,13 +71,7 @@ if (UNIX)
 	endif()
 endif()
 
-# Handle doxygen stuff
-find_package(Doxygen QUIET)
-if(DOXYGEN_FOUND)
-	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/Doxyfile.in" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" @ONLY)
-	add_custom_target(doc "${DOXYGEN_EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}" COMMENT "Generating API documentation with Doxygen" VERBATIM)
-	message(STATUS "Use target \"doc\" to generate doxygen")
-endif(DOXYGEN_FOUND)
+add_subdirectory(doc doxygen EXCLUDE_FROM_ALL)
 
 # Handle precompiled header stuff
 set(USE_PRECOMPILED_HEADERS false CACHE BOOL "Use precompiled headers?")
@@ -111,5 +105,5 @@ set(CPACK_PACKAGE_VERSION_MINOR ${info.version.minor})
 set(CPACK_PACKAGE_VERSION_PATCH ${info.version.patch})
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_PACKAGE_INSTALL_DIRECTORY ${PROJECT_NAME}{CTL_MAJOR_VERSION}.${CTL_MINOR_VERSION})
-set(CPACK_PACKAGE_FILE_NAME  ${PROJECT_NAME})
+set(CPACK_PACKAGE_FILE_NAME ${PROJECT_NAME})
 include(CPack)

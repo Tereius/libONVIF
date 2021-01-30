@@ -20,13 +20,11 @@
 
 
 OnvifDiscoveryWorker::OnvifDiscoveryWorker(const QStringList &rScopes, const QStringList &rTypes, QObject *pParent) :
-	QThread(pParent),
-	mpClient(new OnvifDiscoveryClient(QUrl("soap.udp://239.255.255.250:3702"), QSharedPointer<SoapCtx>::create(), this)),
-	mTypes(rTypes),
-	mScopes(rScopes),
-	mMesssageId(QString("uuid:%1").arg(SoapHelper::GenerateUuid())) {
-
-}
+ QThread(pParent),
+ mpClient(new OnvifDiscoveryClient(QUrl("soap.udp://239.255.255.250:3702"), QSharedPointer<SoapCtx>::create(), this)),
+ mTypes(rTypes),
+ mScopes(rScopes),
+ mMesssageId(QString("uuid:%1").arg(SoapHelper::GenerateUuid())) {}
 
 OnvifDiscoveryWorker::~OnvifDiscoveryWorker() {
 
@@ -57,8 +55,10 @@ void OnvifDiscoveryWorker::StopDiscovery() {
 		mpClient->GetCtx()->ForceSocketClose();
 		const auto waitTimespan = 20000UL;
 		auto terminated = wait(waitTimespan);
-		if(!terminated) qWarning() << "Discovery worker couldn't be terminated within time:" << waitTimespan << "ms";
-		else qDebug() << "Discovery worker successfully stopped";
+		if(!terminated)
+			qWarning() << "Discovery worker couldn't be terminated within time:" << waitTimespan << "ms";
+		else
+			qDebug() << "Discovery worker successfully stopped";
 	}
 }
 
@@ -100,37 +100,37 @@ void OnvifDiscoveryWorker::run() {
 										if(probe.wsa5__EndpointReference.Address) {
 											discoveryMatch.SetEndpointReference(SoapHelper::QuuidFromString(QString::fromUtf8(probe.wsa5__EndpointReference.Address)));
 										}
-									}
-									else {
+									} else {
 										qDebug() << "Got a match which doesn't provide an endpoint - skipping";
 										continue;
 									}
-									if(probe.Types) discoveryMatch.SetTypes(QString::fromUtf8(probe.Types).split(' ', QString::SkipEmptyParts));
+									if(probe.Types)
+										discoveryMatch.SetTypes(QString::fromUtf8(probe.Types).split(' ', QString::SkipEmptyParts));
 									else {
 										qWarning() << "Got a match which doesn't provide a type - skipping";
 										continue;
 									}
-									if(probe.Scopes && probe.Scopes->__item) discoveryMatch.SetScopes(QString::fromLocal8Bit(probe.Scopes->__item).split(' ', QString::SkipEmptyParts));
-									else qWarning() << "Got a match which doesn't provide a scope:" << discoveryMatch.GetDeviceEndpoint();
+									if(probe.Scopes && probe.Scopes->__item)
+										discoveryMatch.SetScopes(QString::fromLocal8Bit(probe.Scopes->__item).split(' ', QString::SkipEmptyParts));
+									else
+										qWarning() << "Got a match which doesn't provide a scope:" << discoveryMatch.GetDeviceEndpoint();
 									qDebug() << "Got a match:" << discoveryMatch.GetDeviceEndpoint();
 									emit Match(discoveryMatch);
 								}
 							}
 						}
 					}
-				}
-				else {
+				} else {
 					qWarning() << "Skipping non related message with id:" << relatesTo;
 				}
-			}
-			else if(matchResp.GetErrorCode() != SOAP_EOF) {
+			} else if(matchResp.GetErrorCode() != SOAP_EOF) {
 				qWarning() << "The discovery match failed:" << matchResp.GetCompleteFault();
 			}
-		}
-		else {
+		} else {
 			qWarning() << "The discovery probe failed:" << probeResponse.GetCompleteFault();
 			// Sleeping
-			for(auto i = 1; i <= 10 && !QThread::isInterruptionRequested(); ++i) QThread::msleep(1000);
+			for(auto i = 1; i <= 10 && !QThread::isInterruptionRequested(); ++i)
+				QThread::msleep(1000);
 		}
 		// Send a new probe earliest 20 seconds after the last probe
 		if(timer.hasExpired(20000)) {
@@ -145,15 +145,7 @@ void OnvifDiscoveryWorker::run() {
 struct OnvifDiscoveryPrivate {
 
 	OnvifDiscoveryPrivate(OnvifDiscovery *pQ) :
-		mpQ(pQ),
-		mTypes(),
-		mScopes(),
-		mpWorker(nullptr),
-		mMutex(QMutex::Recursive),
-		mMatches(),
-		mActive(false) {
-
-	}
+	 mpQ(pQ), mTypes(), mScopes(), mpWorker(nullptr), mMutex(QMutex::Recursive), mMatches(), mActive(false) {}
 
 	OnvifDiscovery *mpQ;
 	QStringList mTypes;
@@ -164,9 +156,10 @@ struct OnvifDiscoveryPrivate {
 	bool mActive;
 };
 
-OnvifDiscovery::OnvifDiscovery(const QStringList &rScopes /*= {}*/, const QStringList &rTypes /*= {"tds:Device", "tdn:NetworkVideoTransmitter"}*/, QObject *pParent /*= nullptr*/) :
-	QObject(pParent),
-	mpD(new OnvifDiscoveryPrivate(this)) {
+OnvifDiscovery::OnvifDiscovery(const QStringList &rScopes /*= {}*/,
+                               const QStringList &rTypes /*= {"tds:Device", "tdn:NetworkVideoTransmitter"}*/,
+                               QObject *pParent /*= nullptr*/) :
+ QObject(pParent), mpD(new OnvifDiscoveryPrivate(this)) {
 
 	mpD->mTypes = rTypes;
 	mpD->mScopes = rScopes;

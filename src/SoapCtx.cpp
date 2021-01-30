@@ -14,7 +14,6 @@
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
 #include "SoapCtx.h"
-#include "QMutexLocker"
 #ifdef WITH_OPENSSL
 #include "httpda.h"
 #endif // WITH_OPENSSL
@@ -23,13 +22,14 @@
 #include <QDebug>
 #include <QPointer>
 #include <QString>
+#include <QMutexLocker>
 
 
 struct arbData {
 
 	bool enableDebug = false;
-	int (*fsend)(struct soap *, const char *, size_t);
-	size_t (*frecv)(struct soap *, char *, size_t);
+	int (*fsend)(struct soap *, const char *, size_t) = nullptr;
+	size_t (*frecv)(struct soap *, char *, size_t) = nullptr;
 	QPointer<QObject> pObject = nullptr;
 };
 
@@ -54,7 +54,7 @@ size_t frecv(struct soap *soap, char *s, size_t n) {
 }
 
 struct CtxPrivate {
-	CtxPrivate(SoapCtx *pQ) :
+	explicit CtxPrivate(SoapCtx *pQ) :
 	 mpQ(pQ),
 	 mpSoap(nullptr),
 	 mMutex(QMutex::Recursive),
@@ -67,7 +67,8 @@ struct CtxPrivate {
 	 mSoFlags(),
 	 mConFlags(),
 	 mBindFlags(),
-	 mAcceptFlags() {}
+	 mAcceptFlags(),
+	 mAuthHandler(nullptr) {}
 
 	SoapCtx *mpQ;
 	soap *mpSoap;
@@ -82,6 +83,7 @@ struct CtxPrivate {
 	int mConFlags;
 	int mBindFlags;
 	int mAcceptFlags;
+	std::unique_ptr<SoapAuthHandler> mAuthHandler;
 };
 
 SoapCtx::SoapCtx() : mpD(new CtxPrivate(this)) {
@@ -100,6 +102,10 @@ SoapCtx::SoapCtx(soap_mode imode, soap_mode omode) : mpD(new CtxPrivate(this)) {
 
 SoapCtx::~SoapCtx() {
 
+	if(mpD->mAuthHandler) {
+		mpD->mAuthHandler->FreeAuth(mpD->mpSoap);
+		mpD->mAuthHandler.reset(nullptr);
+	}
 	delete(arbData *)mpD->mpSoap->user;
 	mpD->mpSoap->user = nullptr;
 	soap_free(mpD->mpSoap);
@@ -231,7 +237,7 @@ void SoapCtx::InitCtx() {
 #endif // WITH_OPENSSL
 	soap_register_plugin(mpD->mpSoap, soap_wsa);
 
-	mpD->mpSoap->connect_retry = 2;
+	mpD->mpSoap->connect_retry = 1;
 	mpD->mpSoap->connect_timeout = SOAP_DEFAULT_CONNECT_TIMEOUT * -1000;
 	mpD->mpSoap->recv_timeout = SOAP_DEFAULT_RECEIVE_TIMEOUT * -1000;
 	mpD->mpSoap->send_timeout = SOAP_DEFAULT_SEND_TIMEOUT * -1000;
@@ -247,6 +253,7 @@ void SoapCtx::InitCtx() {
 	mpD->mpSoap->user = ud;
 	mpD->mpSoap->frecv = pFrecv;
 	mpD->mpSoap->fsend = pFsend;
+	SetSoapAuthHandler(std::unique_ptr<SoapAuthHandler>(new DefaultAuthHandler()));
 }
 
 void SoapCtx::SetConnectTimeout(int timeoutMs) {
@@ -269,8 +276,11 @@ void SoapCtx::SetReceiveTimeout(int timeoutMs) {
 
 void SoapCtx::ForceSocketClose() {
 
-	// Not mutex lock here. This should be non blocking.
+	// No mutex lock here. This should be non blocking.
+#ifdef WITH_SELF_PIPE
 	soap_close_connection(mpD->mpSoap);
+#endif
+	// TODO: How to interrupt ongoing requests on systems that don't support WITH_SELF_PIPE in a nonblocking way?
 }
 
 void SoapCtx::Save() {
@@ -391,4 +401,53 @@ QString SoapCtx::GetFaultSubcode() {
 		if(*soap_faultsubcode(mpD->mpSoap)) return QString::fromLocal8Bit(*soap_faultsubcode(mpD->mpSoap));
 	}
 	return QString();
+}
+
+void SoapCtx::SetSoapAuthHandler(std::unique_ptr<SoapAuthHandler> handler) {
+
+	QMutexLocker locker(&mpD->mMutex);
+	if(mpD->mAuthHandler) {
+		mpD->mAuthHandler->FreeAuth(mpD->mpSoap);
+		disconnect(mpD->mAuthHandler.get(), nullptr, this, nullptr);
+	}
+	mpD->mAuthHandler.swap(handler);
+	if(mpD->mAuthHandler) {
+		mpD->mAuthHandler->moveToThread(this->thread());
+		connect(mpD->mAuthHandler.get(), &SoapAuthHandler::Unauthorized, this, &SoapCtx::Unauthorized, Qt::DirectConnection);
+	}
+}
+
+void SoapCtx::SetAuth(const QString &rUserName, const QString &rPassword, AuthHandlerMode mode /*= AuthHandlerMode::AUTO*/) {
+
+	QMutexLocker locker(&mpD->mMutex);
+	if(mpD->mAuthHandler) {
+		mpD->mAuthHandler->FreeAuth(mpD->mpSoap);
+		mpD->mAuthHandler->SetAuth(mpD->mpSoap, rUserName, rPassword, mode);
+	}
+}
+
+void SoapCtx::DisableAuth() {
+
+	QMutexLocker locker(&mpD->mMutex);
+	if(mpD->mAuthHandler) mpD->mAuthHandler->FreeAuth(mpD->mpSoap);
+}
+
+bool SoapCtx::IsAuthFault() {
+
+	QMutexLocker locker(&mpD->mMutex);
+	if(mpD->mAuthHandler) return mpD->mAuthHandler->IsAuthFault(mpD->mpSoap);
+	return false;
+}
+
+void SoapCtx::RestoreAuthData() {
+
+	QMutexLocker locker(&mpD->mMutex);
+	if(mpD->mAuthHandler) mpD->mAuthHandler->RestoreAuthData(mpD->mpSoap);
+}
+
+bool SoapCtx::ProcessAuthFaultAndRetry() {
+
+	QMutexLocker locker(&mpD->mMutex);
+	if(mpD->mAuthHandler && mpD->mAuthHandler->IsAuthFault(mpD->mpSoap)) return mpD->mAuthHandler->ProcessAuthFaultAndRetry(mpD->mpSoap);
+	return false;
 }

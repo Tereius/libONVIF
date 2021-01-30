@@ -42,7 +42,6 @@ public:
 	void SetEndpointReference(const QUuid &rReference);
 
 private:
-
 	QUrl mDeviceEndpoint;
 	QStringList mTypes;
 	QStringList mScopes;

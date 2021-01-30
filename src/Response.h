@@ -55,7 +55,7 @@ public:
 	 * \brief Construct an errorless response
 	 *
 	 */
-	SimpleResponse() : mErrorCode(SOAP_OK), mFault(), mFaultDetail(), mFaultSubcode() {}
+	SimpleResponse() : mErrorCode(SOAP_OK), mFault(), mFaultDetail(), mFaultSubcode(), mIsAuthFault(false) {}
 
 	/*!
 	 *
@@ -63,12 +63,16 @@ public:
 	 *
 	 */
 	SimpleResponse(int errorCode, const QString &rFault = QString(), const QString &rFaultDetail = QString()) :
-	 mErrorCode(errorCode), mFault(rFault), mFaultDetail(rFaultDetail), mFaultSubcode() {}
+	 mErrorCode(errorCode), mFault(rFault), mFaultDetail(rFaultDetail), mFaultSubcode(), mIsAuthFault(false) {}
 
 	virtual ~SimpleResponse() {}
 
 	SimpleResponse(const SimpleResponse &rOther) :
-	 mErrorCode(rOther.mErrorCode), mFault(rOther.mFault), mFaultDetail(rOther.mFaultDetail), mFaultSubcode(rOther.mFaultSubcode) {}
+	 mErrorCode(rOther.mErrorCode),
+	 mFault(rOther.mFault),
+	 mFaultDetail(rOther.mFaultDetail),
+	 mFaultSubcode(rOther.mFaultSubcode),
+	 mIsAuthFault(rOther.mIsAuthFault) {}
 
 	SimpleResponse &operator=(const SimpleResponse &rOther) {
 
@@ -79,6 +83,7 @@ public:
 		this->mFault = rOther.mFault;
 		this->mFaultDetail = rOther.mFaultDetail;
 		this->mFaultSubcode = rOther.mFaultSubcode;
+		this->mIsAuthFault = rOther.mIsAuthFault;
 		return *this;
 	}
 
@@ -106,9 +111,10 @@ public:
 			else if(IsZlibFault())
 				whatFault = "Zlib Fault: ";
 			else if(IsHttpFault())
-				whatFault = "HTTP Fault:";
+				whatFault = "HTTP Fault: ";
 			else
 				whatFault = "Generic Fault: ";
+			if(IsAuthFault()) whatFault.prepend("(Authentication failed) ");
 			whatFault += GetSoapFault();
 			whatFault += GetSoapFaultDetail();
 		}
@@ -139,11 +145,7 @@ public:
 	//! Check if the origin of the fault (http)
 	bool IsHttpFault() const { return soap_http_error_check(mErrorCode); }
 	//! Check if the origin of the fault (authentication)
-	bool IsAuthFault() const {
-		return mErrorCode == HTTP_UNAUTHORIZED ||
-		       (mErrorCode == SOAP_CLI_FAULT &&
-		        QString::compare(mFaultSubcode, QString("\"http://www.onvif.org/ver10/error\":NotAuthorized")) == 0);
-	}
+	bool IsAuthFault() const { return mIsAuthFault; }
 	//! Safe bool
 	bool BooleanTest() const override { return IsSuccess(); }
 
@@ -156,11 +158,13 @@ protected:
 			SetFault(rSoapCtx->GetFaultString());
 			SetFaultDetail(rSoapCtx->GetFaultDetail());
 			SetFaultSubcode(rSoapCtx->GetFaultSubcode());
+			mIsAuthFault = rSoapCtx->IsAuthFault();
 		} else {
 			SetErrorCode(SOAP_OK);
 			mFault.clear();
 			mFaultDetail.clear();
 			mFaultSubcode.clear();
+			mIsAuthFault = false;
 		}
 	}
 
@@ -169,6 +173,7 @@ private:
 	QString mFault;
 	QString mFaultDetail;
 	QString mFaultSubcode;
+	bool mIsAuthFault;
 };
 
 QDebug operator<<(QDebug debug, const SimpleResponse &rResponse);

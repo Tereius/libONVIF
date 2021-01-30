@@ -1,6 +1,6 @@
-INPUT = "@CMAKE_SOURCE_DIR@/src"
+INPUT = "@PROJECT_SOURCE_DIR@/src"
 PROJECT_NAME = "@info.projectName@"
-OUTPUT_DIRECTORY = "@CMAKE_BINARY_DIR@/doc"
+OUTPUT_DIRECTORY = "@PROJECT_BINARY_DIR@/doc"
 PROJECT_BRIEF = "@info.projectDescription@"
 DOXYFILE_ENCODING = UTF-8
 RECURSIVE = YES
@@ -11,6 +11,12 @@ GENERATE_TREEVIEW = YES
 # graphs
 CLASS_GRAPH = YES
 CALL_GRAPH = YES
+DOT_IMAGE_FORMAT = svg
 EXCLUDE_PATTERNS = */generated/* \
                    */gsoap/*
+EXCLUDE_SYMBOLS = *Private \
+                  arbData
 GENERATE_LATEX = NO
+HTML_EXTRA_STYLESHEET  = "@PROJECT_SOURCE_DIR@/doc/custom.css" \
+                         "@PROJECT_SOURCE_DIR@/doc/custom_dark_theme.css"
+

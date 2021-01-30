@@ -16,17 +16,9 @@
 #include "DiscoveryMatch.h"
 
 
-DiscoveryMatch::DiscoveryMatch() :
-	mDeviceEndpoint(),
-	mTypes(),
-	mScopes(),
-	mEndpointReference() {
+DiscoveryMatch::DiscoveryMatch() : mDeviceEndpoint(), mTypes(), mScopes(), mEndpointReference() {}
 
-}
-
-DiscoveryMatch::~DiscoveryMatch() {
-
-}
+DiscoveryMatch::~DiscoveryMatch() {}
 
 QUrl DiscoveryMatch::GetDeviceEndpoint() const {
 

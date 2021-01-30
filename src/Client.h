@@ -50,21 +50,15 @@ public:
 	 * \param pParent A QObject parent
 	 *
 	 */
-	Client(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
-	virtual ~Client();
+	explicit Client(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
+	~Client() override;
 	/*!
-	 *
-	 * \brief Enable user authentication for this client
-	 *
-	 * Previously set credentials will be replaced by the new ones
-	 *
-	 * \param rUserName The user that is used for authentication
-	 * \param rPassword The password that is used for authentication
-	 * \param mode The authentication mode
-	 *
+	 * \deprecated Use SoapCtx::SetAuth instead
 	 */
 	virtual void SetAuth(const QString &rUserName, const QString &rPassword, AuthMode mode = AUTO);
-	//! Clear previously set credentials and disable user authentication for this client
+	/*!
+	 * \deprecated Use SoapCtx::DisableAuth instead
+	 */
 	virtual void DisableAuth();
 	/*!
 	 *
@@ -79,20 +73,11 @@ public:
 	//! Returns the informative fault detail string of the last service call
 	virtual QString GetFaultDetail();
 	//! Returns the WS endpoint url this client was initialized with
-	virtual const QUrl GetEndpoint();
+	virtual QUrl GetEndpoint();
 	//! Change the WS endpoint this client uses
 	virtual void SetEndpoint(const QUrl &rEndpoint);
 	//! Returns the WS endpoint url as a string this client was initialized with
-	virtual const QString GetEndpointString();
-
-signals:
-	/*!
-	 *
-	 * \brief If this is connected to a slot as a direct connection or blocking queued connection you have a chance
-	 * to provide new credentials by calling Client::SetAuth. The failed request will then be resent.
-	 *
-	 */
-	void Unauthorized();
+	virtual QString GetEndpointString();
 
 protected:
 	//! Service implementations use this to acquire/prepare a raw soap context. releaseCtx must be called afterwards
@@ -104,16 +89,10 @@ protected:
 	void ReleaseCtx(soap *pCtx);
 	//! Service implementations use this to find out how many times a service call has to be repeated
 	//! (needed because of HTTP digest authentication)
-	int Retry(soap *pCtx);
+	int Retry(soap *pCtx) const;
 
 private:
 	Q_DISABLE_COPY(Client);
-	//! Should be called every time before a service method is invoked
-	void RestoreAuth(soap *pCtx);
-	//! Checks if there is an auth fault and processes it. Returns true if the caller should call the service method again, false otherwise
-	bool ProcessAuthFaultAndRetry(soap *pCtx);
-	//! Free user authentication data
-	void FreeAuthData();
 
 	ClientPrivate *mpD;
 };
