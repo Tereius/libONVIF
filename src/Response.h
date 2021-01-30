@@ -14,7 +14,6 @@
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
 #pragma once
-#include "OnvifCommonExport.h"
 #include "SoapCtx.h"
 #include "soapH.h"
 #include <QDebug>
