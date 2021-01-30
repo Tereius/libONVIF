@@ -20,7 +20,6 @@
 #include "soapH.h"
 #include <memory>
 #include <QSharedPointer>
-#include <QMutex>
 #include <QObject>
 
 

@@ -18,6 +18,12 @@
 #include "OnvifEventClient.h"
 #include <QThread>
 #include <QDebug>
+#if(QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+#define HAS_QT_RECURSIVEMUTEX
+#include <QRecursiveMutex>
+#else
+#include <QMutex>
+#endif
 
 
 #define PULL_POINT_MAX_RETRIES 10
@@ -25,9 +31,7 @@
 #define PULL_POINT_DEFAULT_MSG_LIMIT 100
 
 OnvifPullPointWorker::OnvifPullPointWorker(const QUrl &rEndpoint, QObject *pParent) :
-	QThread(pParent),
-	mEndpoint(rEndpoint),
-	mpClient(new OnvifEventClient(mEndpoint, QSharedPointer<SoapCtx>::create(), this)) {
+ QThread(pParent), mEndpoint(rEndpoint), mpClient(new OnvifEventClient(mEndpoint, QSharedPointer<SoapCtx>::create(), this)) {
 
 	mpClient->GetCtx()->EnableOModeFlags(SOAP_IO_KEEPALIVE);
 	mpClient->GetCtx()->EnableIModeFlags(SOAP_IO_KEEPALIVE);
@@ -56,8 +60,7 @@ void OnvifPullPointWorker::run() {
 		if(shortPull) {
 			request.MessageLimit = 1;
 			request.Timeout = SOAP_DEFAULT_RECEIVE_TIMEOUT;
-		}
-		else {
+		} else {
 			request.MessageLimit = messageLimit;
 			request.Timeout = timeoutLimit;
 		}
@@ -75,8 +78,7 @@ void OnvifPullPointWorker::run() {
 				emit ResumedPullPoint();
 				failedPullHandled = false;
 			}
-		}
-		else {
+		} else {
 			pullFaultCount++;
 			qWarning() << "Pull failed (" << pullFaultCount << "/" << PULL_POINT_MAX_RETRIES << "retries):" << mpClient->GetEndpointString();
 			auto faultDetail = resp.GetFaultObject<_tev__PullMessagesFaultResponse>();
@@ -89,12 +91,12 @@ void OnvifPullPointWorker::run() {
 					timeoutLimit = faultDetail->MaxTimeout;
 					qDebug() << "Got new timeout limit from Pull Point:" << timeoutLimit;
 				}
-			}
-			else {
+			} else {
 				shortPull = true;
 				qWarning() << resp;
 				// Sleeping
-				for(auto i = 1; i <= 10 && !QThread::isInterruptionRequested(); ++i) QThread::msleep(1000);
+				for(auto i = 1; i <= 10 && !QThread::isInterruptionRequested(); ++i)
+					QThread::msleep(1000);
 			}
 
 			if(!failedPullHandled && pullFaultCount >= 2) {
@@ -143,34 +145,40 @@ void OnvifPullPointWorker::StopListening() {
 		mpClient->GetCtx()->ForceSocketClose();
 		const auto waitTimespan = 20000UL;
 		auto terminated = wait(waitTimespan);
-		if(!terminated) qWarning() << "PullPoint worker couldn't be terminated within time:" << waitTimespan << "ms";
-		else qDebug() << "PullPoint worker successfully stopped";
+		if(!terminated)
+			qWarning() << "PullPoint worker couldn't be terminated within time:" << waitTimespan << "ms";
+		else
+			qDebug() << "PullPoint worker successfully stopped";
 	}
 }
 
 struct OnvifPullPointPrivate {
 
 	OnvifPullPointPrivate(OnvifPullPoint *pQ, const QUrl &rEndpoint) :
-		mpQ(pQ),
-		mEndpoint(rEndpoint),
-		mpWorker(nullptr),
-		mMutex(QMutex::Recursive),
-		mActive(false) {
-
+	 mpQ(pQ),
+	 mEndpoint(rEndpoint),
+	 mpWorker(nullptr),
+#if defined(HAS_QT_RECURSIVEMUTEX)
+	 mMutex(),
+#else
+	 mMutex(QMutex::Recursive),
+#endif
+	 mActive(false) {
 	}
 
 	OnvifPullPoint *mpQ;
 	const QUrl mEndpoint;
 	OnvifPullPointWorker *mpWorker;
+#if defined(HAS_QT_RECURSIVEMUTEX)
+	QRecursiveMutex mMutex;
+#else
 	QMutex mMutex;
+#endif
 	bool mActive;
 };
 
 OnvifPullPoint::OnvifPullPoint(const QUrl &rEndpoint, QObject *pParent /*= nullptr*/) :
-	Client(rEndpoint, QSharedPointer<SoapCtx>::create(), pParent),
-	mpD(new OnvifPullPointPrivate(this, rEndpoint)) {
-
-}
+ Client(rEndpoint, QSharedPointer<SoapCtx>::create(), pParent), mpD(new OnvifPullPointPrivate(this, rEndpoint)) {}
 
 OnvifPullPoint::~OnvifPullPoint() {
 

@@ -23,6 +23,12 @@
 #include <QPointer>
 #include <QString>
 #include <QMutexLocker>
+#if(QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+#define HAS_QT_RECURSIVEMUTEX
+#include <QRecursiveMutex>
+#else
+#include <QMutex>
+#endif
 
 
 struct arbData {
@@ -57,7 +63,11 @@ struct CtxPrivate {
 	explicit CtxPrivate(SoapCtx *pQ) :
 	 mpQ(pQ),
 	 mpSoap(nullptr),
+#if defined(HAS_QT_RECURSIVEMUTEX)
+	 mMutex(),
+#else
 	 mMutex(QMutex::Recursive),
+#endif
 	 mIsSaved(false),
 	 mIModeSaved(),
 	 mOModeSaved(),
@@ -68,11 +78,16 @@ struct CtxPrivate {
 	 mConFlags(),
 	 mBindFlags(),
 	 mAcceptFlags(),
-	 mAuthHandler(nullptr) {}
+	 mAuthHandler(nullptr) {
+	}
 
 	SoapCtx *mpQ;
 	soap *mpSoap;
+#if defined(HAS_QT_RECURSIVEMUTEX)
+	QRecursiveMutex mMutex;
+#else
 	QMutex mMutex;
+#endif
 	bool mIsSaved;
 	soap_mode mIModeSaved;
 	soap_mode mOModeSaved;

@@ -14,7 +14,6 @@
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
 #pragma once
-#include "SafeBool.h"
 #include "SoapCtx.h"
 #include "soapH.h"
 #include <QDebug>
@@ -47,7 +46,7 @@ struct SoapDuplicator {
  * Holds an error
  *
  */
-class SimpleResponse : public SafeBool<void> {
+class SimpleResponse {
 
 public:
 	/*!
@@ -147,7 +146,7 @@ public:
 	//! Check if the origin of the fault (authentication)
 	bool IsAuthFault() const { return mIsAuthFault; }
 	//! Safe bool
-	bool BooleanTest() const override { return IsSuccess(); }
+	explicit operator bool() const { return IsSuccess(); }
 
 protected:
 	virtual void PopulateFromCtx(const QSharedPointer<SoapCtx> &rSoapCtx) {

@@ -17,6 +17,12 @@
 #include "SoapHelper.h"
 #include <QElapsedTimer>
 #include <QDebug>
+#if(QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+#define HAS_QT_RECURSIVEMUTEX
+#include <QRecursiveMutex>
+#else
+#include <QMutex>
+#endif
 
 
 OnvifDiscoveryWorker::OnvifDiscoveryWorker(const QStringList &rScopes, const QStringList &rTypes, QObject *pParent) :
@@ -104,15 +110,23 @@ void OnvifDiscoveryWorker::run() {
 										qDebug() << "Got a match which doesn't provide an endpoint - skipping";
 										continue;
 									}
-									if(probe.Types)
+									if(probe.Types) {
+#if(QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+										discoveryMatch.SetTypes(QString::fromUtf8(probe.Types).split(' ', Qt::SkipEmptyParts));
+#else
 										discoveryMatch.SetTypes(QString::fromUtf8(probe.Types).split(' ', QString::SkipEmptyParts));
-									else {
+#endif
+									} else {
 										qWarning() << "Got a match which doesn't provide a type - skipping";
 										continue;
 									}
-									if(probe.Scopes && probe.Scopes->__item)
+									if(probe.Scopes && probe.Scopes->__item) {
+#if(QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+										discoveryMatch.SetScopes(QString::fromLocal8Bit(probe.Scopes->__item).split(' ', Qt::SkipEmptyParts));
+#else
 										discoveryMatch.SetScopes(QString::fromLocal8Bit(probe.Scopes->__item).split(' ', QString::SkipEmptyParts));
-									else
+#endif
+									} else
 										qWarning() << "Got a match which doesn't provide a scope:" << discoveryMatch.GetDeviceEndpoint();
 									qDebug() << "Got a match:" << discoveryMatch.GetDeviceEndpoint();
 									emit Match(discoveryMatch);
@@ -145,7 +159,18 @@ void OnvifDiscoveryWorker::run() {
 struct OnvifDiscoveryPrivate {
 
 	OnvifDiscoveryPrivate(OnvifDiscovery *pQ) :
-	 mpQ(pQ), mTypes(), mScopes(), mpWorker(nullptr), mMutex(QMutex::Recursive), mMatches(), mActive(false) {}
+	 mpQ(pQ),
+	 mTypes(),
+	 mScopes(),
+	 mpWorker(nullptr),
+#if defined(HAS_QT_RECURSIVEMUTEX)
+	 mMutex(),
+#else
+	 mMutex(QMutex::Recursive),
+#endif
+	 mMatches(),
+	 mActive(false) {
+	}
 
 	OnvifDiscovery *mpQ;
 	QStringList mTypes;

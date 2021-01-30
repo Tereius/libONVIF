@@ -119,7 +119,6 @@ set(public_header_files
 		Request.h
 		Response.h
 		Client.h
-		SafeBool.h
 		global.h
 		SoapHelper.h
 		)
@@ -142,7 +141,7 @@ endif()
 if(WIN32 AND NOT BUILD_SHARED_LIBS)
 	target_link_libraries(onvifcommon qtpcre2.lib version.lib Winmm.lib Netapi32.lib Userenv.lib)
 endif()
-target_compile_features(onvifcommon PUBLIC cxx_strong_enums cxx_auto_type cxx_nullptr cxx_long_long_type)
+target_compile_features(onvifcommon PUBLIC cxx_strong_enums cxx_auto_type cxx_nullptr cxx_long_long_type cxx_explicit_conversions)
 set_target_properties(onvifcommon PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifCommonExport.h")
 if(USE_PRECOMPILED_HEADERS)
 	cotire(onvifcommon)

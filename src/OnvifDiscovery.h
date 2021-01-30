@@ -21,7 +21,6 @@
 #include <QStringList>
 #include <QUrl>
 #include <QThread>
-#include <QMutex>
 #include <QList>
 
 
@@ -57,29 +56,30 @@ private:
 
 
 /*!
-*
-* \brief A WS discovery listener
-*
-* Use this class to listen (non blocking) for devices entering the network
-*
-*/
+ *
+ * \brief A WS discovery listener
+ *
+ * Use this class to listen (non blocking) for devices entering the network
+ *
+ */
 class ONVIFDISCOVERY_EXPORT OnvifDiscovery : public QObject {
 
 	Q_OBJECT
-		Q_PROPERTY(QList<DiscoveryMatch> matches READ GetMatches NOTIFY MatchesChanged)
-		Q_PROPERTY(bool active READ Active NOTIFY ActiveChanged)
+	Q_PROPERTY(QList<DiscoveryMatch> matches READ GetMatches NOTIFY MatchesChanged)
+	Q_PROPERTY(bool active READ Active NOTIFY ActiveChanged)
 
 public:
 	/*!
-	*
-	* \brief Construct a WS discovery listener
-	*
-	* \param rScopes The WS discovery scopes
-	* \param rTypes The WS discovery types
-	* \param pParent A QObject parent
-	*
-	*/
-	OnvifDiscovery(const QStringList &rScopes = {}, const QStringList &rTypes = {"tds:Device", "tdn:NetworkVideoTransmitter"}, QObject *pParent = nullptr);
+	 *
+	 * \brief Construct a WS discovery listener
+	 *
+	 * \param rScopes The WS discovery scopes
+	 * \param rTypes The WS discovery types
+	 * \param pParent A QObject parent
+	 *
+	 */
+	OnvifDiscovery(const QStringList &rScopes = {}, const QStringList &rTypes = {"tds:Device", "tdn:NetworkVideoTransmitter"},
+	               QObject *pParent = nullptr);
 	virtual ~OnvifDiscovery();
 	//! Clear all the matches that were found since start was called
 	Q_INVOKABLE void ClearMatches();
@@ -95,7 +95,8 @@ public:
 	bool Active();
 
 signals:
-	//! Emitted if a match is found. As long as a matchable device is in the network this signal will be triggered periodically containing the same match
+	//! Emitted if a match is found. As long as a matchable device is in the network this signal will be triggered periodically containing the
+	//! same match
 	void Match(const DiscoveryMatch &rMatch);
 	//! Emitted if a NEW match is found that is unique since Start was called the first time or ClearMatches was called
 	void NewMatch(const DiscoveryMatch &rMatch);
@@ -104,7 +105,7 @@ signals:
 	//! Emitted if the active state changes
 	void ActiveChanged();
 
-	public slots:
+public slots:
 	//! Start listening for devices. Non blocking
 	void Start();
 	//! Stop listening for devices
