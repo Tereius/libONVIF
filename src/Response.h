@@ -14,6 +14,7 @@
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
 #pragma once
+#include "OnvifCommonExport.h"
 #include "SoapCtx.h"
 #include "soapH.h"
 #include <QDebug>
@@ -175,7 +176,12 @@ private:
 	bool mIsAuthFault;
 };
 
-QDebug operator<<(QDebug debug, const SimpleResponse &rResponse);
+inline QDebug operator<<(QDebug debug, const SimpleResponse &rResponse) {
+
+	QDebugStateSaver saver(debug);
+	debug.nospace() << rResponse.GetCompleteFault();
+	return debug;
+}
 
 /*!
  *

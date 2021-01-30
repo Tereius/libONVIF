@@ -92,7 +92,6 @@ set(src_files
 		SoapAuthHandler.cpp
 		Client.cpp
 		SoapHelper.cpp
-		Response.cpp
 		)
 
 if(HAS_OPENSSL)
