@@ -32,8 +32,18 @@ public:
 	DiscoveryMatch();
 	virtual ~DiscoveryMatch();
 
+	/*!
+	 * \deprecated Use DiscoveryMatch::GetDeviceEndpoints instead
+	 */
+	Q_DECL_DEPRECATED
 	QUrl GetDeviceEndpoint() const;
+	/*!
+	 * \deprecated Use DiscoveryMatch::SetDeviceEndpoints instead
+	 */
+	Q_DECL_DEPRECATED
 	void SetDeviceEndpoint(const QUrl &rDeviceEndpoint);
+	QList<QUrl> GetDeviceEndpoints() const;
+	void SetDeviceEndpoints(const QList<QUrl> &rDeviceEndpoint);
 	QStringList GetTypes() const;
 	void SetTypes(const QStringList &rTypes);
 	QStringList GetScopes() const;
@@ -42,7 +52,7 @@ public:
 	void SetEndpointReference(const QUuid &rReference);
 
 private:
-	QUrl mDeviceEndpoint;
+	QList<QUrl> mDeviceEndpoints;
 	QStringList mTypes;
 	QStringList mScopes;
 	QUuid mEndpointReference;

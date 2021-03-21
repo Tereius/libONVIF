@@ -17,6 +17,7 @@
 #include "SoapHelper.h"
 #include <QElapsedTimer>
 #include <QDebug>
+#include <QLoggingCategory>
 #if(QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 #define HAS_QT_RECURSIVEMUTEX
 #include <QRecursiveMutex>
@@ -24,6 +25,7 @@
 #include <QMutex>
 #endif
 
+Q_LOGGING_CATEGORY(dd, "DeviceDiscovery")
 
 OnvifDiscoveryWorker::OnvifDiscoveryWorker(const QStringList &rScopes, const QStringList &rTypes, QObject *pParent) :
  QThread(pParent),
@@ -40,14 +42,14 @@ OnvifDiscoveryWorker::~OnvifDiscoveryWorker() {
 bool OnvifDiscoveryWorker::StartDiscovery() {
 
 	if(!isRunning()) {
-		qDebug() << "Starting discovery worker";
+		qDebug(dd) << "Starting discovery worker";
 		auto probeResponse = Probe(mMesssageId);
 		if(probeResponse) {
 			start();
-			qDebug() << "Discovery worker successfully started";
+			qDebug(dd) << "Discovery worker successfully started";
 			return true;
 		}
-		qWarning() << "Couldn't start discovery worker - initial probe failed:" << probeResponse.GetCompleteFault();
+		qWarning(dd) << "Couldn't start discovery worker - initial probe failed:" << probeResponse.GetCompleteFault();
 		return false;
 	}
 	return true;
@@ -56,15 +58,15 @@ bool OnvifDiscoveryWorker::StartDiscovery() {
 void OnvifDiscoveryWorker::StopDiscovery() {
 
 	if(!isInterruptionRequested() && isRunning()) {
-		qDebug() << "Stopping discovery worker";
+		qDebug(dd) << "Stopping discovery worker";
 		requestInterruption();
 		mpClient->GetCtx()->ForceSocketClose();
 		const auto waitTimespan = 20000UL;
 		auto terminated = wait(waitTimespan);
 		if(!terminated)
-			qWarning() << "Discovery worker couldn't be terminated within time:" << waitTimespan << "ms";
+			qWarning(dd) << "Discovery worker couldn't be terminated within time:" << waitTimespan << "ms";
 		else
-			qDebug() << "Discovery worker successfully stopped";
+			qDebug(dd) << "Discovery worker successfully stopped";
 	}
 }
 
@@ -102,12 +104,34 @@ void OnvifDiscoveryWorker::run() {
 									auto probe = match.ProbeMatch[ii];
 									DiscoveryMatch discoveryMatch;
 									if(probe.XAddrs) {
-										discoveryMatch.SetDeviceEndpoint(QString::fromUtf8(probe.XAddrs).trimmed());
+#if(QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+										auto urlsStr = QString::fromUtf8(probe.XAddrs).split(' ', Qt::SkipEmptyParts);
+#else
+										auto urlsStr = QString::fromUtf8(probe.XAddrs).split(' ', String::SkipEmptyParts);
+#endif
+										QList<QUrl> endpoints = QUrl::fromStringList(urlsStr);
+										for(auto iter = endpoints.begin(); iter != endpoints.end();) {
+											if(iter->isEmpty()) {
+												qDebug(dd) << "Removing empty endpoint url:" << *iter;
+												iter = endpoints.erase(iter);
+											} else if(!iter->isValid()) {
+												qDebug(dd) << "Removing invalid endpoint url:" << *iter;
+												iter = endpoints.erase(iter);
+											} else {
+												qWarning() << "url" << *iter;
+												++iter;
+											}
+										}
+										if(endpoints.isEmpty()) {
+											qInfo(dd) << "Got a match which doesn't provide a valid device endpoint - skipping";
+											continue;
+										}
+										discoveryMatch.SetDeviceEndpoints(endpoints);
 										if(probe.wsa5__EndpointReference.Address) {
 											discoveryMatch.SetEndpointReference(SoapHelper::QuuidFromString(QString::fromUtf8(probe.wsa5__EndpointReference.Address)));
 										}
 									} else {
-										qDebug() << "Got a match which doesn't provide an endpoint - skipping";
+										qInfo(dd) << "Got a match which doesn't provide a device endpoint - skipping";
 										continue;
 									}
 									if(probe.Types) {
@@ -117,7 +141,7 @@ void OnvifDiscoveryWorker::run() {
 										discoveryMatch.SetTypes(QString::fromUtf8(probe.Types).split(' ', QString::SkipEmptyParts));
 #endif
 									} else {
-										qWarning() << "Got a match which doesn't provide a type - skipping";
+										qInfo(dd) << "Got a match which doesn't provide a type - skipping";
 										continue;
 									}
 									if(probe.Scopes && probe.Scopes->__item) {
@@ -127,21 +151,21 @@ void OnvifDiscoveryWorker::run() {
 										discoveryMatch.SetScopes(QString::fromLocal8Bit(probe.Scopes->__item).split(' ', QString::SkipEmptyParts));
 #endif
 									} else
-										qWarning() << "Got a match which doesn't provide a scope:" << discoveryMatch.GetDeviceEndpoint();
-									qDebug() << "Got a match:" << discoveryMatch.GetDeviceEndpoint();
+										qInfo(dd) << "Got a match which doesn't provide a scope:" << discoveryMatch.GetDeviceEndpoints();
+									qDebug(dd) << "Got a match:" << discoveryMatch.GetDeviceEndpoints();
 									emit Match(discoveryMatch);
 								}
 							}
 						}
 					}
 				} else {
-					qWarning() << "Skipping non related message with id:" << relatesTo;
+					qInfo(dd) << "Skipping non related message with id:" << relatesTo;
 				}
 			} else if(matchResp.GetErrorCode() != SOAP_EOF) {
-				qWarning() << "The discovery match failed:" << matchResp.GetCompleteFault();
+				qWarning(dd) << "The discovery match failed:" << matchResp.GetCompleteFault();
 			}
 		} else {
-			qWarning() << "The discovery probe failed:" << probeResponse.GetCompleteFault();
+			qWarning(dd) << "The discovery probe failed:" << probeResponse.GetCompleteFault();
 			// Sleeping
 			for(auto i = 1; i <= 10 && !QThread::isInterruptionRequested(); ++i)
 				QThread::msleep(1000);
@@ -158,7 +182,7 @@ void OnvifDiscoveryWorker::run() {
 
 struct OnvifDiscoveryPrivate {
 
-	OnvifDiscoveryPrivate(OnvifDiscovery *pQ) :
+	explicit OnvifDiscoveryPrivate(OnvifDiscovery *pQ) :
 	 mpQ(pQ),
 	 mTypes(),
 	 mScopes(),
@@ -206,11 +230,14 @@ void OnvifDiscovery::Start() {
 		connect(mpD->mpWorker, &OnvifDiscoveryWorker::Match, [this](const DiscoveryMatch &rMatch) {
 			auto found = false;
 			this->mpD->mMutex.lock();
-			for(auto match : this->mpD->mMatches) {
-				if(match.GetDeviceEndpoint() == rMatch.GetDeviceEndpoint()) {
-					found = true;
-					break;
+			for(const auto &match : this->mpD->mMatches) {
+				for(const auto &endpoint : rMatch.GetDeviceEndpoints()) {
+					if(match.GetDeviceEndpoints().contains(endpoint)) {
+						found = true;
+						break;
+					}
 				}
+				if(found) break;
 			}
 			if(!found) {
 				this->mpD->mMatches << rMatch;

@@ -16,18 +16,28 @@
 #include "DiscoveryMatch.h"
 
 
-DiscoveryMatch::DiscoveryMatch() : mDeviceEndpoint(), mTypes(), mScopes(), mEndpointReference() {}
+DiscoveryMatch::DiscoveryMatch() : mDeviceEndpoints(), mTypes(), mScopes(), mEndpointReference() {}
 
-DiscoveryMatch::~DiscoveryMatch() {}
+DiscoveryMatch::~DiscoveryMatch() = default;
 
 QUrl DiscoveryMatch::GetDeviceEndpoint() const {
 
-	return mDeviceEndpoint;
+	return !mDeviceEndpoints.isEmpty() ? mDeviceEndpoints.first() : QUrl();
 }
 
 void DiscoveryMatch::SetDeviceEndpoint(const QUrl &rDeviceEndpoint) {
 
-	mDeviceEndpoint = rDeviceEndpoint;
+	mDeviceEndpoints = {rDeviceEndpoint};
+}
+
+QList<QUrl> DiscoveryMatch::GetDeviceEndpoints() const {
+
+	return mDeviceEndpoints;
+}
+
+void DiscoveryMatch::SetDeviceEndpoints(const QList<QUrl> &rDeviceEndpoint) {
+
+	mDeviceEndpoints = rDeviceEndpoint;
 }
 
 QStringList DiscoveryMatch::GetTypes() const {

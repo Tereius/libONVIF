@@ -55,10 +55,12 @@ public:
 	/*!
 	 * \deprecated Use SoapCtx::SetAuth instead
 	 */
+	Q_DECL_DEPRECATED
 	virtual void SetAuth(const QString &rUserName, const QString &rPassword, AuthMode mode = AUTO);
 	/*!
 	 * \deprecated Use SoapCtx::DisableAuth instead
 	 */
+	Q_DECL_DEPRECATED
 	virtual void DisableAuth();
 	/*!
 	 *
