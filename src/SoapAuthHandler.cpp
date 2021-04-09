@@ -56,6 +56,11 @@ DefaultAuthHandler::~DefaultAuthHandler() {
 void DefaultAuthHandler::SetAuth(soap *pCtx, const QString &rUserName, const QString &rPassword, AuthHandlerMode mode) {
 
 	if(pCtx) {
+#ifdef WITH_OPENSSL
+		if(!soap_lookup_plugin(pCtx, HTTP_DA_ID)) {
+			soap_register_plugin(pCtx, http_da);
+		}
+#endif
 		FreeAuth(pCtx);
 		mpD->mAuthProcessed = false;
 #ifndef WITH_OPENSSL
@@ -134,11 +139,17 @@ void DefaultAuthHandler::RestoreAuthData(soap *pCtx) {
 	}
 }
 
-bool DefaultAuthHandler::ProcessAuthFaultAndRetry(soap *pCtx) {
+bool DefaultAuthHandler::ProcessAuthFaultAndRetry(soap *pCtx, int numRetry) {
 
 	if(pCtx) {
 		bool ret = false;
 		if(IsAuthFault(pCtx)) {
+
+			if(IsHttpAuthFault(pCtx) && mpD->mAuthProcessed && pCtx->authrealm && numRetry == 0) {
+				// nonce probably changed
+				mpD->mAuthProcessed = false;
+			}
+
 			if(!mpD->mAuthProcessed) {
 				if((mpD->mAuthmode == AuthHandlerMode::HTTP_DIGEST || mpD->mAuthmode == AuthHandlerMode::BOTH ||
 				    mpD->mAuthmode == AuthHandlerMode::AUTO) &&
@@ -158,7 +169,7 @@ bool DefaultAuthHandler::ProcessAuthFaultAndRetry(soap *pCtx) {
 			} else {
 				emit Unauthorized();
 				// check if new credentials were provided. If so retry
-				ret = !mpD->mAuthProcessed;
+				ret = false;
 			}
 		}
 		return ret;

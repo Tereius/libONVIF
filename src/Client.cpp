@@ -19,6 +19,7 @@
 #include <QDebug>
 #include <QObject>
 #include <utility>
+#include <QMutex>
 
 
 struct ClientPrivate {
@@ -28,6 +29,7 @@ struct ClientPrivate {
 	Client *mpQ;
 	QSharedPointer<SoapCtx> mCtx;
 	QUrl mEndpoint;
+	QMutex mMutex;
 };
 
 Client::Client(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx, QObject *pParent) :
@@ -106,17 +108,17 @@ QString Client::GetFaultDetail() {
 
 QUrl Client::GetEndpoint() {
 
-	mpD->mCtx->Acquire();
+	mpD->mMutex.lock();
 	auto ret = mpD->mEndpoint;
-	mpD->mCtx->Release();
+	mpD->mMutex.unlock();
 	return ret;
 }
 
 void Client::SetEndpoint(const QUrl &rEndpoint) {
 
-	mpD->mCtx->Acquire();
+	mpD->mMutex.lock();
 	mpD->mEndpoint = rEndpoint;
-	mpD->mCtx->Release();
+	mpD->mMutex.unlock();
 }
 
 QString Client::GetEndpointString() {

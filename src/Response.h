@@ -148,7 +148,6 @@ public:
 	//! Safe bool
 	explicit operator bool() const { return IsSuccess(); }
 
-protected:
 	virtual void PopulateFromCtx(const QSharedPointer<SoapCtx> &rSoapCtx) {
 
 		auto errorCode = rSoapCtx->GetFaultCode();
@@ -303,7 +302,6 @@ public:
 		return QString();
 	}
 
-protected:
 	virtual void PopulateFromCtx(const QSharedPointer<SoapCtx> &rSoapCtx) override {
 
 		SimpleResponse::PopulateFromCtx(rSoapCtx);

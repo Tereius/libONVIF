@@ -178,36 +178,44 @@ public:
 			mpResult->SetConnectTimeout(timeoutMs);
 			return *this;
 		}
+
 		Builder &SetSendTimeout(int timeoutMs) {
 			mpResult->SetSendTimeout(timeoutMs);
 			return *this;
 		}
+
 		Builder &SetReceiveTimeout(int timeoutMs) {
 			mpResult->SetReceiveTimeout(timeoutMs);
 			return *this;
 		}
+
 		Builder &EnableIMode(soap_mode timeoutMs) {
 			mpResult->EnableIModeFlags(timeoutMs);
 			return *this;
 		}
+
 		Builder &EnableOMode(soap_mode timeoutMs) {
 			mpResult->EnableOModeFlags(timeoutMs);
 			return *this;
 		}
+
 		Builder &EnablePrintRawSoap() {
 			mpResult->EnablePrintRawSoap();
 			return *this;
 		}
+
 		Builder &SetSoapAuthHandler(std::unique_ptr<SoapAuthHandler> handler) {
 			mpResult->SetSoapAuthHandler(std::move(handler));
 			return *this;
 		}
+
 #ifdef WITH_OPENSSL
 		Builder &EnableSsl() {
 			mpResult->EnableSsl();
 			return *this;
 		}
 #endif // WITH_OPENSSL
+
 		const QSharedPointer<SoapCtx> &Build() const { return mpResult; }
 
 	private:

@@ -50,6 +50,8 @@ public:
 	void SetScopes(const QStringList &rScopes);
 	QUuid GetEndpointReference() const;
 	void SetEndpointReference(const QUuid &rReference);
+	bool operator==(const DiscoveryMatch &rOther) const;
+	bool operator!=(const DiscoveryMatch &rOther) const;
 
 private:
 	QList<QUrl> mDeviceEndpoints;

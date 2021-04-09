@@ -78,6 +78,7 @@ struct CtxPrivate {
 	 mConFlags(),
 	 mBindFlags(),
 	 mAcceptFlags(),
+	 mRetryCounter(0),
 	 mAuthHandler(nullptr) {
 	}
 
@@ -98,6 +99,7 @@ struct CtxPrivate {
 	int mConFlags;
 	int mBindFlags;
 	int mAcceptFlags;
+	int mRetryCounter;
 	std::unique_ptr<SoapAuthHandler> mAuthHandler;
 };
 
@@ -230,28 +232,29 @@ void SoapCtx::DisableOModeFlags(soap_mode omode) {
 soap *SoapCtx::Acquire() {
 
 	mpD->mMutex.lock();
+	mpD->mRetryCounter = 0;
 	return mpD->mpSoap;
 }
 
 void SoapCtx::Release() {
 
+	mpD->mRetryCounter = 0;
 	mpD->mMutex.unlock();
 }
 
 soap *SoapCtx::TryAcquire(int timeoutMs) {
 
 	bool locked = mpD->mMutex.tryLock(timeoutMs);
-	if(locked) return mpD->mpSoap;
+	if(locked) {
+		mpD->mRetryCounter = 0;
+		return mpD->mpSoap;
+	}
 	return nullptr;
 }
 
 void SoapCtx::InitCtx() {
 
-#ifdef WITH_OPENSSL
-	soap_register_plugin(mpD->mpSoap, http_da);
-#endif // WITH_OPENSSL
 	soap_register_plugin(mpD->mpSoap, soap_wsa);
-
 	mpD->mpSoap->connect_retry = 1;
 	mpD->mpSoap->connect_timeout = SOAP_DEFAULT_CONNECT_TIMEOUT * -1000;
 	mpD->mpSoap->recv_timeout = SOAP_DEFAULT_RECEIVE_TIMEOUT * -1000;
@@ -462,7 +465,13 @@ void SoapCtx::RestoreAuthData() {
 
 bool SoapCtx::ProcessAuthFaultAndRetry() {
 
+	auto retry = false;
 	QMutexLocker locker(&mpD->mMutex);
-	if(mpD->mAuthHandler && mpD->mAuthHandler->IsAuthFault(mpD->mpSoap)) return mpD->mAuthHandler->ProcessAuthFaultAndRetry(mpD->mpSoap);
-	return false;
+	if(mpD->mAuthHandler) {
+		if(mpD->mAuthHandler->IsAuthFault(mpD->mpSoap)) {
+			retry = mpD->mAuthHandler->ProcessAuthFaultAndRetry(mpD->mpSoap, mpD->mRetryCounter++);
+		}
+		mpD->mAuthHandler->ProcessResponse(mpD->mpSoap);
+	}
+	return retry;
 }

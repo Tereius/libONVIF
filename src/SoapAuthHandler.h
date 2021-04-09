@@ -53,11 +53,18 @@ public:
 	virtual void RestoreAuthData(soap *pCtx) = 0;
 	/*!
 	 * \brief The implementation shall return true to signal the caller to rerun the WS call.
-	 * This method is invoked <b>after</b> every WS call and only if SoapAuthHandler::IsAuthFault returned true before.
+	 * This method is invoked <b>after</b> every WS call but only if SoapAuthHandler::IsAuthFault returned <b>true</b> before.
 	 * If the AuthHandlerMode equals NO_AUTH the implementation shall always return false.
+	 * \param numRetry The current retry count of the same WS call
 	 * \warning This may lead to an infinite loop if true is always returned. The implementation is responsible to avoid this loop
 	 */
-	virtual bool ProcessAuthFaultAndRetry(soap *pCtx) = 0;
+	virtual bool ProcessAuthFaultAndRetry(soap *pCtx, int numRetry) = 0;
+	/*!
+	 * \brief The implementation may implement this method to do some arbitrary processing.
+	 * This method is invoked <b>after</b> every WS call and <b>after</b> SoapAuthHandler::ProcessAuthFaultAndRetry was called (if applicable)
+	 * The default implementation does nothing
+	 */
+	virtual void ProcessResponse(soap *pCtx){};
 
 signals:
 	/*!
@@ -90,7 +97,7 @@ public:
 	virtual bool IsWssTokenAuthFault(soap *pCtx);
 	void FreeAuth(soap *pCtx) override;
 	void RestoreAuthData(soap *pCtx) override;
-	bool ProcessAuthFaultAndRetry(soap *pCtx) override;
+	bool ProcessAuthFaultAndRetry(soap *pCtx, int numRetry) override;
 
 private:
 	DefaultAuthHandlerPrivate *mpD;

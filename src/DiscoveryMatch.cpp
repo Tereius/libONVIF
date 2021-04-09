@@ -14,6 +14,7 @@
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
 #include "DiscoveryMatch.h"
+#include <algorithm>
 
 
 DiscoveryMatch::DiscoveryMatch() : mDeviceEndpoints(), mTypes(), mScopes(), mEndpointReference() {}
@@ -68,4 +69,19 @@ QUuid DiscoveryMatch::GetEndpointReference() const {
 void DiscoveryMatch::SetEndpointReference(const QUuid &rReference) {
 
 	mEndpointReference = rReference;
+}
+
+bool DiscoveryMatch::operator==(const DiscoveryMatch &rOther) const {
+
+	if(!GetEndpointReference().isNull() && !rOther.GetEndpointReference().isNull())
+		return GetEndpointReference() == rOther.GetEndpointReference();
+	auto endpoints = GetDeviceEndpoints();
+	auto otherEndpoints = rOther.GetDeviceEndpoints();
+	return std::find_first_of(endpoints.constBegin(), endpoints.constEnd(), otherEndpoints.constBegin(), otherEndpoints.constEnd()) !=
+	       endpoints.constEnd();
+}
+
+bool DiscoveryMatch::operator!=(const DiscoveryMatch &rOther) const {
+
+	return !operator==(rOther);
 }

@@ -118,7 +118,6 @@ void OnvifDiscoveryWorker::run() {
 												qDebug(dd) << "Removing invalid endpoint url:" << *iter;
 												iter = endpoints.erase(iter);
 											} else {
-												qWarning() << "url" << *iter;
 												++iter;
 											}
 										}
@@ -150,8 +149,9 @@ void OnvifDiscoveryWorker::run() {
 #else
 										discoveryMatch.SetScopes(QString::fromLocal8Bit(probe.Scopes->__item).split(' ', QString::SkipEmptyParts));
 #endif
-									} else
+									} else {
 										qInfo(dd) << "Got a match which doesn't provide a scope:" << discoveryMatch.GetDeviceEndpoints();
+									}
 									qDebug(dd) << "Got a match:" << discoveryMatch.GetDeviceEndpoints();
 									emit Match(discoveryMatch);
 								}
@@ -228,17 +228,8 @@ void OnvifDiscovery::Start() {
 		mpD->mpWorker = new OnvifDiscoveryWorker(mpD->mScopes, mpD->mTypes, this);
 		connect(mpD->mpWorker, &OnvifDiscoveryWorker::Match, this, &OnvifDiscovery::Match);
 		connect(mpD->mpWorker, &OnvifDiscoveryWorker::Match, [this](const DiscoveryMatch &rMatch) {
-			auto found = false;
 			this->mpD->mMutex.lock();
-			for(const auto &match : this->mpD->mMatches) {
-				for(const auto &endpoint : rMatch.GetDeviceEndpoints()) {
-					if(match.GetDeviceEndpoints().contains(endpoint)) {
-						found = true;
-						break;
-					}
-				}
-				if(found) break;
-			}
+			auto found = this->mpD->mMatches.contains(rMatch);
 			if(!found) {
 				this->mpD->mMatches << rMatch;
 			}

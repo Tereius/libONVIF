@@ -82,9 +82,9 @@ public:
 	virtual QString GetEndpointString();
 
 protected:
-	//! Service implementations use this to acquire/prepare a raw soap context. releaseCtx must be called afterwards
+	//! Service implementations use this to acquire/init a raw soap context. releaseCtx must be called afterwards
 	soap *AcquireCtx();
-	//! Service implementations use this to acquire/prepare a raw soap context. releaseCtx must be called afterwards if successful.
+	//! Service implementations use this to acquire/init a raw soap context. releaseCtx must be called afterwards if successful.
 	//! (If the timeout is reached before the soap context could be acquired/prepared null is returned)
 	soap *TryAcquireCtx(int timeoutMs = 0);
 	//! Service implementations use this to release a previously acquired raw soap context
