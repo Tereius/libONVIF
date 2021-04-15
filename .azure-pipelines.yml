@@ -108,6 +108,6 @@ jobs:
         CONAN_USERNAME: "tereius",
         CONAN_CHANNEL: "stable",
         CONAN_UPLOAD: "https://conan.privatehive.de/artifactory/api/conan/public-conan",
-        CONAN_LOGIN_USERNAME: "tereius",
+        CONAN_LOGIN_USERNAME: "ci",
         CONAN_PASSWORD: "$(secret)",
       }
