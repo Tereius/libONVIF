@@ -23,7 +23,7 @@ foreach(var ${info})
 endforeach()
 
 # Check if we use conan
-if (EXISTS "${PROJECT_BINARY_DIR}/conanbuildinfo.cmake")
+if(EXISTS "${PROJECT_BINARY_DIR}/conanbuildinfo.cmake")
 	include("${PROJECT_BINARY_DIR}/conanbuildinfo.cmake")
 	conan_basic_setup()
 elseif(EXISTS "${PROJECT_SOURCE_DIR}/conanbuildinfo.cmake")

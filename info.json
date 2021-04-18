@@ -3,7 +3,7 @@
         "major": 2,
         "minor": 0,
         "patch": 0,
-        "snapshot": false
+        "snapshot": true
     },
     "projectName": "libONVIF",
     "projectDescription": "A client side ONVIF library",
