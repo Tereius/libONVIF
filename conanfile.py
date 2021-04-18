@@ -16,7 +16,7 @@ class LibonvifConan(ConanFile):
     description = jsonInfo["projectDescription"]
     author = jsonInfo["vendor"]
     homepage = jsonInfo["repository"]
-    requires = "Qt/[5.12]@tereius/stable"
+    requires = "Qt/[^5.12]@tereius/stable"
     settings = {"os": ["Windows", "Linux", "Android", "Macos"], "compiler": None, "build_type": None, "arch": None}
     options = {"shared": [True, False], "openssl": [True, False]}
     default_options = "shared=True", "openssl=True"
