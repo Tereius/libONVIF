@@ -9,12 +9,12 @@ jobs:
 - job: Android
   strategy:
     matrix:
-      Linux:
+      armv7Linux:
         imageName: "ubuntu-16.04"
-        conanBuildOS: "Linux"
-      Windows:
+        buildProfile: "androidArmv7LinuxHost"
+      armv7Windows:
         imageName: "windows-2019"
-        conanBuildOS: "Windows"
+        buildProfile: "androidArmv7WinHost"
   pool:
     vmImage: '$(imageName)'
   timeoutInMinutes: 0
@@ -24,15 +24,9 @@ jobs:
       conanEnv: {
         CONAN_USERNAME: "tereius",
         CONAN_CHANNEL: "stable",
-        CONAN_REMOTES: "https://api.bintray.com/conan/tereius/public-conan",
-        CONAN_BASE_PROFILE_OS: "Android",
-        CONAN_BASE_PROFILE_OS_API: "21",
-        CONAN_BASE_PROFILE_ARCH: "armv7",
-        CONAN_BASE_PROFILE_OSBUILD: "$(conanBuildOS)",
-        CONAN_BASE_PROFILE_ARCHBUILD: "x86_64",
-        CONAN_BASE_PROFILE_COMPILER: "clang",
-        CONAN_BASE_PROFILE_COMPILER_VERSION: "6.0",
-        CONAN_BASE_PROFILE_COMPILER_LIBCXX: "libc++"
+        CONAN_REMOTES: "https://conan.privatehive.de/artifactory/api/conan/public-conan",
+        CONAN_BASE_PROFILE_PATH: "./buildProfiles/$(buildProfile).profile",
+        CONAN_BUILD_PROFILE: "default",
       }
 
 - job: Linux
@@ -45,7 +39,7 @@ jobs:
       conanEnv: {
         CONAN_USERNAME: "tereius",
         CONAN_CHANNEL: "stable",
-        CONAN_REMOTES: "https://api.bintray.com/conan/tereius/public-conan",
+        CONAN_REMOTES: "https://conan.privatehive.de/artifactory/api/conan/public-conan",
         CONAN_BASE_PROFILE_BUILDTYPE: "Release",
         CONAN_BASE_PROFILE_OS: "Linux",
         CONAN_BASE_PROFILE_ARCH: "x86_64",
@@ -66,7 +60,7 @@ jobs:
       conanEnv: {
         CONAN_USERNAME: "tereius",
         CONAN_CHANNEL: "stable",
-        CONAN_REMOTES: "https://api.bintray.com/conan/tereius/public-conan",
+        CONAN_REMOTES: "https://conan.privatehive.de/artifactory/api/conan/public-conan",
         CONAN_BASE_PROFILE_BUILDTYPE: "Release",
         CONAN_BASE_PROFILE_OS: "Windows",
         CONAN_BASE_PROFILE_ARCH: "x86_64",
@@ -86,7 +80,7 @@ jobs:
       conanEnv: {
         CONAN_USERNAME: "tereius",
         CONAN_CHANNEL: "stable",
-        CONAN_REMOTES: "https://api.bintray.com/conan/tereius/public-conan",
+        CONAN_REMOTES: "https://conan.privatehive.de/artifactory/api/conan/public-conan",
         CONAN_BASE_PROFILE_BUILDTYPE: "Release",
         CONAN_BASE_PROFILE_OS: "Macos",
         CONAN_BASE_PROFILE_OS_VERSION: "10.14",
@@ -113,7 +107,7 @@ jobs:
       conanEnv: {
         CONAN_USERNAME: "tereius",
         CONAN_CHANNEL: "stable",
-        CONAN_UPLOAD: "https://api.bintray.com/conan/tereius/public-conan",
-        CONAN_LOGIN_USERNAME: "tereius",
+        CONAN_UPLOAD: "https://conan.privatehive.de/artifactory/api/conan/public-conan",
+        CONAN_LOGIN_USERNAME: "ci",
         CONAN_PASSWORD: "$(secret)",
       }

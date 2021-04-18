@@ -4,34 +4,44 @@ How to build and install libONVIF binaries
 This projects uses CMake (see www.cmake.org). Make sure that cmake is properly installed.
 
 You may want to use conan.io (https://conan.io/) to build the dependencies (OpenSSL, Qt5). This step is optional: You can build the dependencies via conan yourself (recommended for Windows) or obtain them using a package manager (like apt or yum).
-To build the dependencies yourself you have to add two conan repositories first:
+To build the dependencies yourself you have to add one conan repositories first:
 
-    conan remote add tereius https://api.bintray.com/conan/tereius/public-conan
-    conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+    conan remote add tereius https://conan.privatehive.de/artifactory/api/conan/public-conan
     
 After that just run following command in the git root dir (where the conanfile.py is located):
 
-    conan install ./ -s build_type=Debug --build missing
+    conan install ./ -s build_type=Release --build missing
 
-Then create a (build) directory (preferably outside the git root dir). To compile libONVIF the minimal project setup for "Unix Makefiles" would be:
+Then create a (build) directory (preferably outside the git root dir). To compile and install libONVIF the minimal project setup for "Unix Makefiles" would be:
 
     cd <build_dir>
-    cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE:STRING=Debug <git_root_dir>
+    cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release <git_root_dir>
     cmake --build ./
-    cmake --build ./ --target install
+    sudo cmake --build ./ --target install
 
-If CMake is missing a dependency you have to set the variable (pointing to a path) manually e.g. for OpenSSL:
+If CMake is missing a dependency (this should not happen if you use conan) you have to set the variable (pointing to a path) manually e.g. for OpenSSL:
 
-    cmake -G "Unix Makefiles" -DOpenSSL_cryptro_PATH:PATH="/usr/lib/x86_64-linux-gnu/libcrypto.so" -DOpenSSL_ssl_PATH:PATH="usr/lib/x86_64-linux-gnu/libssl.so" -DOpenSSL_include_DIR:PATH="/usr/include" /opt/libONVIF
+    cmake -G "Unix Makefiles" -DOpenSSL_cryptro_PATH="/usr/lib/x86_64-linux-gnu/libcrypto.so" -DOpenSSL_ssl_PATH="usr/lib/x86_64-linux-gnu/libssl.so" -DOpenSSL_include_DIR="/usr/include" <git_root_dir>
+   
+To change the path where CMake installs the lib/include files just set CMAKE_INSTALL_PREFIX:
 
-To print the relevant variables you may want to change use:
+    cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="/install/here" <git_root_dir>
+   
+To print all the relevant variables you may want to change use:
 
-    cd <git_root_dir>
+    v
     cmake -LH
 
 For Windows use a CMake generator like "NMake Makefiles" or "Visual Studio [...]" e.g.:
 
     cd <build_dir>
-    cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE:STRING=Debug <git_root_dir>
+    cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release <git_root_dir>
     cmake --build ./
     cmake --build ./ --target install
+    
+To cross compile libONVIF for Android use one of the conan profiles from "buildProfiles" matching your host machine and target arch.
+E.g.: To compile libONVIF for Android Armv8 arch on a Linux host run the following command in your git root dir:
+
+    conan create ./ -pr:h ./buildProfiles/androidArmv8LinuxHost.profile -pr:b default --build missing
+
+The lib/include files are located in your conan cache (~/.conan/data/libONVIF/<version>/tereius/stable/package/<packageId>)
