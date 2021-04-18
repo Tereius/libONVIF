@@ -132,6 +132,11 @@ set_source_files_properties(${src_files} PROPERTIES LANGUAGE CXX)
 
 add_library(onvifcommon ${src_files} ${private_header_files} ${public_header_files})
 generate_export_header(onvifcommon EXPORT_FILE_NAME OnvifCommonExport.h)
+target_include_directories(onvifcommon
+													 PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<INSTALL_INTERFACE:include>
+													 PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/gsoap> $<INSTALL_INTERFACE:include/gsoap>
+													 PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/generated> $<INSTALL_INTERFACE:include/generated>
+													 PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 target_link_libraries(onvifcommon Qt5::Core)
 target_compile_definitions(onvifcommon PUBLIC WITH_SELF_PIPE)
 if(HAS_OPENSSL)

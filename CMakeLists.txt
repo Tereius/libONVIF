@@ -24,16 +24,10 @@ endforeach()
 
 # Check if we use conan
 if(EXISTS "${PROJECT_BINARY_DIR}/conanbuildinfo.cmake")
-	include("${PROJECT_BINARY_DIR}/conanbuildinfo.cmake")
-	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
-	set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
-	set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
+	include("${PROJECT_SOURCE_DIR}/conanbuildinfo.cmake")
 	conan_basic_setup()
 elseif(EXISTS "${PROJECT_SOURCE_DIR}/conanbuildinfo.cmake")
 	include("${PROJECT_SOURCE_DIR}/conanbuildinfo.cmake")
-	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
-	set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
-	set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 	conan_basic_setup()
 endif()
 
