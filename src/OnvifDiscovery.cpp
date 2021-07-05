@@ -107,7 +107,7 @@ void OnvifDiscoveryWorker::run() {
 #if(QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 										auto urlsStr = QString::fromUtf8(probe.XAddrs).split(' ', Qt::SkipEmptyParts);
 #else
-										auto urlsStr = QString::fromUtf8(probe.XAddrs).split(' ', String::SkipEmptyParts);
+										auto urlsStr = QString::fromUtf8(probe.XAddrs).split(' ', QString::SkipEmptyParts);
 #endif
 										QList<QUrl> endpoints = QUrl::fromStringList(urlsStr);
 										for(auto iter = endpoints.begin(); iter != endpoints.end();) {
