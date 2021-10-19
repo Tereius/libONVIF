@@ -28,7 +28,7 @@ class LibonvifConan(ConanFile):
 
     def requirements(self):
         if self.options.openssl:
-            self.requires("openssl/1.1.1i")
+            self.requires("openssl/1.1.1l@tereius/stable")
             self.options["openssl"].shared = True
 
     def build(self):
