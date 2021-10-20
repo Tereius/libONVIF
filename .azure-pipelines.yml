@@ -10,7 +10,7 @@ jobs:
   strategy:
     matrix:
       armv7Linux:
-        imageName: "ubuntu-16.04"
+        imageName: "ubuntu-18.04"
         buildProfile: "androidArmv7LinuxHost"
       armv7Windows:
         imageName: "windows-2019"
@@ -26,12 +26,12 @@ jobs:
         CONAN_CHANNEL: "stable",
         CONAN_REMOTES: "https://conan.privatehive.de/artifactory/api/conan/public-conan",
         CONAN_BASE_PROFILE_PATH: "./buildProfiles/$(buildProfile).profile",
-        CONAN_BUILD_PROFILE: "default",
+        CONAN_BUILD_PROFILE: "default"
       }
 
 - job: Linux
   pool:
-    vmImage: "ubuntu-16.04"
+    vmImage: "ubuntu-18.04"
   timeoutInMinutes: 0
   steps:
   - template: buildConanRecipe.yml@templates
@@ -40,14 +40,7 @@ jobs:
         CONAN_USERNAME: "tereius",
         CONAN_CHANNEL: "stable",
         CONAN_REMOTES: "https://conan.privatehive.de/artifactory/api/conan/public-conan",
-        CONAN_BASE_PROFILE_BUILDTYPE: "Release",
-        CONAN_BASE_PROFILE_OS: "Linux",
-        CONAN_BASE_PROFILE_ARCH: "x86_64",
-        CONAN_BASE_PROFILE_OSBUILD: "Linux",
-        CONAN_BASE_PROFILE_ARCHBUILD: "x86_64",
-        CONAN_BASE_PROFILE_COMPILER: "gcc",
-        CONAN_BASE_PROFILE_COMPILER_VERSION: "5",
-        CONAN_BASE_PROFILE_COMPILER_LIBCXX: "libstdc++"
+        CONAN_BASE_PROFILE: "default"
       }
 
 - job: Windows
@@ -61,13 +54,7 @@ jobs:
         CONAN_USERNAME: "tereius",
         CONAN_CHANNEL: "stable",
         CONAN_REMOTES: "https://conan.privatehive.de/artifactory/api/conan/public-conan",
-        CONAN_BASE_PROFILE_BUILDTYPE: "Release",
-        CONAN_BASE_PROFILE_OS: "Windows",
-        CONAN_BASE_PROFILE_ARCH: "x86_64",
-        CONAN_BASE_PROFILE_OSBUILD: "Windows",
-        CONAN_BASE_PROFILE_ARCHBUILD: "x86_64",
-        CONAN_BASE_PROFILE_COMPILER: "Visual Studio",
-        CONAN_BASE_PROFILE_COMPILER_VERSION: "15"
+        CONAN_BASE_PROFILE: "default"
       }
       
 - job: Macos
@@ -81,15 +68,7 @@ jobs:
         CONAN_USERNAME: "tereius",
         CONAN_CHANNEL: "stable",
         CONAN_REMOTES: "https://conan.privatehive.de/artifactory/api/conan/public-conan",
-        CONAN_BASE_PROFILE_BUILDTYPE: "Release",
-        CONAN_BASE_PROFILE_OS: "Macos",
-        CONAN_BASE_PROFILE_OS_VERSION: "10.14",
-        CONAN_BASE_PROFILE_ARCH: "x86_64",
-        CONAN_BASE_PROFILE_OSBUILD: "Macos",
-        CONAN_BASE_PROFILE_ARCHBUILD: "x86_64",
-        CONAN_BASE_PROFILE_COMPILER: "apple-clang",
-        CONAN_BASE_PROFILE_COMPILER_VERSION: "10.0",
-        CONAN_BASE_PROFILE_COMPILER_LIBCXX: "libc++"
+        CONAN_BASE_PROFILE: "default"
       }
     
 - job: Upload
