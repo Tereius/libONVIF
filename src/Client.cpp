@@ -20,16 +20,18 @@
 #include <QObject>
 #include <utility>
 #include <QMutex>
+#include <QAtomicInt>
 
 
 struct ClientPrivate {
 	ClientPrivate(Client *pQ, QUrl rEndpoint, QSharedPointer<SoapCtx> sharedCtx) :
-	 mpQ(pQ), mCtx(std::move(sharedCtx)), mEndpoint(std::move(rEndpoint)) {}
+	 mpQ(pQ), mCtx(std::move(sharedCtx)), mEndpoint(std::move(rEndpoint)), mOwnsContext(false) {}
 
 	Client *mpQ;
 	QSharedPointer<SoapCtx> mCtx;
 	QUrl mEndpoint;
 	QMutex mMutex;
+	QAtomicInt mOwnsContext;
 };
 
 Client::Client(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx, QObject *pParent) :
@@ -45,6 +47,7 @@ soap *Client::AcquireCtx() {
 	auto pCtx = mpD->mCtx->Acquire();
 	if(pCtx) {
 		mpD->mCtx->RestoreAuthData();
+		mpD->mOwnsContext = true;
 	}
 	return pCtx;
 }
@@ -54,6 +57,7 @@ soap *Client::TryAcquireCtx(int timeoutMs /*= 0*/) {
 	auto pCtx = mpD->mCtx->TryAcquire(timeoutMs);
 	if(pCtx) {
 		mpD->mCtx->RestoreAuthData();
+		mpD->mOwnsContext = true;
 	}
 	return pCtx;
 }
@@ -61,6 +65,7 @@ soap *Client::TryAcquireCtx(int timeoutMs /*= 0*/) {
 void Client::ReleaseCtx(soap *pCtx) {
 
 	if(pCtx) {
+		mpD->mOwnsContext = false;
 		soap_destroy(pCtx);
 		soap_end(pCtx);
 		mpD->mCtx->Release();
@@ -124,6 +129,13 @@ void Client::SetEndpoint(const QUrl &rEndpoint) {
 QString Client::GetEndpointString() {
 
 	return GetEndpoint().toString();
+}
+
+void Client::CancelRequest() {
+
+	if(mpD->mOwnsContext) {
+		mpD->mCtx->ForceSocketClose();
+	}
 }
 
 QSharedPointer<SoapCtx> Client::GetCtx() const {

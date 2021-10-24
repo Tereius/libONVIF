@@ -80,6 +80,8 @@ public:
 	virtual void SetEndpoint(const QUrl &rEndpoint);
 	//! Returns the WS endpoint url as a string this client was initialized with
 	virtual QString GetEndpointString();
+	//! If this client is currently doing a request it will be canceled immediately. Otherwise nothing happens.
+	void CancelRequest();
 
 protected:
 	//! Service implementations use this to acquire/init a raw soap context. releaseCtx must be called afterwards
