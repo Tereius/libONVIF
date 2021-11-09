@@ -14,28 +14,31 @@
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
 #include "DiscoveryMatch.h"
+#include <algorithm>
 
 
-DiscoveryMatch::DiscoveryMatch() :
-	mDeviceEndpoint(),
-	mTypes(),
-	mScopes(),
-	mEndpointReference() {
+DiscoveryMatch::DiscoveryMatch() : mDeviceEndpoints(), mTypes(), mScopes(), mEndpointReference() {}
 
-}
-
-DiscoveryMatch::~DiscoveryMatch() {
-
-}
+DiscoveryMatch::~DiscoveryMatch() = default;
 
 QUrl DiscoveryMatch::GetDeviceEndpoint() const {
 
-	return mDeviceEndpoint;
+	return !mDeviceEndpoints.isEmpty() ? mDeviceEndpoints.first() : QUrl();
 }
 
 void DiscoveryMatch::SetDeviceEndpoint(const QUrl &rDeviceEndpoint) {
 
-	mDeviceEndpoint = rDeviceEndpoint;
+	mDeviceEndpoints = {rDeviceEndpoint};
+}
+
+QList<QUrl> DiscoveryMatch::GetDeviceEndpoints() const {
+
+	return mDeviceEndpoints;
+}
+
+void DiscoveryMatch::SetDeviceEndpoints(const QList<QUrl> &rDeviceEndpoint) {
+
+	mDeviceEndpoints = rDeviceEndpoint;
 }
 
 QStringList DiscoveryMatch::GetTypes() const {
@@ -66,4 +69,19 @@ QUuid DiscoveryMatch::GetEndpointReference() const {
 void DiscoveryMatch::SetEndpointReference(const QUuid &rReference) {
 
 	mEndpointReference = rReference;
+}
+
+bool DiscoveryMatch::operator==(const DiscoveryMatch &rOther) const {
+
+	if(!GetEndpointReference().isNull() && !rOther.GetEndpointReference().isNull())
+		return GetEndpointReference() == rOther.GetEndpointReference();
+	auto endpoints = GetDeviceEndpoints();
+	auto otherEndpoints = rOther.GetDeviceEndpoints();
+	return std::find_first_of(endpoints.constBegin(), endpoints.constEnd(), otherEndpoints.constBegin(), otherEndpoints.constEnd()) !=
+	       endpoints.constEnd();
+}
+
+bool DiscoveryMatch::operator!=(const DiscoveryMatch &rOther) const {
+
+	return !operator==(rOther);
 }

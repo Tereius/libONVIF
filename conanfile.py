@@ -9,13 +9,14 @@ from conans import ConanFile, CMake, tools
 class LibonvifConan(ConanFile):
     jsonInfo = json.loads(tools.load("info.json"))
     name = jsonInfo["projectName"]
-    version = "%u.%u.%u%s" % (jsonInfo["version"]["major"], jsonInfo["version"]["minor"], jsonInfo["version"]["patch"], "-SNAPSHOT" if jsonInfo["version"]["snapshot"] else "")
+    version = "%u.%u.%u%s" % (jsonInfo["version"]["major"], jsonInfo["version"]["minor"], jsonInfo["version"]["patch"],
+                              "-SNAPSHOT" if jsonInfo["version"]["snapshot"] else "")
     license = jsonInfo["license"]
     url = jsonInfo["repository"]
     description = jsonInfo["projectDescription"]
     author = jsonInfo["vendor"]
     homepage = jsonInfo["repository"]
-    requires = "Qt/[5.12]@tereius/stable"
+    requires = "Qt/[^5.12]@tereius/stable"
     settings = {"os": ["Windows", "Linux", "Android", "Macos"], "compiler": None, "build_type": None, "arch": None}
     options = {"shared": [True, False], "openssl": [True, False]}
     default_options = "shared=True", "openssl=True"
@@ -27,7 +28,7 @@ class LibonvifConan(ConanFile):
 
     def requirements(self):
         if self.options.openssl:
-            self.requires("openssl/1.1.1i")
+            self.requires("openssl/1.1.1l@tereius/stable")
             self.options["openssl"].shared = True
 
     def build(self):
@@ -41,5 +42,6 @@ class LibonvifConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.builddirs = ['cmake']
+        self.cpp_info.defines = ['WITH_SELF_PIPE']
         if self.options.openssl:
             self.cpp_info.defines = ['WITH_OPENSSL']

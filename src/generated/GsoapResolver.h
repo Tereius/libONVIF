@@ -7,6 +7,7 @@ public:
 		if(rQname.isEmpty()) return false;
 		else if(rQname == "_xml:lang") return true;
 		else if(rQname == "tds:EAPMethodTypes") return true;
+		else if(rQname == "tr2:EncodingTypes") return true;
 		else if(rQname == "trc:EncodingTypes") return true;
 		else if(rQname == "trt:EncodingTypes") return true;
 		else if(rQname == "tt:AudioClassType") return true;
@@ -26,11 +27,11 @@ public:
 		else if(rQname == "tt:TrackReference") return true;
 		else if(rQname == "tt:ReferenceTokenList") return true;
 		else if(rQname == "tt:StringAttrList") return true;
+		else if(rQname == "tt:StringList") return true;
 		else if(rQname == "tt:XPathExpression") return true;
 		else if(rQname == "xsd:NCName") return true;
 		else if(rQname == "xsd:anySimpleType") return true;
 		else if(rQname == "xsd:anyURI") return true;
-		else if(rQname == "tt:TopicNamespaceLocation") return true;
 		else if(rQname == "xsd:token") return true;
 		else if(rQname == "tt:DNSName") return true;
 		else if(rQname == "tt:Domain") return true;

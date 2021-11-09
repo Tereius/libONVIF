@@ -1,13 +1,13 @@
 /*
         dom.c[pp]
 
-        DOM API v5 gSOAP 2.8.55
+        DOM API v5 gSOAP 2.8.88
 
         See gsoap/doc/dom/html/index.html for the new DOM API v5 documentation
         Also located in /gsoap/samples/dom/README.md
 
 gSOAP XML Web services tools
-Copyright (C) 2000-2017, Robert van Engelen, Genivia, Inc. All Rights Reserved.
+Copyright (C) 2000-2019, Robert van Engelen, Genivia, Inc. All Rights Reserved.
 This part of the software is released under ONE of the following licenses:
 GPL, or the gSOAP public license, or Genivia's license for commercial use.
 --------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ A commercial use license is available from Genivia, Inc., contact@genivia.com
 */
 
 /** Compatibility requirement with gSOAP engine version */
-#define GSOAP_LIB_VERSION 20855
+#define GSOAP_LIB_VERSION 20888
 
 #include "stdsoap2.h"
 
@@ -86,7 +86,7 @@ namespace SOAP_DOM_EXTERNAL_NAMESPACE {
 SOAP_FMAC3 void SOAP_FMAC4 soap_markelement(struct soap*, const void*, int);
 #endif
 
-SOAP_FMAC3 void * SOAP_FMAC4 soap_getelement(struct soap*, int*);
+SOAP_FMAC3 void * SOAP_FMAC4 soap_getelement(struct soap*, const char*, int*);
 SOAP_FMAC3 int SOAP_FMAC4 soap_putelement(struct soap*, const void*, const char*, int, int);
 SOAP_FMAC3 void * SOAP_FMAC4 soap_dupelement(struct soap*, const void*, int);
 SOAP_FMAC3 void SOAP_FMAC4 soap_delelement(const void*, int);
@@ -103,7 +103,7 @@ extern "C" {
 SOAP_FMAC3 void SOAP_FMAC4 soap_markelement(struct soap*, const void*, int);
 #endif
 
-SOAP_FMAC3 void * SOAP_FMAC4 soap_getelement(struct soap*, int*);
+SOAP_FMAC3 void * SOAP_FMAC4 soap_getelement(struct soap*, const char*, int*);
 SOAP_FMAC3 int SOAP_FMAC4 soap_putelement(struct soap*, const void*, const char*, int, int);
 SOAP_FMAC3 void * SOAP_FMAC4 soap_dupelement(struct soap*, const void*, int);
 SOAP_FMAC3 void SOAP_FMAC4 soap_delelement(const void*, int);
@@ -250,13 +250,16 @@ out_element(struct soap *soap, const struct soap_dom_element *node, const char *
         return soap->error = SOAP_EOM;
       (SOAP_SNPRINTF(s, l + 2, l + 1), "%s:%s", prefix, name);
     }
-    for (p = soap->local_namespaces; p && p->id; p++)
+    if (!(soap->mode & SOAP_DOM_ASIS))
     {
-      if (p->ns && soap_push_prefix(soap, p->id, strlen(p->id), p->ns, 1, 0) == NULL)
+      for (p = soap->local_namespaces; p && p->id; p++)
       {
-        if (s)
-          SOAP_FREE(soap, s);
-        return soap->error;
+        if (p->ns && soap_push_prefix(soap, p->id, strlen(p->id), p->ns, 1, 0) == NULL)
+        {
+          if (s)
+            SOAP_FREE(soap, s);
+          return soap->error;
+        }
       }
     }
 #ifdef SOAP_DOM_EXTERNAL_NAMESPACE
@@ -642,11 +645,11 @@ soap_in_xsd__anyType(struct soap *soap, const char *tag, struct soap_dom_element
   {
     soap->mode = m;
 #ifdef SOAP_DOM_EXTERNAL_NAMESPACE
-    node->node = SOAP_DOM_EXTERNAL_NAMESPACE::soap_getelement(soap, &node->type);
+    node->node = SOAP_DOM_EXTERNAL_NAMESPACE::soap_getelement(soap, NULL, &node->type);
     if ((!node->node || !node->type) && soap->error == SOAP_TAG_MISMATCH)
-      node->node = ::soap_getelement(soap, &node->type);
+      node->node = ::soap_getelement(soap, NULL, &node->type);
 #else
-    node->node = soap_getelement(soap, &node->type);
+    node->node = soap_getelement(soap, NULL, &node->type);
 #endif
     if (node->node && node->type)
     {
@@ -820,7 +823,7 @@ soap_dup_xsd__anyType(struct soap *soap, struct soap_dom_element *d, const struc
     d->node = NULL;
   }
 #else
-  d->node = a->node ? soap_dupelement(soap, a->node, a->type) : NULL;
+  d->node = soap_dupelement(soap, a->node, a->type);
 #endif
   d->type = a->type;
   d->atts = soap_dup_xsd__anyAttribute(soap, NULL, a->atts);
@@ -832,6 +835,7 @@ soap_dup_xsd__anyType(struct soap *soap, struct soap_dom_element *d, const struc
       elt = d->elts = soap_dup_xsd__anyType(soap, NULL, a);
     elt->prnt = d;
   }
+  d->soap = soap;
   return d;
 }
 
@@ -862,8 +866,7 @@ soap_del_xsd__anyType(const struct soap_dom_element *a)
       ::soap_delelement(a->node, a->type);
     }
 #else
-    if (a->node)
-      soap_delelement(a->node, a->type);
+    soap_delelement(a->node, a->type);
 #endif
     if (a->atts)
     {
@@ -907,6 +910,7 @@ soap_dup_xsd__anyAttribute(struct soap *soap, struct soap_dom_attribute *d, cons
       att = att->next;
     }
   }
+  d->soap = soap;
   return d;
 }
 
@@ -980,7 +984,8 @@ soap_push_prefix(struct soap *soap, const char *id, size_t n, const char *ns, in
         for (np = soap->nlist; np; np = np->next)
         {
           DBGLOG(TEST, SOAP_MESSAGE(fdebug, "DOM find binding %s = '%s' level = %d index = %d\n", np->id, np->ns, np->level, np->index));
-          i++;
+          if (np->level)
+            i++;
         }
         (SOAP_SNPRINTF(soap->tag, sizeof(soap->tag), sizeof(SOAP_DOMID_FORMAT) + 20), SOAP_DOMID_FORMAT, i);
         id = soap->tag;
@@ -1006,7 +1011,7 @@ soap_push_prefix(struct soap *soap, const char *id, size_t n, const char *ns, in
         break;
       }
     }
-    soap_strncpy(soap->tag, sizeof(soap->tag), id, n);
+    (void)soap_strncpy(soap->tag, sizeof(soap->tag), id, n);
     id = soap->tag;
     soap->local_namespaces = NULL; /* do not permit a replacement id, when ns is in table */
   }
@@ -1203,7 +1208,7 @@ static struct soap_dom_element *new_element(struct soap *soap)
   if (elt)
   {
 #ifdef __cplusplus
-    SOAP_PLACEMENT_NEW(elt, soap_dom_element);
+    SOAP_PLACEMENT_NEW(soap, elt, soap_dom_element);
 #endif
     soap_default_xsd__anyType(soap, elt);
   }
@@ -1219,7 +1224,7 @@ static struct soap_dom_attribute *new_attribute(struct soap *soap)
   if (att)
   {
 #ifdef __cplusplus
-    SOAP_PLACEMENT_NEW(att, soap_dom_attribute);
+    SOAP_PLACEMENT_NEW(soap, att, soap_dom_attribute);
 #endif
     soap_default_xsd__anyAttribute(soap, att);
   }
@@ -1321,7 +1326,7 @@ soap_elt_set_w(struct soap_dom_element *elt, const char *ns, const wchar_t *tag)
 /******************************************************************************/
 
 /**
-@brief Populate xsd__anyType DOM element node with an attribute node
+@brief Populate xsd__anyType DOM element node with an attribute node, if the attribute does not already exists
 @param elt pointer to xsd__anyType DOM element to populate
 @param ns namespace URI string or NULL of attribute
 @param tag (un)qualified tag name string of attribute
@@ -1342,7 +1347,7 @@ soap_att(struct soap_dom_element *elt, const char *ns, const char *tag)
 /******************************************************************************/
 
 /**
-@brief Populate xsd__anyType DOM element node with an attribute node
+@brief Populate xsd__anyType DOM element node with an attribute node, if the attribute does not already exists
 @param elt pointer to xsd__anyType DOM element to populate
 @param ns namespace URI string or NULL of attribute
 @param tag (un)qualified tag name wide string of attribute
@@ -2241,7 +2246,7 @@ soap_att_set_w(struct soap_dom_attribute *att, const char *ns, const wchar_t *ta
 /******************************************************************************/
 
 /**
-@brief Add an attribute node to an xsd__anyAttribute DOM attribute node to create or extend an attribute list
+@brief Add an attribute node to an xsd__anyAttribute DOM attribute node, if the attribute does not already exists, to create or extend an attribute list
 @param att pointer to xsd__anyAttribute DOM attribute
 @param ns namespace URI string or NULL of attribute
 @param tag (un)qualified tag name string of attribute
@@ -2275,7 +2280,7 @@ soap_att_add(struct soap_dom_attribute *att, const char *ns, const char *tag)
 /******************************************************************************/
 
 /**
-@brief Add an attribute node to an xsd__anyAttribute DOM attribute node to create or extend an attribute list
+@brief Add an attribute node to an xsd__anyAttribute DOM attribute node, if the attribute does not already exists, to create or extend an attribute list
 @param att pointer to xsd__anyAttribute DOM attribute
 @param ns namespace URI string or NULL of attribute
 @param tag (un)qualified tag name wide string of attribute
@@ -3290,11 +3295,11 @@ soap_dom_call(struct soap *soap, const char *endpoint, const char *action, const
     if (!soap_begin_recv(soap))
     {
 #ifndef WITH_LEAN
-      (void)soap_get_http_body(soap, NULL);
+      (void)soap_http_get_body(soap, NULL);
 #endif
       (void)soap_end_recv(soap);
     }
-    else if (soap->error == SOAP_NO_DATA || soap->error == 200 || soap->error == 202)
+    else if (soap->error == 200 || soap->error == 201 || soap->error == 202)
       soap->error = SOAP_OK;
     return soap_closesock(soap);
   }
@@ -4088,26 +4093,26 @@ struct soap_dom_element
   */
   template<class T> soap_dom_element& operator=(T *obj);
   /**
-  @brief Populate this xsd__anyType DOM element node with an attribute node, same as att(NULL, tag)
+  @brief Populate this xsd__anyType DOM element node with an attribute node, same as att(NULL, tag), if the attribute does not already exists
   @param tag (un)qualified tag name string of attribute
   @return reference to xsd__anyAttribute attribute node (new attribute node if none matches)
   */
   soap_dom_attribute& att(const char *tag);
   /**
-  @brief Populate this xsd__anyType DOM element node with an attribute node, same as att(NULL, tag)
+  @brief Populate this xsd__anyType DOM element node with an attribute node, same as att(NULL, tag), if the attribute does not already exists
   @param tag (un)qualified tag name wide string of attribute
   @return reference to xsd__anyAttribute attribute node (new attribute node if none matches)
   */
   soap_dom_attribute& att(const wchar_t *tag);
   /**
-  @brief Populate this xsd__anyType DOM element node with an attribute node
+  @brief Populate this xsd__anyType DOM element node with an attribute node, if the attribute does not already exists
   @param ns namespace URI string or NULL of attribute
   @param tag (un)qualified tag name string of attribute
   @return reference to xsd__anyAttribute attribute node (new attribute node if none matches)
   */
   soap_dom_attribute& att(const char *ns, const char *tag);
   /**
-  @brief Populate this xsd__anyType DOM element node with an attribute node
+  @brief Populate this xsd__anyType DOM element node with an attribute node, if the attribute does not already exists
   @param ns namespace URI string or NULL of attribute
   @param tag (un)qualified tag name wide string of attribute
   @return reference to xsd__anyAttribute attribute node (new attribute node if none matches)

@@ -15,10 +15,12 @@
  */
 #pragma once
 #include "OnvifCommonExport.h"
+#include "SoapAuthHandler.h"
 #include "global.h"
 #include "soapH.h"
-#include <QMutex>
+#include <memory>
 #include <QSharedPointer>
+#include <QObject>
 
 
 #define SOAP_NEW_IO_DEFAULT (SOAP_IO_DEFAULT | SOAP_C_UTFSTRING | SOAP_DOM_NODE | SOAP_XML_TREE)
@@ -29,13 +31,16 @@
 
 struct Namespace;
 struct CtxPrivate;
+class SoapAuthHandler;
 
 /*!
  *
  * \brief Wrapper class for the raw soap context
  *
  */
-class ONVIFCOMMON_EXPORT SoapCtx {
+class ONVIFCOMMON_EXPORT SoapCtx : public QObject {
+
+	Q_OBJECT
 
 public:
 	/*!
@@ -125,7 +130,40 @@ public:
 	static QString GetPrefix(const QString &rNamespace);
 	//! Get the namespace of prefix from default namespace map
 	static QString GetNamespace(const QString &rPrefix);
+	/*!
+	 *
+	 * \brief Set a custom auth handler
+	 *
+	 * You may want to do this if your ONVIF device uses an authentication mechanism other than WSS token or HTTP digest.
+	 * @param handler A handler class derived from SoapAuthHandler
+	 *
+	 */
+	void SetSoapAuthHandler(std::unique_ptr<SoapAuthHandler> handler);
+	/*!
+	 *
+	 * \brief Enable user authentication for this context
+	 *
+	 * Previously set credentials will be replaced by the new ones
+	 *
+	 * \param rUserName The user that is used for authentication
+	 * \param rPassword The password that is used for authentication
+	 * \param mode The authentication mode
+	 */
+	void SetAuth(const QString &rUserName, const QString &rPassword, AuthHandlerMode mode = AuthHandlerMode::AUTO);
+	//!	Clear previously set credentials and disable user authentication for this context
+	void DisableAuth();
+	//! Check if the last WS call finished with an auth fault
+	bool IsAuthFault();
 
+signals:
+	/*!
+	 * \brief Signal the receiver that the authorization finally failed
+	 * If this signal is connected to a slot via a direct connection or blocking queued connection you have a chance
+	 * to provide new credentials by calling SoapCtx::SetAuth. The failed request will then be rerun.
+	 */
+	void Unauthorized();
+
+public:
 	/*!
 	 *
 	 * \brief Builds a soap context
@@ -140,32 +178,44 @@ public:
 			mpResult->SetConnectTimeout(timeoutMs);
 			return *this;
 		}
+
 		Builder &SetSendTimeout(int timeoutMs) {
 			mpResult->SetSendTimeout(timeoutMs);
 			return *this;
 		}
+
 		Builder &SetReceiveTimeout(int timeoutMs) {
 			mpResult->SetReceiveTimeout(timeoutMs);
 			return *this;
 		}
+
 		Builder &EnableIMode(soap_mode timeoutMs) {
 			mpResult->EnableIModeFlags(timeoutMs);
 			return *this;
 		}
+
 		Builder &EnableOMode(soap_mode timeoutMs) {
 			mpResult->EnableOModeFlags(timeoutMs);
 			return *this;
 		}
+
 		Builder &EnablePrintRawSoap() {
 			mpResult->EnablePrintRawSoap();
 			return *this;
 		}
+
+		Builder &SetSoapAuthHandler(std::unique_ptr<SoapAuthHandler> handler) {
+			mpResult->SetSoapAuthHandler(std::move(handler));
+			return *this;
+		}
+
 #ifdef WITH_OPENSSL
 		Builder &EnableSsl() {
 			mpResult->EnableSsl();
 			return *this;
 		}
 #endif // WITH_OPENSSL
+
 		const QSharedPointer<SoapCtx> &Build() const { return mpResult; }
 
 	private:
@@ -175,6 +225,10 @@ public:
 private:
 	Q_DISABLE_COPY(SoapCtx);
 	void InitCtx();
+
+	friend class Client;
+	void RestoreAuthData();
+	bool ProcessAuthFaultAndRetry();
 
 	CtxPrivate *mpD;
 };

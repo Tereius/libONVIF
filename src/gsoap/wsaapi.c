@@ -1244,7 +1244,7 @@ soap_wsa_check_fault(struct soap *soap, SOAP_WSA(FaultCodesType) *fault, const c
 {
   if (soap->error && soap->fault && soap->fault->SOAP_ENV__Code)
   {
-    const char *code = soap_check_faultsubcode(soap);
+    const char *code = soap_fault_subcode(soap);
     if (code)
     {
       SOAP_WSA__(soap_s2,FaultCodesType)(soap, code, fault);
@@ -1319,7 +1319,7 @@ soap_wsa_check_fault(struct soap *soap, SOAP_WSA(FaultSubcodeValues) *fault)
 {
   if (soap->error && soap->fault && soap->fault->SOAP_ENV__Code)
   {
-    const char *code = soap_check_faultsubcode(soap);
+    const char *code = soap_fault_subcode(soap);
     if (code)
     {
       SOAP_WSA__(soap_s2,FaultSubcodeValues)(soap, code, fault);
@@ -1518,13 +1518,12 @@ soap_wsa(struct soap *soap, struct soap_plugin *p, void *arg)
   p->data = (void*)SOAP_MALLOC(soap, sizeof(struct soap_wsa_data));
   p->fcopy = NULL;
   p->fdelete = soap_wsa_delete;
-  if (p->data)
+  if (!p->data)
+    return SOAP_EOM;
+  if (soap_wsa_init(soap, (struct soap_wsa_data*)p->data))
   {
-    if (soap_wsa_init(soap, (struct soap_wsa_data*)p->data))
-    {
-      SOAP_FREE(soap, p->data);
-      return SOAP_EOM;
-    }
+    SOAP_FREE(soap, p->data);
+    return SOAP_EOM;
   }
   return SOAP_OK;
 }

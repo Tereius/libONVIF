@@ -14,7 +14,6 @@
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
 #pragma once
-#include "SafeBool.h"
 #include "SoapCtx.h"
 #include "soapH.h"
 #include <QDebug>
@@ -47,7 +46,7 @@ struct SoapDuplicator {
  * Holds an error
  *
  */
-class SimpleResponse : public SafeBool<void> {
+class SimpleResponse {
 
 public:
 	/*!
@@ -55,7 +54,7 @@ public:
 	 * \brief Construct an errorless response
 	 *
 	 */
-	SimpleResponse() : mErrorCode(SOAP_OK), mFault(), mFaultDetail(), mFaultSubcode() {}
+	SimpleResponse() : mErrorCode(SOAP_OK), mFault(), mFaultDetail(), mFaultSubcode(), mIsAuthFault(false) {}
 
 	/*!
 	 *
@@ -63,10 +62,7 @@ public:
 	 *
 	 */
 	SimpleResponse(int errorCode, const QString &rFault = QString(), const QString &rFaultDetail = QString()) :
-	 mErrorCode(errorCode),
-	 mFault(rFault),
-	 mFaultDetail(rFaultDetail),
-	 mFaultSubcode() {}
+	 mErrorCode(errorCode), mFault(rFault), mFaultDetail(rFaultDetail), mFaultSubcode(), mIsAuthFault(false) {}
 
 	virtual ~SimpleResponse() {}
 
@@ -74,7 +70,8 @@ public:
 	 mErrorCode(rOther.mErrorCode),
 	 mFault(rOther.mFault),
 	 mFaultDetail(rOther.mFaultDetail),
-	 mFaultSubcode(rOther.mFaultSubcode) {}
+	 mFaultSubcode(rOther.mFaultSubcode),
+	 mIsAuthFault(rOther.mIsAuthFault) {}
 
 	SimpleResponse &operator=(const SimpleResponse &rOther) {
 
@@ -85,6 +82,7 @@ public:
 		this->mFault = rOther.mFault;
 		this->mFaultDetail = rOther.mFaultDetail;
 		this->mFaultSubcode = rOther.mFaultSubcode;
+		this->mIsAuthFault = rOther.mIsAuthFault;
 		return *this;
 	}
 
@@ -112,9 +110,10 @@ public:
 			else if(IsZlibFault())
 				whatFault = "Zlib Fault: ";
 			else if(IsHttpFault())
-				whatFault = "HTTP Fault:";
+				whatFault = "HTTP Fault: ";
 			else
 				whatFault = "Generic Fault: ";
+			if(IsAuthFault()) whatFault.prepend("(Authentication failed) ");
 			whatFault += GetSoapFault();
 			whatFault += GetSoapFaultDetail();
 		}
@@ -145,15 +144,10 @@ public:
 	//! Check if the origin of the fault (http)
 	bool IsHttpFault() const { return soap_http_error_check(mErrorCode); }
 	//! Check if the origin of the fault (authentication)
-	bool IsAuthFault() const {
-		return mErrorCode == HTTP_UNAUTHORIZED ||
-		       (mErrorCode == SOAP_CLI_FAULT &&
-		        QString::compare(mFaultSubcode, QString("\"http://www.onvif.org/ver10/error\":NotAuthorized")) == 0);
-	}
+	bool IsAuthFault() const { return mIsAuthFault; }
 	//! Safe bool
-	bool BooleanTest() const override { return IsSuccess(); }
+	explicit operator bool() const { return IsSuccess(); }
 
-protected:
 	virtual void PopulateFromCtx(const QSharedPointer<SoapCtx> &rSoapCtx) {
 
 		auto errorCode = rSoapCtx->GetFaultCode();
@@ -162,11 +156,13 @@ protected:
 			SetFault(rSoapCtx->GetFaultString());
 			SetFaultDetail(rSoapCtx->GetFaultDetail());
 			SetFaultSubcode(rSoapCtx->GetFaultSubcode());
+			mIsAuthFault = rSoapCtx->IsAuthFault();
 		} else {
 			SetErrorCode(SOAP_OK);
 			mFault.clear();
 			mFaultDetail.clear();
 			mFaultSubcode.clear();
+			mIsAuthFault = false;
 		}
 	}
 
@@ -175,7 +171,15 @@ private:
 	QString mFault;
 	QString mFaultDetail;
 	QString mFaultSubcode;
+	bool mIsAuthFault;
 };
+
+inline QDebug operator<<(QDebug debug, const SimpleResponse &rResponse) {
+
+	QDebugStateSaver saver(debug);
+	debug.nospace() << rResponse.GetCompleteFault();
+	return debug;
+}
 
 /*!
  *
@@ -298,7 +302,6 @@ public:
 		return QString();
 	}
 
-protected:
 	virtual void PopulateFromCtx(const QSharedPointer<SoapCtx> &rSoapCtx) override {
 
 		SimpleResponse::PopulateFromCtx(rSoapCtx);
@@ -352,10 +355,7 @@ public:
 	 mpResultObject(pResultObject ? mDuplicator(pResultObject) : nullptr) {}
 
 	Response(const T *pResultObject) :
-	 DetailedResponse(),
-	 mDeleter(),
-	 mDuplicator(),
-	 mpResultObject(pResultObject ? mDuplicator(pResultObject) : nullptr) {}
+	 DetailedResponse(), mDeleter(), mDuplicator(), mpResultObject(pResultObject ? mDuplicator(pResultObject) : nullptr) {}
 
 	virtual ~Response() { mDeleter(mpResultObject); }
 
@@ -447,8 +447,7 @@ public:
 	 */
 	ArbitraryResponse(int errorCode, const QString &rFault = QString(), const QString &rFaultDetail = QString(),
 	                  const SOAP_ENV__Detail *pFaultObject = nullptr) :
-	 DetailedResponse(errorCode, rFault, rFaultDetail, pFaultObject),
-	 mResultObject() {}
+	 DetailedResponse(errorCode, rFault, rFaultDetail, pFaultObject), mResultObject() {}
 
 	ArbitraryResponse(const DetailedResponse &rOther) : DetailedResponse(rOther), mResultObject() {}
 

@@ -72,7 +72,6 @@ A commercial use license is available from Genivia, Inc., contact@genivia.com
 */
 
 #include <QString>
-#include "qstringCompare.h"
 
 extern class QString;
 

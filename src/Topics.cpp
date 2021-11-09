@@ -28,13 +28,11 @@ TopicSet TopicSet::FromXml(const wstop__TopicSetType *pTopicSet) {
 		for(auto topic : pTopicSet->__any) {
 			if(topic) {
 				ret.fromDom(topic);
-			}
-			else {
+			} else {
 				qDebug() << "Empty topic -> Skipping";
 			}
 		}
-	}
-	else {
+	} else {
 		qWarning() << "Couldn't initialize Topic Set from empty xml";
 	}
 	return ret;
@@ -60,13 +58,16 @@ void TopicSet::fromDom(soap_dom_element *pDom, QString topicPath /*= QString()*/
 		// Leaf topic node
 		Topic topic;
 		topic.SetName(QString::fromUtf8(pDom->tag()));
+#if(QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+		topic.SetTopicPath(topicPath.split("/", Qt::SkipEmptyParts));
+#else
 		topic.SetTopicPath(topicPath.split("/", QString::SkipEmptyParts));
-		auto pMessageDescr = (tt__MessageDescription*)messageDescrChild->get_node(SOAP_TYPE_tt__MessageDescription);
+#endif
+		auto pMessageDescr = (tt__MessageDescription *)messageDescrChild->get_node(SOAP_TYPE_tt__MessageDescription);
 		pMessageDescr->soap = pDom->soap;
 		topic.PopulateItems(pMessageDescr);
 		mTopics.push_back(topic);
-	}
-	else if(isTopicAttr && isTopicAttr->is_true()) {
+	} else if(isTopicAttr && isTopicAttr->is_true()) {
 		topicPath.append(QString::fromUtf8(pDom->tag()));
 		for(xsd__anyType::iterator it = pDom->elt_begin(); it != pDom->elt_end(); ++it) {
 			fromDom(it.iter, topicPath);
@@ -79,24 +80,26 @@ void Topic::PopulateItems(const tt__MessageDescription *pMessageDescr) {
 	if(pMessageDescr) {
 		if(pMessageDescr->Key) {
 			for(auto item : pMessageDescr->Key->SimpleItemDescription) {
-				auto futureItem = SimpleItemInfo(item.Name, GetPrimitiveType(pMessageDescr->soap, QString::fromLocal8Bit(item.Type.c_str())), QString(item.Type.c_str()), SimpleItemInfo::KEY);
+				auto futureItem = SimpleItemInfo(item.Name, GetPrimitiveType(pMessageDescr->soap, QString::fromLocal8Bit(item.Type.c_str())),
+				                                 QString(item.Type.c_str()), SimpleItemInfo::KEY);
 				mItems.push_back(futureItem);
 			}
 		}
 		if(pMessageDescr->Source) {
 			for(auto item : pMessageDescr->Source->SimpleItemDescription) {
-				auto futureItem = SimpleItemInfo(item.Name, GetPrimitiveType(pMessageDescr->soap, QString::fromLocal8Bit(item.Type.c_str())), QString(item.Type.c_str()), SimpleItemInfo::SOURCE);
+				auto futureItem = SimpleItemInfo(item.Name, GetPrimitiveType(pMessageDescr->soap, QString::fromLocal8Bit(item.Type.c_str())),
+				                                 QString(item.Type.c_str()), SimpleItemInfo::SOURCE);
 				mItems.push_back(futureItem);
 			}
 		}
 		if(pMessageDescr->Data) {
 			for(auto item : pMessageDescr->Data->SimpleItemDescription) {
-				auto futureItem = SimpleItemInfo(item.Name, GetPrimitiveType(pMessageDescr->soap, QString::fromLocal8Bit(item.Type.c_str())), QString(item.Type.c_str()), SimpleItemInfo::DATA);
+				auto futureItem = SimpleItemInfo(item.Name, GetPrimitiveType(pMessageDescr->soap, QString::fromLocal8Bit(item.Type.c_str())),
+				                                 QString(item.Type.c_str()), SimpleItemInfo::DATA);
 				mItems.push_back(futureItem);
 			}
 		}
-	}
-	else {
+	} else {
 		qWarning() << "Couldn't populate items from empty xml";
 	}
 }
@@ -134,22 +137,15 @@ SimpleItemInfo::PrimitiveType Topic::GetPrimitiveType(soap *pSoap, const QString
 
 			if(GsoapResolver::isStringDerived(qName)) {
 				return SimpleItemInfo::PRIMITIVE_STRING;
-			}
-			else if(qName == "xsd:boolean") {
+			} else if(qName == "xsd:boolean") {
 				return SimpleItemInfo::PRIMITIVE_BOOL;
-			}
-			else if(qName == "xsd:integer"
-							|| qName == "xsd:nonNegativeInteger"
-							|| qName == "xsd:nonPositiveInteger"
-							|| qName == "xsd:positiveInteger"
-							|| qName == "xsd:negativeInteger") {
+			} else if(qName == "xsd:integer" || qName == "xsd:nonNegativeInteger" || qName == "xsd:nonPositiveInteger" ||
+			          qName == "xsd:positiveInteger" || qName == "xsd:negativeInteger") {
 				return SimpleItemInfo::PRIMITIVE_INTEGER;
-			}
-			else if(qName == "xsd:decimal") {
+			} else if(qName == "xsd:decimal") {
 				return SimpleItemInfo::PRIMITIVE_REAL;
 			}
 		}
 	}
 	return SimpleItemInfo::PRIMITIVE_UNKNOWN;
 }
-
