@@ -45,7 +45,7 @@ jobs:
 
 - job: Windows
   pool:
-    vmImage: "vs2017-win2016"
+    vmImage: "windows-2019"
   timeoutInMinutes: 0
   steps:
   - template: buildConanRecipe.yml@templates
@@ -59,7 +59,7 @@ jobs:
       
 - job: Macos
   pool:
-    vmImage: "macOS-10.14"
+    vmImage: "macOS-11"
   timeoutInMinutes: 0
   steps:
   - template: buildConanRecipe.yml@templates
