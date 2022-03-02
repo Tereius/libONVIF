@@ -19,7 +19,10 @@
 #endif // WITH_OPENSSL
 #include "namespaces.nsmap"
 #include "wsaapi.h"
+#include "info.h"
 #include <QDebug>
+#include <QLatin1String>
+#include <QSysInfo>
 #include <QPointer>
 #include <QString>
 #include <QMutexLocker>
@@ -34,8 +37,16 @@
 struct arbData {
 
 	bool enableDebug = false;
+	QString userAgent = QString("%1/%2.%3.%4 (%5; %6)")
+	                     .arg(INFO_PROJECTNAME)
+	                     .arg(INFO_VERSION_MAJOR)
+	                     .arg(INFO_VERSION_MINOR)
+	                     .arg(INFO_VERSION_PATCH)
+	                     .arg(QSysInfo::prettyProductName())
+	                     .arg(QSysInfo::currentCpuArchitecture());
 	int (*fsend)(struct soap *, const char *, size_t) = nullptr;
 	size_t (*frecv)(struct soap *, char *, size_t) = nullptr;
+	int (*fposthdr)(struct soap *soap, const char *key, const char *val) = nullptr;
 	QPointer<QObject> pObject = nullptr;
 };
 
@@ -47,6 +58,16 @@ int fsend(struct soap *soap, const char *s, size_t n) {
 		if(!out.isEmpty()) qDebug() << qUtf8Printable(out);
 	}
 	return ret;
+}
+
+int fposthdr(struct soap *soap, const char *key, const char *val) {
+
+	auto latinKey = QLatin1String(key);
+	const auto latinUserAgent = QLatin1String("User-Agent");
+	if(latinKey.size() == latinUserAgent.size() && QLatin1String(key).startsWith(QLatin1String("User-Agent"), Qt::CaseInsensitive)) {
+		return ((arbData *)soap->user)->fposthdr(soap, key, qPrintable(((arbData *)soap->user)->userAgent));
+	}
+	return ((arbData *)soap->user)->fposthdr(soap, key, val);
 }
 
 size_t frecv(struct soap *soap, char *s, size_t n) {
@@ -106,7 +127,7 @@ struct CtxPrivate {
 SoapCtx::SoapCtx() : mpD(new CtxPrivate(this)) {
 
 	mpD->mpSoap = soap_new();
-	soap_init2(mpD->mpSoap, SOAP_NEW_IO_DEFAULT, SOAP_NEW_IO_DEFAULT);
+	soap_init2(mpD->mpSoap, SOAP_NEW_I_DEFAULT, SOAP_NEW_O_DEFAULT);
 	InitCtx();
 }
 
@@ -265,12 +286,16 @@ void SoapCtx::InitCtx() {
 	pFsend = &fsend;
 	size_t (*pFrecv)(struct soap * soap, char *s, size_t n);
 	pFrecv = &frecv;
+	int (*pFposthdr)(struct soap * soap, const char *s, const char *v);
+	pFposthdr = &fposthdr;
 	auto ud = new arbData();
 	ud->frecv = mpD->mpSoap->frecv;
 	ud->fsend = mpD->mpSoap->fsend;
+	ud->fposthdr = mpD->mpSoap->fposthdr;
 	mpD->mpSoap->user = ud;
 	mpD->mpSoap->frecv = pFrecv;
 	mpD->mpSoap->fsend = pFsend;
+	mpD->mpSoap->fposthdr = pFposthdr;
 	SetSoapAuthHandler(std::unique_ptr<SoapAuthHandler>(new DefaultAuthHandler()));
 }
 
@@ -380,6 +405,12 @@ void SoapCtx::DisablePrintRawSoap() {
 
 	QMutexLocker locker(&mpD->mMutex);
 	((arbData *)mpD->mpSoap->user)->enableDebug = false;
+}
+
+void SoapCtx::SetUserAgent(const QString &rUserAgent) {
+
+	QMutexLocker locker(&mpD->mMutex);
+	((arbData *)mpD->mpSoap->user)->userAgent = rUserAgent;
 }
 
 void SoapCtx::SetSocketFlags(int soFlags) {

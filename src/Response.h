@@ -340,7 +340,7 @@ public:
 	 * \brief Construct an errorless response
 	 *
 	 */
-	Response() : DetailedResponse(), mDeleter(), mDuplicator(), mpResultObject(nullptr) {}
+	Response() : DetailedResponse(), mDeleter(), mDuplicator(), mpResultObject(nullptr), mpDomElement(nullptr) {}
 
 	/*!
 	 *
@@ -352,18 +352,27 @@ public:
 	 DetailedResponse(errorCode, rFault, rFaultDetail, pFaultObject),
 	 mDeleter(),
 	 mDuplicator(),
-	 mpResultObject(pResultObject ? mDuplicator(pResultObject) : nullptr) {}
+	 mpResultObject(pResultObject ? mDuplicator(pResultObject) : nullptr),
+	 mpDomElement(nullptr) {}
 
 	Response(const T *pResultObject) :
-	 DetailedResponse(), mDeleter(), mDuplicator(), mpResultObject(pResultObject ? mDuplicator(pResultObject) : nullptr) {}
+	 DetailedResponse(),
+	 mDeleter(),
+	 mDuplicator(),
+	 mpResultObject(pResultObject ? mDuplicator(pResultObject) : nullptr),
+	 mpDomElement(nullptr) {}
 
-	virtual ~Response() { mDeleter(mpResultObject); }
+	virtual ~Response() {
+		mDeleter(mpResultObject);
+		soap_del_xsd__anyType(mpDomElement);
+	}
 
 	Response(const Response &rOther) :
 	 DetailedResponse(rOther),
 	 mDeleter(rOther.mDeleter),
 	 mDuplicator(rOther.mDuplicator),
-	 mpResultObject(rOther.mpResultObject ? mDuplicator(rOther.mpResultObject) : nullptr) {}
+	 mpResultObject(rOther.mpResultObject ? mDuplicator(rOther.mpResultObject) : nullptr),
+	 mpDomElement(nullptr) {}
 
 	Response &operator=(const Response &rOther) {
 
@@ -373,11 +382,17 @@ public:
 		DetailedResponse::operator=(rOther);
 		this->mDeleter(this->mpResultObject);
 		this->mpResultObject = rOther.mpResultObject ? mDuplicator(rOther.mpResultObject) : nullptr;
+		this->mpDomElement = rOther.mpDomElement ? soap_dup_xsd__anyType(nullptr, nullptr, rOther.mpDomElement) : nullptr;
 		return *this;
 	}
 
 	//! Get the result object of a WS response
 	const T *GetResultObject() const { return mpResultObject; }
+
+#ifdef WITH_DOM
+	//! Get the underlying dom tree (only available if SOAP_XML_DOM is set for soap_mode imode)
+	const soap_dom_element *GetDomTree() const { return mpDomElement; }
+#endif
 
 	//! Set the result object of a WS response
 	void SetResultObject(const T *pResultObject) {
@@ -404,7 +419,11 @@ public:
 			auto errorCode = rSoapCtx->GetFaultCode();
 			if(errorCode != SOAP_OK) {
 				mpResult.SetResultObject(nullptr);
+				mpResult.mpDomElement = nullptr;
 			} else {
+				auto *pSoap = rSoapCtx->Acquire();
+				if(pSoap->dom) mpResult.mpDomElement = soap_dup_xsd__anyType(nullptr, nullptr, pSoap->dom);
+				rSoapCtx->Release();
 				mpResult.SetResultObject(pResultObject);
 			}
 			return *this;
@@ -420,6 +439,7 @@ private:
 	Deleter mDeleter;
 	Duplicator mDuplicator;
 	T *mpResultObject;
+	soap_dom_element *mpDomElement;
 };
 
 /*!

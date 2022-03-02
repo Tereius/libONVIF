@@ -23,7 +23,8 @@
 #include <QObject>
 
 
-#define SOAP_NEW_IO_DEFAULT (SOAP_IO_DEFAULT | SOAP_C_UTFSTRING | SOAP_DOM_NODE | SOAP_XML_TREE)
+#define SOAP_NEW_O_DEFAULT (SOAP_IO_DEFAULT | SOAP_C_UTFSTRING | SOAP_DOM_NODE | SOAP_XML_TREE)
+#define SOAP_NEW_I_DEFAULT (SOAP_NEW_O_DEFAULT | SOAP_XML_DOM)
 #define SOAP_NEW_SSL_DEFAULT (SOAP_SSL_REQUIRE_SERVER_AUTHENTICATION | SOAP_TLSv1 | SOAP_SSL_CLIENT)
 #define SOAP_DEFAULT_CONNECT_TIMEOUT 10000
 #define SOAP_DEFAULT_RECEIVE_TIMEOUT 10000
@@ -77,6 +78,8 @@ public:
 	void EnablePrintRawSoap();
 	//! This context will not print the raw soap messages
 	void DisablePrintRawSoap();
+	//! Overwrite the default User-Agent
+	void SetUserAgent(const QString &rUserAgent);
 	//! Get a informative fault message of the last WS call
 	QString GetFaultString();
 	//! Get a detailed, informative fault message of the last WS call
@@ -206,6 +209,11 @@ public:
 
 		Builder &SetSoapAuthHandler(std::unique_ptr<SoapAuthHandler> handler) {
 			mpResult->SetSoapAuthHandler(std::move(handler));
+			return *this;
+		}
+
+		Builder &SetUserAgent(const QString &rUserAgent) {
+			mpResult->SetUserAgent(rUserAgent);
 			return *this;
 		}
 

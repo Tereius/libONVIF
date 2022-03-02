@@ -138,7 +138,7 @@ target_include_directories(onvifcommon
 													 PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/generated> $<INSTALL_INTERFACE:include>
 													 PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 target_link_libraries(onvifcommon Qt5::Core)
-target_compile_definitions(onvifcommon PUBLIC WITH_SELF_PIPE)
+target_compile_definitions(onvifcommon PUBLIC WITH_SELF_PIPE PUBLIC WITH_DOM)
 if(HAS_OPENSSL)
 	target_link_libraries(onvifcommon "${OpenSSL_ssl_PATH}" "${OpenSSL_cryptro_PATH}")
 endif()
