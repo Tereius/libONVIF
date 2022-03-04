@@ -64,8 +64,8 @@ void DefaultAuthHandler::SetAuth(soap *pCtx, const QString &rUserName, const QSt
 		FreeAuth(pCtx);
 		mpD->mAuthProcessed = false;
 #ifndef WITH_OPENSSL
-		if(mode != NO_AUTH && mode != WS_USERNAME_TOKEN) {
-			mode = WS_USERNAME_TOKEN;
+		if(mode != AuthHandlerMode::NO_AUTH && mode != AuthHandlerMode::WS_USERNAME_TOKEN) {
+			mode = AuthHandlerMode::WS_USERNAME_TOKEN;
 			qWarning() << "This build doesn't support http digest auth. Switching back to ws token";
 		}
 #endif // WITH_OPENSSL
