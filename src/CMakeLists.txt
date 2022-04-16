@@ -481,6 +481,28 @@ if(USE_PRECOMPILED_HEADERS)
 	cotire(onvifreplay)
 endif()
 
+# -------------------------------Device Probe-------------------------------
+set(src_files
+		DeviceProbe.cpp
+		)
+
+# private header
+set(private_header_files
+		)
+
+# public header
+set(public_header_files
+		DeviceProbe.h
+		)
+
+add_library(onvifprobe ${src_files} ${private_header_files} ${public_header_files})
+generate_export_header(onvifprobe EXPORT_FILE_NAME OnvifProbeExport.h)
+target_link_libraries(onvifprobe onvifcommon onvifdevice)
+set_target_properties(onvifprobe PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifProbeExport.h")
+if(USE_PRECOMPILED_HEADERS)
+	cotire(onvifprobe)
+endif()
+
 # -------------------------------------------------------------------------
 
 # info tool
@@ -497,13 +519,13 @@ set(private_header_files
 		)
 
 add_executable(onvifinfo ${src_files} ${private_header_files})
-target_link_libraries(onvifinfo onvifcommon onvifdevice onvifdiscovery onvifreplay onvifrecording onvifreceiver onvifptz onvifmedia onvifmedia2 onvifimaging onvifevent onvifdisplay onvifanalytics)
+target_link_libraries(onvifinfo onvifcommon onvifdevice onvifdiscovery onvifreplay onvifprobe onvifrecording onvifreceiver onvifptz onvifmedia onvifmedia2 onvifimaging onvifevent onvifdisplay onvifanalytics)
 if(USE_PRECOMPILED_HEADERS)
 	cotire(onvifinfo)
 endif()
 
 if(MSVC)
-	set_target_properties(onvifinfo onvifcommon onvifdevice onvifdiscovery onvifreplay onvifrecording onvifreceiver onvifptz onvifmedia onvifmedia2 onvifimaging onvifevent onvifdisplay onvifanalytics PROPERTIES COMPILE_FLAGS "/bigobj")
+	set_target_properties(onvifinfo onvifcommon onvifdevice onvifdiscovery onvifreplay onvifprobe onvifrecording onvifreceiver onvifptz onvifmedia onvifmedia2 onvifimaging onvifevent onvifdisplay onvifanalytics PROPERTIES COMPILE_FLAGS "/bigobj")
 endif()
 
 set(install_root "${CMAKE_INSTALL_PREFIX}")
@@ -529,6 +551,7 @@ install(TARGETS
 				onvifdevice
 				onvifdiscovery
 				onvifreplay
+				onvifprobe
 				onvifrecording
 				onvifreceiver
 				onvifptz
