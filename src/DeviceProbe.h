@@ -39,6 +39,9 @@ public:
 	static DeviceProbe create(const QUrl &rDeviceEndpoint);
 
 	DeviceProbe();
+	~DeviceProbe();
+	DeviceProbe(const DeviceProbe &rOther);
+	DeviceProbe &operator=(const DeviceProbe &rOther);
 
 	enum OnvifServicesTye {
 		ONVIF_DEVICE = 1 << 0,

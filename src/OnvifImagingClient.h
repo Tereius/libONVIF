@@ -19,23 +19,23 @@
 #include "Client.h"
 #include "OnvifImagingExport.h"
 
-
 struct OnvifImagingClientPrivate;
 
 /*!
-*
-* \brief Client side service implementations of Onvif Imaging
-*
-*/
+ *
+ * \brief Client side service implementations of Onvif Imaging
+ *
+ */
 class ONVIFIMAGING_EXPORT OnvifImagingClient : public Client {
 
 	Q_OBJECT
 
 public:
-	OnvifImagingClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
+	OnvifImagingClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(),
+	                   QObject *pParent = nullptr);
 	virtual ~OnvifImagingClient();
 
-	static QString GetServiceNamespace() { return "http://www.onvif.org/ver20/imaging/wsdl"; }
+	static QString GetServiceNamespace() { return SOAP_NAMESPACE_OF_timg; }
 	Response<_timg__GetServiceCapabilitiesResponse> GetServiceCapabilities(Request<_timg__GetServiceCapabilities> &rRequest);
 	Response<_timg__GetImagingSettingsResponse> GetImagingSettings(Request<_timg__GetImagingSettings> &rRequest);
 	Response<_timg__SetImagingSettingsResponse> SetImagingSettings(Request<_timg__SetImagingSettings> &rRequest);

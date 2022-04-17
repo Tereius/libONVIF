@@ -22,19 +22,20 @@
 struct OnvifReceiverClientPrivate;
 
 /*!
-*
-* \brief Client side service implementations of Onvif Receiver
-*
-*/
+ *
+ * \brief Client side service implementations of Onvif Receiver
+ *
+ */
 class ONVIFRECEIVER_EXPORT OnvifReceiverClient : public Client {
 
 	Q_OBJECT
 
 public:
-	OnvifReceiverClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
+	OnvifReceiverClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(),
+	                    QObject *pParent = nullptr);
 	virtual ~OnvifReceiverClient();
 
-	static QString GetServiceNamespace() { return "http://www.onvif.org/ver10/receiver/wsdl"; }
+	static QString GetServiceNamespace() { return SOAP_NAMESPACE_OF_trv; }
 	Response<_trv__GetServiceCapabilitiesResponse> GetServiceCapabilities(Request<_trv__GetServiceCapabilities> &rRequest);
 	Response<_trv__GetReceiversResponse> GetReceivers(Request<_trv__GetReceivers> &rRequest);
 	Response<_trv__GetReceiverResponse> GetReceiver(Request<_trv__GetReceiver> &rRequest);

@@ -21,14 +21,13 @@
 #include "OnvifEventExport.h"
 #include "Topics.h"
 
-
 struct OnvifEventClientPrivate;
 
 /*!
-*
-* \brief Client side service implementations of Onvif Event
-*
-*/
+ *
+ * \brief Client side service implementations of Onvif Event
+ *
+ */
 class ONVIFEVENT_EXPORT OnvifEventClient : public Client {
 
 	Q_OBJECT
@@ -37,7 +36,7 @@ public:
 	OnvifEventClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
 	virtual ~OnvifEventClient();
 
-	static QString GetServiceNamespace() { return "http://www.onvif.org/ver10/events/wsdl"; }
+	static QString GetServiceNamespace() { return SOAP_NAMESPACE_OF_tev; }
 	Response<_tev__CreatePullPointSubscriptionResponse> CreatePullPointSubscription(Request<_tev__CreatePullPointSubscription> &rRequest);
 	Response<_tev__PullMessagesResponse> PullMessages(Request<_tev__PullMessages> &rRequest);
 	Response<_wsnt__RenewResponse> Renew(Request<_wsnt__Renew> &rRequest);

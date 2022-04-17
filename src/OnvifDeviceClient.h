@@ -19,23 +19,23 @@
 #include "Client.h"
 #include "OnvifDeviceExport.h"
 
-
 struct OnvifDeviceClientPrivate;
 
 /*!
-*
-* \brief Client side service implementations of Onvif Device
-*
-*/
+ *
+ * \brief Client side service implementations of Onvif Device
+ *
+ */
 class ONVIFDEVICE_EXPORT OnvifDeviceClient : public Client {
 
 	Q_OBJECT
 
 public:
-	OnvifDeviceClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
+	OnvifDeviceClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(),
+	                  QObject *pParent = nullptr);
 	virtual ~OnvifDeviceClient();
 
-	static QString GetServiceNamespace() { return "http://www.onvif.org/ver10/device/wsdl"; }
+	static QString GetServiceNamespace() { return SOAP_NAMESPACE_OF_tds; }
 	Response<_tds__GetServicesResponse> GetServices(Request<_tds__GetServices> &rRequest);
 	Response<_tds__GetServiceCapabilitiesResponse> GetServiceCapabilities(Request<_tds__GetServiceCapabilities> &rRequest);
 	Response<_tds__GetDeviceInformationResponse> GetDeviceInformation(Request<_tds__GetDeviceInformation> &rRequest);
@@ -104,7 +104,8 @@ public:
 	Response<_tds__SetRelayOutputStateResponse> SetRelayOutputState(Request<_tds__SetRelayOutputState> &rRequest);
 	Response<_tds__SendAuxiliaryCommandResponse> SendAuxiliaryCommand(Request<_tds__SendAuxiliaryCommand> &rRequest);
 	Response<_tds__GetCACertificatesResponse> GetCACertificates(Request<_tds__GetCACertificates> &rRequest);
-	Response<_tds__LoadCertificateWithPrivateKeyResponse> LoadCertificateWithPrivateKey(Request<_tds__LoadCertificateWithPrivateKey> &rRequest);
+	Response<_tds__LoadCertificateWithPrivateKeyResponse>
+	LoadCertificateWithPrivateKey(Request<_tds__LoadCertificateWithPrivateKey> &rRequest);
 	Response<_tds__GetCertificateInformationResponse> GetCertificateInformation(Request<_tds__GetCertificateInformation> &rRequest);
 	Response<_tds__LoadCACertificatesResponse> LoadCACertificates(Request<_tds__LoadCACertificates> &rRequest);
 	Response<_tds__CreateDot1XConfigurationResponse> CreateDot1XConfiguration(Request<_tds__CreateDot1XConfiguration> &rRequest);

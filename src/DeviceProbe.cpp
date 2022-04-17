@@ -2,18 +2,9 @@
 // Created by bjoern on 16.04.22.
 //
 #include "DeviceProbe.h"
+#include "global.h"
 #include <QScopedPointer>
 #include "OnvifDeviceClient.h"
-#include "OnvifEventClient.h"
-#include "OnvifMediaClient.h"
-#include "OnvifMedia2Client.h"
-#include "OnvifAnalyticsClient.h"
-#include "OnvifDisplayClient.h"
-#include "OnvifImagingClient.h"
-#include "OnvifPtzClient.h"
-#include "OnvifReceiverClient.h"
-#include "OnvifReplayClient.h"
-#include "OnvifRecordingClient.h"
 #include <QLoggingCategory>
 
 Q_LOGGING_CATEGORY(pr, "DeviceProbe")
@@ -21,8 +12,7 @@ Q_LOGGING_CATEGORY(pr, "DeviceProbe")
 class DeviceProbePrivate {
 
 public:
-	explicit DeviceProbePrivate(DeviceProbe *pQ) :
-	 mpQ(pQ),
+	explicit DeviceProbePrivate() :
 	 mEndpoint(),
 	 mError(),
 	 mFirmwareVersion(),
@@ -34,7 +24,6 @@ public:
 	 mEndpointReference(),
 	 mServices() {}
 
-	DeviceProbe *mpQ;
 	QUrl mEndpoint;
 	QString mError;
 	QString mFirmwareVersion;
@@ -47,7 +36,26 @@ public:
 	QList<DeviceProbe::OnvifServicesTye> mServices;
 };
 
-DeviceProbe::DeviceProbe() : mpD(new DeviceProbePrivate(this)) {}
+DeviceProbe::DeviceProbe() : mpD(new DeviceProbePrivate()) {}
+
+DeviceProbe::~DeviceProbe() {
+
+	delete mpD;
+}
+
+DeviceProbe::DeviceProbe(const DeviceProbe &rOther) : mpD(new DeviceProbePrivate()) {
+
+	*mpD = *rOther.mpD;
+}
+
+DeviceProbe &DeviceProbe::operator=(const DeviceProbe &rOther) {
+
+	if(&rOther == this) {
+		return *this;
+	}
+	*this->mpD = *rOther.mpD;
+	return *this;
+}
 
 DeviceProbe::DeviceProbe(const QUrl &rDeviceEndpoint) : DeviceProbe::DeviceProbe() {
 
@@ -91,37 +99,37 @@ DeviceProbe::DeviceProbe(const QUrl &rDeviceEndpoint) : DeviceProbe::DeviceProbe
 				if(response) {
 					auto services = response.GetResultObject();
 					for(auto service : services->Service) {
-						if(service->Namespace == OnvifDeviceClient::GetServiceNamespace()) {
+						if(service->Namespace == SOAP_NAMESPACE_OF_tds) {
 							// Device Service
 							mpD->mServices.push_back(DeviceProbe::ONVIF_DEVICE);
-						} else if(service->Namespace == OnvifEventClient::GetServiceNamespace()) {
+						} else if(service->Namespace == SOAP_NAMESPACE_OF_tev) {
 							// Event Service
 							mpD->mServices.push_back(DeviceProbe::ONVIF_EVENT);
-						} else if(service->Namespace == OnvifMediaClient::GetServiceNamespace()) {
+						} else if(service->Namespace == SOAP_NAMESPACE_OF_trt) {
 							// Media Service
 							mpD->mServices.push_back(DeviceProbe::ONVIF_MEDIA);
-						} else if(service->Namespace == OnvifMedia2Client::GetServiceNamespace()) {
+						} else if(service->Namespace == SOAP_NAMESPACE_OF_tr2) {
 							// Media2 Service
 							mpD->mServices.push_back(DeviceProbe::ONVIF_MEDIA2);
-						} else if(service->Namespace == OnvifAnalyticsClient::GetServiceNamespace()) {
+						} else if(service->Namespace == SOAP_NAMESPACE_OF_tan) {
 							// Analytics Service
 							mpD->mServices.push_back(DeviceProbe::ONVIF_ANALYTICS);
-						} else if(service->Namespace == OnvifDisplayClient::GetServiceNamespace()) {
+						} else if(service->Namespace == SOAP_NAMESPACE_OF_tls) {
 							// Display Service
 							mpD->mServices.push_back(DeviceProbe::ONVIF_DISPLAY);
-						} else if(service->Namespace == OnvifImagingClient::GetServiceNamespace()) {
+						} else if(service->Namespace == SOAP_NAMESPACE_OF_timg) {
 							// Imaging Service
 							mpD->mServices.push_back(DeviceProbe::ONVIF_IMAGING);
-						} else if(service->Namespace == OnvifPtzClient::GetServiceNamespace()) {
+						} else if(service->Namespace == SOAP_NAMESPACE_OF_tptz) {
 							// Ptz Service
 							mpD->mServices.push_back(DeviceProbe::ONVIF_PTZ);
-						} else if(service->Namespace == OnvifReceiverClient::GetServiceNamespace()) {
+						} else if(service->Namespace == SOAP_NAMESPACE_OF_trv) {
 							// Receiver Service
 							mpD->mServices.push_back(DeviceProbe::ONVIF_RECEIVER);
-						} else if(service->Namespace == OnvifRecordingClient::GetServiceNamespace()) {
+						} else if(service->Namespace == SOAP_NAMESPACE_OF_trc) {
 							// Recording Service
 							mpD->mServices.push_back(DeviceProbe::ONVIF_RECORDING);
-						} else if(service->Namespace == OnvifReplayClient::GetServiceNamespace()) {
+						} else if(service->Namespace == SOAP_NAMESPACE_OF_trp) {
 							// Replay Service
 							mpD->mServices.push_back(DeviceProbe::ONVIF_REPLAY);
 						} else {

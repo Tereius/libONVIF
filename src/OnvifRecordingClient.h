@@ -22,19 +22,20 @@
 struct OnvifRecordingClientPrivate;
 
 /*!
-*
-* \brief Client side service implementations of Onvif Recording
-*
-*/
+ *
+ * \brief Client side service implementations of Onvif Recording
+ *
+ */
 class ONVIFRECORDING_EXPORT OnvifRecordingClient : public Client {
 
 	Q_OBJECT
 
 public:
-	OnvifRecordingClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
+	OnvifRecordingClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(),
+	                     QObject *pParent = nullptr);
 	virtual ~OnvifRecordingClient();
 
-	static QString GetServiceNamespace() { return "http://www.onvif.org/ver10/recording/wsdl"; }
+	static QString GetServiceNamespace() { return SOAP_NAMESPACE_OF_trc; }
 	Response<_trc__GetServiceCapabilitiesResponse> GetServiceCapabilities(Request<_trc__GetServiceCapabilities> &rRequest);
 	Response<_trc__CreateRecordingResponse> CreateRecording(Request<_trc__CreateRecording> &rRequest);
 	Response<_trc__DeleteRecordingResponse> DeleteRecording(Request<_trc__DeleteRecording> &rRequest);

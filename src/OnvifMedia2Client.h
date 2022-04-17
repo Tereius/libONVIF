@@ -19,7 +19,6 @@
 #include "Client.h"
 #include "OnvifMedia2Export.h"
 
-
 struct OnvifMedia2ClientPrivate;
 
 /*!
@@ -36,7 +35,7 @@ public:
 	                  QObject *pParent = nullptr);
 	virtual ~OnvifMedia2Client();
 
-	static QString GetServiceNamespace() { return "http://www.onvif.org/ver20/media/wsdl"; }
+	static QString GetServiceNamespace() { return SOAP_NAMESPACE_OF_tr2; }
 	Response<_tr2__GetServiceCapabilitiesResponse> GetServiceCapabilities(Request<_tr2__GetServiceCapabilities> &rRequest);
 	Response<_tr2__CreateProfileResponse> CreateProfile(Request<_tr2__CreateProfile> &rRequest);
 	Response<_tr2__GetProfilesResponse> GetProfiles(Request<_tr2__GetProfiles> &rRequest);

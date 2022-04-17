@@ -19,23 +19,23 @@
 #include "Client.h"
 #include "OnvifReplayExport.h"
 
-
 struct OnvifReplayClientPrivate;
 
 /*!
-*
-* \brief Client side service implementations of Onvif Replay
-*
-*/
+ *
+ * \brief Client side service implementations of Onvif Replay
+ *
+ */
 class ONVIFREPLAY_EXPORT OnvifReplayClient : public Client {
 
 	Q_OBJECT
 
 public:
-	OnvifReplayClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
+	OnvifReplayClient(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(),
+	                  QObject *pParent = nullptr);
 	virtual ~OnvifReplayClient();
 
-	static QString GetServiceNamespace() { return "http://www.onvif.org/ver10/replay/wsdl"; }
+	static QString GetServiceNamespace() { return SOAP_NAMESPACE_OF_trp; }
 	Response<_trp__GetServiceCapabilitiesResponse> GetServiceCapabilities(Request<_trp__GetServiceCapabilities> &rRequest);
 	Response<_trp__GetReplayUriResponse> GetReplayUri(Request<_trp__GetReplayUri> &rRequest);
 	Response<_trp__GetReplayConfigurationResponse> GetReplayConfiguration(Request<_trp__GetReplayConfiguration> &rRequest);
