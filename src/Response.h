@@ -15,6 +15,7 @@
  */
 #pragma once
 #include "SoapCtx.h"
+#include "global.h"
 #include "soapH.h"
 #include <QDebug>
 #include <QString>
@@ -48,7 +49,7 @@ struct SoapDuplicator {
  */
 class SimpleResponse {
 
-public:
+ public:
 	/*!
 	 *
 	 * \brief Construct an errorless response
@@ -166,7 +167,7 @@ public:
 		}
 	}
 
-private:
+ private:
 	int mErrorCode;
 	QString mFault;
 	QString mFaultDetail;
@@ -190,7 +191,7 @@ inline QDebug operator<<(QDebug debug, const SimpleResponse &rResponse) {
  */
 class DetailedResponse : public SimpleResponse {
 
-public:
+ public:
 	/*!
 	 *
 	 * \brief Construct an errorless response
@@ -319,7 +320,7 @@ public:
 		}
 	}
 
-private:
+ private:
 	SOAP_ENV__Detail *mpFaultResultObject;
 	SOAP_ENV__Header *mpSoapHeader;
 };
@@ -334,7 +335,7 @@ private:
 template<class T, class Deleter = SoapDeleter<T>, class Duplicator = SoapDuplicator<T>>
 class Response : public DetailedResponse {
 
-public:
+ public:
 	/*!
 	 *
 	 * \brief Construct an errorless response
@@ -410,7 +411,7 @@ public:
 	 */
 	class Builder {
 
-	public:
+	 public:
 		Builder() : mpResult() {}
 
 		Builder &From(const QSharedPointer<SoapCtx> &rSoapCtx, const T *pResultObject = nullptr) {
@@ -431,11 +432,11 @@ public:
 
 		Response<T, Deleter, Duplicator> Build() const { return mpResult; }
 
-	private:
+	 private:
 		Response<T, Deleter, Duplicator> mpResult;
 	};
 
-private:
+ private:
 	Deleter mDeleter;
 	Duplicator mDuplicator;
 	T *mpResultObject;
@@ -452,7 +453,7 @@ private:
 template<class T>
 class ArbitraryResponse : public DetailedResponse {
 
-public:
+ public:
 	/*!
 	 *
 	 * \brief Construct an errorless response
@@ -505,7 +506,7 @@ public:
 	 */
 	class Builder {
 
-	public:
+	 public:
 		Builder() : mpResult() {}
 
 		Builder &From(const QSharedPointer<SoapCtx> &rSoapCtx, const T &rResultObject) {
@@ -526,10 +527,12 @@ public:
 
 		ArbitraryResponse<T> Build() const { return mpResult; }
 
-	private:
+	 private:
 		ArbitraryResponse<T> mpResult;
 	};
 
-private:
+ private:
 	T mResultObject;
 };
+
+REGISTER_METATYPE(SimpleResponse)

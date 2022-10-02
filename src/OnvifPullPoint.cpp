@@ -14,10 +14,11 @@
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
 #include "OnvifPullPoint.h"
-#include "Request.h"
 #include "OnvifEventClient.h"
-#include <QThread>
+#include "Request.h"
 #include <QDebug>
+#include <QThread>
+#include <utility>
 #if(QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 #define HAS_QT_RECURSIVEMUTEX
 #include <QRecursiveMutex>
@@ -25,17 +26,12 @@
 #include <QMutex>
 #endif
 
-
 #define PULL_POINT_MAX_RETRIES 10
 #define PULL_POINT_DEFAULT_TIMEOUT 3600000
 #define PULL_POINT_DEFAULT_MSG_LIMIT 100
 
-OnvifPullPointWorker::OnvifPullPointWorker(const QUrl &rEndpoint, QObject *pParent) :
- QThread(pParent), mEndpoint(rEndpoint), mpClient(new OnvifEventClient(mEndpoint, QSharedPointer<SoapCtx>::create(), this)) {
-
-	mpClient->GetCtx()->EnableOModeFlags(SOAP_IO_KEEPALIVE);
-	mpClient->GetCtx()->EnableIModeFlags(SOAP_IO_KEEPALIVE);
-}
+OnvifPullPointWorker::OnvifPullPointWorker(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx, QObject *pParent) :
+ QThread(pParent), mEndpoint(rEndpoint), mpClient(new OnvifEventClient(mEndpoint, std::move(sharedCtx), this)) {}
 
 OnvifPullPointWorker::~OnvifPullPointWorker() {
 
@@ -46,15 +42,17 @@ void OnvifPullPointWorker::run() {
 
 	mpClient->GetCtx()->Save();
 
+	mpClient->GetCtx()->EnableOModeFlags(SOAP_IO_KEEPALIVE);
+	mpClient->GetCtx()->EnableIModeFlags(SOAP_IO_KEEPALIVE);
 	int messageLimit = PULL_POINT_DEFAULT_MSG_LIMIT;
 	int timeoutLimit = PULL_POINT_DEFAULT_TIMEOUT; // 1 h
 	int pullFaultCount = 0;
 	bool failedPullHandled = false;
 	bool shortPull = true; // The first pull should have a short timeout so we can check if it's working.
 
-	qDebug() << "Starting new Pull Point:" << mpClient->GetEndpointString();
+	qDebug() << "Starting new pullpoint:" << mpClient->GetEndpointString();
 
-	while(!isInterruptionRequested() /*&& pullFaultCount < PULL_POINT_MAX_RETRIES*/) {
+	while(!isInterruptionRequested() && pullFaultCount < PULL_POINT_MAX_RETRIES) {
 
 		Request<_tev__PullMessages> request;
 		if(shortPull) {
@@ -69,8 +67,16 @@ void OnvifPullPointWorker::run() {
 		if(resp && resp.GetResultObject()) {
 			pullFaultCount = 0;
 			shortPull = false;
-			qDebug() << "Received new messages from Pull Point:" << mpClient->GetEndpointString();
+			qDebug() << "Received new messages from pullpoint:" << mpClient->GetEndpointString();
 			for(auto it : resp.GetResultObject()->wsnt__NotificationMessage) {
+				if(it->Message.__any) {
+					// We have a dom element we try to cast to _tt__Message
+					auto *message =
+					 const_cast<_tt__Message *>(static_cast<const _tt__Message *>(it->Message.__any->get_node(SOAP_TYPE__tt__Message)));
+					if(message) {
+						it->Message.Message = message->soap_dup();
+					}
+				}
 				emit MessageReceived(Response<wsnt__NotificationMessageHolderType>(it));
 			}
 
@@ -85,20 +91,19 @@ void OnvifPullPointWorker::run() {
 			if(faultDetail) {
 				if(faultDetail->MaxMessageLimit < messageLimit) {
 					messageLimit = faultDetail->MaxMessageLimit;
-					qDebug() << "Got new message limit from Pull Point:" << messageLimit << ")";
+					qDebug() << "Got new message limit from pullpoint:" << messageLimit << ")";
 				}
 				if(faultDetail->MaxTimeout < timeoutLimit) {
 					timeoutLimit = faultDetail->MaxTimeout;
-					qDebug() << "Got new timeout limit from Pull Point:" << timeoutLimit;
+					qDebug() << "Got new timeout limit from pullpoint:" << timeoutLimit;
 				}
 			} else {
 				shortPull = true;
-				qWarning() << resp;
+				qWarning() << "Unknown pullpoint fault" << resp;
 				// Sleeping
 				for(auto i = 1; i <= 10 && !QThread::isInterruptionRequested(); ++i)
 					QThread::msleep(1000);
 			}
-
 			if(!failedPullHandled && pullFaultCount >= 2) {
 				failedPullHandled = true;
 				emit LostPullPoint(resp);
@@ -110,7 +115,7 @@ void OnvifPullPointWorker::run() {
 	Request<_wsnt__Unsubscribe> req;
 	auto resp = mpClient->Unsubscribe(req);
 	if(!resp) {
-		qWarning() << "Couldn't unsubscribe from Pull Point:" << mpClient->GetEndpointString();
+		qWarning() << "Couldn't unsubscribe from pullpoint:" << mpClient->GetEndpointString();
 	}
 }
 
@@ -124,14 +129,36 @@ Response<_tev__CreatePullPointSubscriptionResponse> OnvifPullPointWorker::Setup(
 bool OnvifPullPointWorker::StartListening() {
 
 	if(!isRunning()) {
-		qDebug() << "Starting PullPoint worker";
+		qDebug() << "Starting pullpoint worker";
 		auto response = Setup();
 		if(response) {
+			if(response.GetResultObject()) {
+				if(response.GetResultObject()->SubscriptionReference.Address) {
+					mpClient->SetEndpoint(QUrl::fromUserInput(QString::fromLocal8Bit(response.GetResultObject()->SubscriptionReference.Address)));
+				} else if(response.GetResultObject()->SubscriptionReference.__size > 0) {
+					// TODO: Don't know why gsop does not deserialize wsa5__EndpointReferenceType? As a workaround we parse it ourselves!
+					for(auto i = 0; i < response.GetResultObject()->SubscriptionReference.__size; i++) {
+						auto address = response.GetResultObject()->SubscriptionReference.__any[i];
+						QRegExp rx(".+Address>(.*)<\\/");
+						rx.indexIn(QString::fromLocal8Bit(address));
+						rx.capturedTexts();
+						QStringList addressList = rx.capturedTexts();
+						if(addressList.length() > 1) {
+							mpClient->SetEndpoint(addressList[1]);
+							break;
+						}
+					}
+				} else {
+					qWarning() << "Missing a valid pullpoint subscription reference";
+				}
+			} else {
+				qWarning() << "Missing a valid pullpoint subscription response";
+			}
 			start();
-			qDebug() << "PullPoint worker successfully started";
+			qDebug() << "pullpoint worker successfully started";
 			return true;
 		}
-		qWarning() << "Couldn't start PullPoint worker - initial setup failed:" << response.GetCompleteFault();
+		qWarning() << "Couldn't start pullpoint worker - initial setup failed:" << response.GetCompleteFault();
 		return false;
 	}
 	return true;
@@ -140,15 +167,15 @@ bool OnvifPullPointWorker::StartListening() {
 void OnvifPullPointWorker::StopListening() {
 
 	if(!isInterruptionRequested() && isRunning()) {
-		qDebug() << "Stopping PullPoint worker";
+		qDebug() << "Stopping pullpoint worker";
 		requestInterruption();
 		mpClient->GetCtx()->ForceSocketClose();
 		const auto waitTimespan = 20000UL;
 		auto terminated = wait(waitTimespan);
 		if(!terminated)
-			qWarning() << "PullPoint worker couldn't be terminated within time:" << waitTimespan << "ms";
+			qWarning() << "pullpoint worker couldn't be terminated within time:" << waitTimespan << "ms";
 		else
-			qDebug() << "PullPoint worker successfully stopped";
+			qDebug() << "pullpoint worker successfully stopped";
 	}
 }
 
@@ -191,10 +218,11 @@ void OnvifPullPoint::Start() {
 	bool activeBackup = mpD->mActive;
 	mpD->mMutex.lock();
 	if(!mpD->mpWorker) {
-		mpD->mpWorker = new OnvifPullPointWorker(mpD->mEndpoint, this);
-		connect(mpD->mpWorker, SIGNAL(UnsuccessfulPull(int, const SimpleResponse &)), this, SLOT(UnsuccessfulPull(int, const SimpleResponse &)));
-		connect(mpD->mpWorker, SIGNAL(LostPullPoint(const SimpleResponse &)), this, SLOT(LostPullPoint(const SimpleResponse &)));
-		connect(mpD->mpWorker, SIGNAL(ResumedPullPoint()), this, SLOT(ResumedPullPoint()));
+		mpD->mpWorker = new OnvifPullPointWorker(mpD->mEndpoint, GetCtx(), this);
+		connect(mpD->mpWorker, &OnvifPullPointWorker::MessageReceived, this, &OnvifPullPoint::MessageReceived);
+		connect(mpD->mpWorker, &OnvifPullPointWorker::UnsuccessfulPull, this, &OnvifPullPoint::UnsuccessfulPull);
+		connect(mpD->mpWorker, &OnvifPullPointWorker::LostPullPoint, this, &OnvifPullPoint::LostPullPoint);
+		connect(mpD->mpWorker, &OnvifPullPointWorker::ResumedPullPoint, this, &OnvifPullPoint::ResumedPullPoint);
 		mpD->mActive = mpD->mpWorker->StartListening();
 		if(!mpD->mActive) {
 			Stop();

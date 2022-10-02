@@ -20,16 +20,14 @@
 #include "OnvifDisplayClient.h"
 #include "OnvifEventClient.h"
 #include "OnvifImagingClient.h"
-#include "OnvifMediaClient.h"
 #include "OnvifMedia2Client.h"
-#include "OnvifEventClient.h"
-#include "OnvifImagingClient.h"
+#include "OnvifMediaClient.h"
 #include "OnvifPtzClient.h"
+#include "OnvifPullPoint.h"
 #include "OnvifReceiverClient.h"
 #include "OnvifRecordingClient.h"
 #include "OnvifReplayClient.h"
 #include "SoapCtx.h"
-#include "OnvifDeviceClient.h"
 #include <QUrl>
 
 
@@ -61,7 +59,8 @@ struct OnvifDevicePrivate {
 	 mpOnvifPtzClient(nullptr),
 	 mpOnvifReceiverClient(nullptr),
 	 mpOnvifRecordingClient(nullptr),
-	 mpOnvifReplayClient(nullptr) {}
+	 mpOnvifReplayClient(nullptr),
+	 mpOnvifPullPoint(nullptr) {}
 
 	OnvifDevice *mpQ;
 	QString mUserName;
@@ -90,6 +89,7 @@ struct OnvifDevicePrivate {
 	OnvifReceiverClient *mpOnvifReceiverClient;
 	OnvifRecordingClient *mpOnvifRecordingClient;
 	OnvifReplayClient *mpOnvifReplayClient;
+	OnvifPullPoint *mpOnvifPullPoint;
 };
 
 OnvifDevice::OnvifDevice(const QUrl &rDeviceEndpoint, QObject *pParent /*= nullptr*/) :
@@ -310,4 +310,66 @@ void OnvifDevice::SetAuth(const QString &rUserName, const QString &rPassword, Au
 
 	mpD->mUserName = rUserName;
 	mpD->mPassword = rPassword;
+}
+
+void OnvifDevice::SubscribePullPoint() {
+
+	if(mpD->mpOnvifEventClient) {
+		mpD->mpOnvifPullPoint = new OnvifPullPoint(mpD->mpOnvifEventClient->GetEndpoint(), this);
+		if(!mpD->mUserName.isNull() || !mpD->mPassword.isNull()) {
+			mpD->mpOnvifPullPoint->SetAuth(mpD->mUserName, mpD->mPassword, AUTO);
+		}
+		connect(mpD->mpOnvifPullPoint, &OnvifPullPoint::LostPullPoint, this, &OnvifDevice::LostPullPoint);
+		connect(mpD->mpOnvifPullPoint, &OnvifPullPoint::UnsuccessfulPull, this, &OnvifDevice::UnsuccessfulPull);
+		connect(mpD->mpOnvifPullPoint, &OnvifPullPoint::MessageReceived, this, &OnvifDevice::MessageReceived);
+		connect(mpD->mpOnvifPullPoint, &OnvifPullPoint::ResumedPullPoint, this, &OnvifDevice::ResumedPullPoint);
+		mpD->mpOnvifPullPoint->Start();
+	} else {
+		qWarning() << "Missing ONVIF event service - could not start pullpoint";
+	}
+}
+void OnvifDevice::UnsuccessfulPull(int unsuccessfulPullcount, const SimpleResponse &rCause) {
+
+	qWarning() << "Unsuccessful pull" << rCause;
+}
+
+void OnvifDevice::MessageReceived(const Response<wsnt__NotificationMessageHolderType> &rResponse) {
+
+	if(auto result = rResponse.GetResultObject()) {
+		qDebug() << "";
+		qDebug() << "pullpoint message";
+		if(result->Topic) {
+			qDebug() << "    Topic Dialect" << result->Topic->Dialect;
+		}
+		if(result->Message.Message) {
+			qDebug() << "        Source";
+			OnvifDevice::PrintItemList(result->Message.Message->Source);
+			qDebug() << "        Key";
+			OnvifDevice::PrintItemList(result->Message.Message->Key);
+			qDebug() << "        Data";
+			OnvifDevice::PrintItemList(result->Message.Message->Data);
+		}
+	}
+}
+
+void OnvifDevice::LostPullPoint(const SimpleResponse &rCause) {
+
+	qWarning() << "Lost pullpoint pull" << rCause;
+}
+
+void OnvifDevice::ResumedPullPoint() {
+
+	qWarning() << "Resumed pullpoint";
+}
+
+void OnvifDevice::PrintItemList(tt__ItemList *list) {
+
+	if(list) {
+		for(const auto &entry : list->SimpleItem) {
+			qDebug() << "            Name" << entry.Name << "Value" << entry.Value;
+		}
+		for(const auto &entry : list->ElementItem) {
+			qDebug() << "            Name" << entry.Name;
+		}
+	}
 }

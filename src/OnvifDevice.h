@@ -14,8 +14,8 @@
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
 #pragma once
-#include "Response.h"
 #include "Client.h"
+#include "Response.h"
 #include <QObject>
 #include <QUrl>
 
@@ -26,14 +26,21 @@ class OnvifDevice : public QObject {
 
 	Q_OBJECT
 
-public:
-	OnvifDevice(const QUrl &rDeviceEndpoint, QObject *pParent = nullptr);
-	virtual ~OnvifDevice();
+ public:
+	explicit OnvifDevice(const QUrl &rDeviceEndpoint, QObject *pParent = nullptr);
+	~OnvifDevice() override;
 
 	void SetAuth(const QString &rUserName, const QString &rPassword, AuthMode mode = AUTO);
 	SimpleResponse Initialize();
 	SimpleResponse InitializeTopicSet();
+	void SubscribePullPoint();
 
-private:
+ private:
+	void UnsuccessfulPull(int unsuccessfulPullcount, const SimpleResponse &rCause);
+	void MessageReceived(const Response<wsnt__NotificationMessageHolderType> &rResponse);
+	void LostPullPoint(const SimpleResponse &rCause);
+	void ResumedPullPoint();
+	static void PrintItemList(tt__ItemList *list);
+
 	OnvifDevicePrivate *mpD;
 };

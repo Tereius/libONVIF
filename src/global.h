@@ -14,15 +14,16 @@
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
 #pragma once
+#include <QMetaType>
 #include <qglobal.h>
 
-#if QT_VERSION < QT_VERSION_CHECK(5,5,0)
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
 #define QML_ENUM Q_ENUMS
 #else
 #define QML_ENUM Q_ENUM
 #endif
 
-#if QT_VERSION < QT_VERSION_CHECK(5,4,0)
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
 #define qUtf8Printable(string) QString(string).toUtf8().constData()
 #endif
 
@@ -85,3 +86,24 @@
 #define HTTP_INSUFFICIENT_STORAGE 507
 #define HTTP_LOOP_DETECTED 508
 #define HTTP_NOT_EXTENDED 510
+
+
+// calls qRegisterMetaType once for your custom Type T - use like so:
+//   static QMetaTypeRegistrar<T> RegisterMyType;
+// or so:
+//   static QMetaTypeRegistrar<T> RegisterMyType("MyTypesName");
+template<class T>
+class QMetaTypeRegistrar {
+ public:
+	QMetaTypeRegistrar() { qRegisterMetaType<T>(); };
+	explicit QMetaTypeRegistrar(const char *metaTypeName) { qRegisterMetaType<T>(metaTypeName); }
+};
+
+#define CONCAT_(x, y) x##y
+#define CONCAT(x, y) CONCAT_(x, y)
+
+// combines Q_DECLARE_METATYPE and qRegisterMetaType in one macro
+#define REGISTER_METATYPE(TYPE) REGISTER_METATYPE_IMPL(TYPE) // NOLINT
+#define REGISTER_METATYPE_IMPL(TYPE) \
+	Q_DECLARE_METATYPE(TYPE)           \
+	static QMetaTypeRegistrar<TYPE> CONCAT(Registrar_, __COUNTER__); // NOLINT

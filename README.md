@@ -1,4 +1,5 @@
 # libONVIF
+
 | os | os_build | Status |
 |---|---|---|
 | Android | Linux | [![Build Status](https://dev.azure.com/bjoernstresing/bjoernstresing/_apis/build/status/Tereius.libONVIF?repoName=Tereius%2FlibONVIF&branchName=master&jobName=Android&configuration=Android%20armv7Linux)](https://dev.azure.com/bjoernstresing/bjoernstresing/_build/latest?definitionId=7&repoName=Tereius%2FlibONVIF&branchName=master) |
@@ -9,12 +10,14 @@
 
 ### Yet another ONVIF library
 
-__This projects status is "work in progress". Don't expect binary compatibility. Actually don't expect anything other than major changes in the source code :-).__
+__This projects status is "work in progress". Don't expect binary compatibility. Actually don't expect anything other
+than major changes in the source code :-).__
 
 What does ONVIF stand for:
 > ONVIF (Open Network Video Interface Forum) is a global and open industry forum with the goal of facilitating the development and use of a global open standard for the interface of physical IP-based security products – or, in other words, to create a standard for how IP products within video surveillance and other physical security areas can communicate with each other. [Wikipedia](https://en.wikipedia.org/wiki/ONVIF)
 
-The idea behind this library is to hide some complexity of gsoap and to provide 'high level' classes including QT5 goodness. Currently there are eleven client side service methods implemented:
+The idea behind this library is to hide some complexity of gsoap and to provide 'high level' classes including QT5
+goodness. Currently there are eleven client side service methods implemented:
 
 - ONVIF analytics http://www.onvif.org/ver20/analytics/wsdl
 - ONVIF device http://www.onvif.org/ver10/device/wsdl
@@ -28,7 +31,9 @@ The idea behind this library is to hide some complexity of gsoap and to provide 
 - ONVIF recording http://www.onvif.org/ver10/recording/wsdl
 - ONVIF replay http://www.onvif.org/ver10/replay/wsdl
 
-For every service exists a class following the naming scheme `Onvif*Client` (\* matches service name). These classes handle the RPCs. For the convenience of WS discovery and ONVIF (pull point) event handling there are two more classes: `OnvifDiscovery` and `OnvifPullPoint`.
+For every service exists a class following the naming scheme `Onvif*Client` (\* matches service name). These classes
+handle the RPCs. For the convenience of WS discovery and ONVIF (pullpoint) event handling there are two more
+classes: `OnvifDiscovery` and `OnvifPullPoint`.
 
 Design thoughts:
 
@@ -38,7 +43,11 @@ Design thoughts:
 
 ### Further reading
 
-* The library comes with a small application (named ovifinfo) that does some device-discovery, inspection. You may want to look at the [source code](https://github.com/Tereius/libONVIF/blob/master/src/main.cpp).
-* If you want to learn more about how to use libONVIF in a qml app take a look at the following project [ONVIFMonitor](https://github.com/Tereius/ONVIFMonitor).
-* It is always advisable to look at the [ONVIF programmers guide](https://www.onvif.org/wp-content/uploads/2016/12/ONVIF_WG-APG-Application_Programmers_Guide-1.pdf) to learn more about ONVIF.
+* The library comes with a small application (named ovifinfo) that does some device-discovery, inspection. You may want
+  to look at the [source code](https://github.com/Tereius/libONVIF/blob/master/src/main.cpp).
+* If you want to learn more about how to use libONVIF in a qml app take a look at the following
+  project [ONVIFMonitor](https://github.com/Tereius/ONVIFMonitor).
+* It is always advisable to look at
+  the [ONVIF programmers guide](https://www.onvif.org/wp-content/uploads/2016/12/ONVIF_WG-APG-Application_Programmers_Guide-1.pdf)
+  to learn more about ONVIF.
 

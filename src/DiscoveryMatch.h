@@ -15,10 +15,11 @@
  */
 #pragma once
 #include "OnvifDiscoveryExport.h"
+#include "global.h"
+#include <QMetaType>
 #include <QStringList>
 #include <QUrl>
 #include <QUuid>
-#include <QMetaType>
 
 
 /*!
@@ -28,7 +29,7 @@
  */
 class ONVIFDISCOVERY_EXPORT DiscoveryMatch {
 
-public:
+ public:
 	DiscoveryMatch();
 	virtual ~DiscoveryMatch();
 
@@ -46,18 +47,18 @@ public:
 	void SetDeviceEndpoints(const QList<QUrl> &rDeviceEndpoint);
 	QStringList GetTypes() const;
 	void SetTypes(const QStringList &rTypes);
-	QStringList GetScopes() const;
+	QStringList GetScopes() const; // Can be url/percent encoded
 	void SetScopes(const QStringList &rScopes);
 	QUuid GetEndpointReference() const;
 	void SetEndpointReference(const QUuid &rReference);
 	bool operator==(const DiscoveryMatch &rOther) const;
 	bool operator!=(const DiscoveryMatch &rOther) const;
 
-private:
+ private:
 	QList<QUrl> mDeviceEndpoints;
 	QStringList mTypes;
 	QStringList mScopes;
 	QUuid mEndpointReference;
 };
 
-Q_DECLARE_METATYPE(DiscoveryMatch);
+REGISTER_METATYPE(DiscoveryMatch)

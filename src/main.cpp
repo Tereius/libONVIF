@@ -16,6 +16,7 @@
 #include "CmdLineParser.h"
 #include "OnvifDevice.h"
 #include "OnvifDiscoveryClient.h"
+#include "Response.h"
 #include "SoapHelper.h"
 #include <QCoreApplication>
 #include <QDateTime>
@@ -109,6 +110,7 @@ int main(int argc, char **argv) {
 			auto device = new OnvifDevice(response.GetResultObject().endpointUrl, &app);
 			device->SetAuth(response.GetResultObject().user, response.GetResultObject().pwd);
 			device->Initialize();
+			device->SubscribePullPoint();
 		}
 	} else {
 		qCritical() << response.GetCompleteFault();
@@ -142,9 +144,9 @@ int main(int argc, char **argv) {
 	// 		if(auto topicSet = resObj->wstop__TopicSet) {
 	// 			for(auto it : topicSet->__any) {
 	// 				if(auto topicAtt = soap_att_get(it, "http://docs.oasis-open.org/wsn/t-1", "topic")) {
-	// 					for(auto itt = soap_elt_get(it, "http://www.onvif.org/ver10/schema", "MessageDescription"); itt; itt = soap_elt_get_next(itt)) {
-	// 						auto node = (tt__MessageDescription*)soap_elt_get_node(itt, SOAP_TYPE_tt__MessageDescription);
-	// 						bool property = node->IsProperty ? node->IsProperty : false;
+	// 					for(auto itt = soap_elt_get(it, "http://www.onvif.org/ver10/schema", "MessageDescription"); itt; itt = soap_elt_get_next(itt))
+	// { 						auto node = (tt__MessageDescription*)soap_elt_get_node(itt, SOAP_TYPE_tt__MessageDescription); 						bool property =
+	// node->IsProperty ? node->IsProperty : false;
 	// 					}
 	// 				}
 	// 			}
@@ -163,5 +165,5 @@ int main(int argc, char **argv) {
 	  }
 	 }
 	 */
-	return 0;
+	return QCoreApplication::exec();
 }
