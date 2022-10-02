@@ -559,6 +559,10 @@ if (MSVC)
     set_target_properties(onvifinfo onvifcommon onvifdevice onvifdiscovery onvifreplay onvifprobe onvifrecording onvifreceiver onvifptz onvifmedia onvifmedia2 onvifimaging onvifevent onvifdisplay onvifanalytics PROPERTIES COMPILE_FLAGS "/bigobj")
 endif ()
 
+if (ANDROID)
+    target_link_libraries(onvifinfo log.so z.so)
+endif ()
+
 set(install_root "${CMAKE_INSTALL_PREFIX}")
 set(install_include_dir "${install_root}/include")
 set(install_runtime_dir "${install_root}/bin")

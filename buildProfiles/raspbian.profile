@@ -1,0 +1,14 @@
+[settings]
+os=Linux
+arch=armv6
+compiler=gcc
+compiler.version=8.3
+compiler.libcxx=libstdc++11
+build_type=Release
+arch_build=x86_64
+os_build=Linux
+[options]
+Qt:opengl=es2
+[build_requires]
+raspbian/2020-02-14@tereius/stable
+[env] 
