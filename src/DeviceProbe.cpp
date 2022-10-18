@@ -6,6 +6,7 @@
 #include <QScopedPointer>
 #include "OnvifDeviceClient.h"
 #include <QLoggingCategory>
+#include <cmath>
 
 Q_LOGGING_CATEGORY(pr, "DeviceProbe")
 

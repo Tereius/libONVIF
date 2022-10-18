@@ -9,7 +9,8 @@ compiler.version=9
 compiler.libcxx=libc++
 build_type=Release
 [options]
-android-sdk:platformVersion=28
+android-sdk:platformVersion=29
+android-sdk:buildToolsRevision=29.0.2
 [build_requires]
 android-ndk/r21e@tereius/stable
 android-sdk/latest@tereius/stable

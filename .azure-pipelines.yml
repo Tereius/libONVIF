@@ -9,6 +9,9 @@ jobs:
 - job: Android
   strategy:
     matrix:
+      Raspbian:
+        imageName: "ubuntu-18.04"
+        buildProfile: "raspbian"
       armv7Linux:
         imageName: "ubuntu-18.04"
         buildProfile: "androidArmv7LinuxHost"
