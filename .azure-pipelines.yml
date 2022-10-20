@@ -9,9 +9,6 @@ jobs:
 - job: Android
   strategy:
     matrix:
-      Raspbian:
-        imageName: "ubuntu-18.04"
-        buildProfile: "raspbian"
       armv7Linux:
         imageName: "ubuntu-18.04"
         buildProfile: "androidArmv7LinuxHost"
@@ -29,6 +26,21 @@ jobs:
         CONAN_CHANNEL: "stable",
         CONAN_REMOTES: "https://conan.privatehive.de/artifactory/api/conan/public-conan",
         CONAN_BASE_PROFILE_PATH: "./buildProfiles/$(buildProfile).profile",
+        CONAN_BUILD_PROFILE: "default"
+      }
+
+- job: Raspbian
+  pool:
+    vmImage: "ubuntu-18.04"
+  timeoutInMinutes: 0
+  steps:
+  - template: buildConanRecipe.yml@templates
+    parameters:
+      conanEnv: {
+        CONAN_USERNAME: "tereius",
+        CONAN_CHANNEL: "stable",
+        CONAN_REMOTES: "https://conan.privatehive.de/artifactory/api/conan/public-conan",
+        CONAN_BASE_PROFILE_PATH: "./buildProfiles/raspbian.profile",
         CONAN_BUILD_PROFILE: "default"
       }
 
@@ -77,6 +89,7 @@ jobs:
 - job: Upload
   dependsOn:
   - Android
+  - Raspbian
   - Linux
   - Windows
   - Macos
