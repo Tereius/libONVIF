@@ -2,8 +2,7 @@ include(GenerateExportHeader)
 include(CMakePackageConfigHelpers)
 find_package(CommonLibs QUIET)
 
-set(CMAKE_PREFIX_PATH /home/chan/Qt5.12.12/5.12.12/gcc_64/lib/cmake/Qt5/)
-set(Qt5_DIR /home/chan/Qt5.12.12/5.12.12/gcc_64/lib/cmake/Qt5/)
+
 
 find_package(Qt5 COMPONENTS Core REQUIRED)
 find_library(OpenSSL_cryptro_PATH NAMES libeay libeay32 libcrypto libcrypto32 eay crypto PATH_SUFFIXES "lib")
