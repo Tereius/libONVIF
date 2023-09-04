@@ -1,6 +1,10 @@
 include(GenerateExportHeader)
 include(CMakePackageConfigHelpers)
 find_package(CommonLibs QUIET)
+
+set(CMAKE_PREFIX_PATH /home/chan/Qt5.12.12/5.12.12/gcc_64/lib/cmake/Qt5/)
+set(Qt5_DIR /home/chan/Qt5.12.12/5.12.12/gcc_64/lib/cmake/Qt5/)
+
 find_package(Qt5 COMPONENTS Core REQUIRED)
 find_library(OpenSSL_cryptro_PATH NAMES libeay libeay32 libcrypto libcrypto32 eay crypto PATH_SUFFIXES "lib")
 find_library(OpenSSL_ssl_PATH NAMES ssleay ssleay32 libssl libssl32 eay ssl PATH_SUFFIXES "lib")
@@ -481,6 +485,137 @@ if(USE_PRECOMPILED_HEADERS)
 	cotire(onvifreplay)
 endif()
 
+# -------------------------- onvifX ---------------------
+set(src_files_list 	    
+		generated/soapC.cpp
+		gsoap/duration.c
+		gsoap/qdatetime.cpp
+		gsoap/AbsoluteOrRelativeTimeType.cpp
+		gsoap/qstring.cpp
+		gsoap/stdsoap2.cpp
+		gsoap/dom.cpp
+		gsoap/wsaapi.c
+		gsoap/qstringCompare.cpp
+		SoapCtx.cpp
+		SoapAuthHandler.cpp
+		Client.cpp
+		SoapHelper.cpp
+		generated/soapAnalyticsDeviceBindingProxy.cpp
+		#generated/soapAnalyticsDeviceBindingService.cpp
+		OnvifAnalyticsClient.cpp
+		generated/soapDeviceBindingProxy.cpp
+		#generated/soapDeviceBindingService.cpp
+		OnvifDeviceClient.cpp
+		generated/soapDisplayBindingProxy.cpp
+		#generated/soapDisplayBindingService.cpp
+		OnvifDisplayClient.cpp
+		generated/soapImagingBindingProxy.cpp
+		#generated/soapImagingBindingService.cpp
+		OnvifImagingClient.cpp
+		generated/soapMediaBindingProxy.cpp
+		#generated/soapMediaBindingService.cpp
+		OnvifMediaClient.cpp
+		generated/soapMedia2BindingProxy.cpp
+		#generated/soapMedia2BindingService.cpp
+		OnvifMedia2Client.cpp
+		generated/soapPTZBindingProxy.cpp
+		#generated/soapPTZBindingService.cpp
+		OnvifPtzClient.cpp
+		generated/soapPullPointSubscriptionBindingProxy.cpp
+		#generated/soapPullPointSubscriptionBindingService.cpp
+		OnvifEventClient.cpp
+		OnvifPullPoint.cpp
+		Topics.cpp
+		NotificationFilter.cpp
+		generated/soapReceiverBindingProxy.cpp
+		#generated/soapReceiverBindingService.cpp
+		OnvifReceiverClient.cpp
+		generated/soapRecordingBindingProxy.cpp
+		#generated/soapRecordingBindingService.cpp
+		OnvifRecordingClient.cpp
+		OnvifDiscoveryClient.cpp
+		# OnvifDiscover.cpp
+		OnvifDiscovery.cpp
+		DiscoveryMatch.cpp
+		generated/soapwsddProxy.cpp
+		generated/soapReplayBindingProxy.cpp
+		#generated/soapReplayBindingService.cpp
+		OnvifReplayClient.cpp
+		OnvifDevice.cpp
+)
+if(HAS_OPENSSL)
+	set(src_files_list ${src_files_list} gsoap/smdevp.c gsoap/httpda.c gsoap/mecevp.c gsoap/wsseapi.c)
+else()
+	set(src_files_list ${src_files_list} gsoap/wsseapi-lite.c)
+endif()
+
+set(private_header_files_list 
+		gsoap/stlvector.h
+		generated/soapAnalyticsDeviceBindingProxy.h
+		generated/soapDeviceBindingProxy.h
+		generated/soapDisplayBindingProxy.h
+		generated/soapImagingBindingProxy.h
+		generated/soapMediaBindingProxy.h
+		generated/soapMedia2BindingProxy.h
+		generated/soapPTZBindingProxy.h
+		generated/soapPullPointSubscriptionBindingProxy.h
+		generated/soapReceiverBindingProxy.h
+		generated/soapRecordingBindingProxy.h
+		generated/soapReplayBindingProxy.h
+		OnvifDevice.h
+)
+
+set(public_header_files_list 	
+		generated/soapStub.h
+		generated/soapH.h
+		gsoap/stdsoap2.h
+		gsoap/wsaapi.h
+		gsoap/AbsoluteOrRelativeTime.h
+		gsoap/qstringCompare.h
+		SoapCtx.h
+		SoapAuthHandler.h
+		Request.h
+		Response.h
+		Client.h
+		global.h
+		SoapHelper.h
+		OnvifAnalyticsClient.h
+		OnvifDeviceClient.h
+		OnvifDisplayClient.h
+		OnvifImagingClient.h
+		OnvifMediaClient.h
+		OnvifMedia2Client.h
+		OnvifPtzClient.h
+		OnvifEventClient.h
+		OnvifPullPoint.h
+		Topics.h
+		NotificationFilter.h
+		OnvifReceiverClient.h
+		OnvifRecordingClient.h
+		OnvifDiscoveryClient.h
+		DeleterDuplicator.h
+		# OnvifDiscover.h
+		generated/soapwsddProxy.h
+		OnvifDiscovery.h
+		DiscoveryMatch.h
+		OnvifReplayClient.h
+)
+
+if(HAS_OPENSSL)
+	set(public_header_files_list ${public_header_files_list} gsoap/smdevp.h gsoap/httpda.h gsoap/threads.h gsoap/mecevp.h gsoap/wsseapi.h)
+else()
+	set(public_header_files_list ${public_header_files_list} gsoap/wsseapi-lite.h)
+endif()
+
+add_library(onvifX ${src_files_list} ${private_header_files_list} ${public_header_files_list})
+generate_export_header(onvifX EXPORT_FILE_NAME OnvifXExport.h)
+target_link_libraries(onvifX onvifcommon)
+set_target_properties(onvifX PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifReplayExport.h")
+if(USE_PRECOMPILED_HEADERS)
+	cotire(onvifX)
+endif()
+# -----------------------------------------------------------
+
 # -------------------------------------------------------------------------
 
 # info tool
@@ -538,6 +673,7 @@ install(TARGETS
 				onvifevent
 				onvifdisplay
 				onvifanalytics
+				onvifX
 				EXPORT libONVIFTargets RUNTIME DESTINATION bin ARCHIVE DESTINATION lib LIBRARY DESTINATION lib PUBLIC_HEADER DESTINATION include
 				)
 
