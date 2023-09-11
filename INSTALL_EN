@@ -29,7 +29,6 @@ To change the path where CMake installs the lib/include files just set CMAKE_INS
    
 To print all the relevant variables you may want to change use:
 
-    v
     cmake -LH
 
 For Windows use a CMake generator like "NMake Makefiles" or "Visual Studio [...]" e.g.:
