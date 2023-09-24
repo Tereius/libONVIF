@@ -1,7 +1,7 @@
 include(GenerateExportHeader)
 include(CMakePackageConfigHelpers)
 find_package(CommonLibs QUIET)
-find_package(Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Core REQUIRED)
 find_library(OpenSSL_cryptro_PATH NAMES libeay libeay32 libcrypto libcrypto32 eay crypto PATH_SUFFIXES "lib")
 find_library(OpenSSL_ssl_PATH NAMES ssleay ssleay32 libssl libssl32 eay ssl PATH_SUFFIXES "lib")
 find_path(OpenSSL_include_DIR NAMES openssl/ssl.h PATH_SUFFIXES "include")
@@ -25,7 +25,7 @@ if (OpenSSL_include_DIR AND OpenSSL_cryptro_PATH AND OpenSSL_ssl_PATH)
     set(HAS_OPENSSL ON)
 endif ()
 
-link_directories("${_qt5Core_install_prefix}/lib")
+#link_directories("${_qt6Core_install_prefix}/lib")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/generated" "${CMAKE_CURRENT_SOURCE_DIR}/gsoap")
 if (HAS_OPENSSL)
     include_directories("${OpenSSL_include_DIR}")
@@ -168,7 +168,7 @@ target_include_directories(onvifcommon
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/gsoap> $<INSTALL_INTERFACE:include>
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/generated> $<INSTALL_INTERFACE:include>
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
-target_link_libraries(onvifcommon Qt5::Core)
+target_link_libraries(onvifcommon Qt6::Core)
 target_compile_definitions(onvifcommon PUBLIC WITH_SELF_PIPE PUBLIC WITH_DOM)
 if (HAS_OPENSSL)
     target_link_libraries(onvifcommon "${OpenSSL_ssl_PATH}" "${OpenSSL_cryptro_PATH}")

@@ -1,16 +1,21 @@
 {
-    "version": {
-        "major": 2,
-        "minor": 1,
-        "patch": 0,
-        "snapshot": true
-    },
-    "projectName": "libONVIF",
-    "projectDescription": "A client side ONVIF library",
-    "vendor": "Björn Stresing",
-    "contact": "bjoern.stresing@gmx.de",
-    "domain": "com.github.Tereius",
-    "copyrightYear": "2018",
-    "license": "GPLv3",
-    "repository": "https://github.com/Tereius/libONVIF"
+  "version": {
+    "major": 3,
+    "minor": 0,
+    "patch": 0,
+    "snapshot": true
+  },
+  "projectName": "lib_onvif",
+  "projectDescription": "A client side ONVIF library",
+  "vendor": "Björn Stresing",
+  "contact": "bjoern.stresing@gmx.de",
+  "domain": "com.github.tereius",
+  "copyrightYear": "2018",
+  "repository": "https://github.com/Tereius/libONVIF",
+  "topics": [
+    "Qt",
+    "ONVIF"
+  ],
+  "homepage": "https://github.com/Tereius/libONVIF",
+  "license": "GPLv3"
 }

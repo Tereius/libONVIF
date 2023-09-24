@@ -19,6 +19,11 @@
 #include <QDebug>
 #include <QThread>
 #include <utility>
+#if(QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#include <QRegularExpression>
+#else
+#include <QRegExp>
+#endif
 #if(QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 #define HAS_QT_RECURSIVEMUTEX
 #include <QRecursiveMutex>
@@ -139,10 +144,13 @@ bool OnvifPullPointWorker::StartListening() {
 					// TODO: Don't know why gsop does not deserialize wsa5__EndpointReferenceType? As a workaround we parse it ourselves!
 					for(auto i = 0; i < response.GetResultObject()->SubscriptionReference.__size; i++) {
 						auto address = response.GetResultObject()->SubscriptionReference.__any[i];
+#if(QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+						QRegularExpression rx(".+Address>(.*)<\\/");
+						QStringList addressList = rx.match(QString::fromLocal8Bit(address)).capturedTexts();
+#else
 						QRegExp rx(".+Address>(.*)<\\/");
-						rx.indexIn(QString::fromLocal8Bit(address));
-						rx.capturedTexts();
 						QStringList addressList = rx.capturedTexts();
+#endif
 						if(addressList.length() > 1) {
 							mpClient->SetEndpoint(addressList[1]);
 							break;
