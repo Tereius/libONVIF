@@ -1,0 +1,11 @@
+[settings]
+os=Linux
+arch=armv6
+compiler=gcc
+compiler.version=13
+compiler.libcxx=libstdc++11
+build_type=Release
+[options]
+raspberry-pi-os/*:os_select=bullseye
+[tool_requires]
+raspberry-pi-os/0.1.0@com.github.tereius/stable

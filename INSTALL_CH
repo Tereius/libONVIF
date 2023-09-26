@@ -7,7 +7,7 @@
 要自行构建依赖项，必须先添加一个 conan 软件源：
 
 conan remote add tereius https://conan.privatehive.de/artifactory/api/conan/public-conan
-    
+
 之后，只需在 git 根目录（conanfile.py 所在位置）下运行以下命令即可：
 
     conan install ./ -s build_type=Release --build missing
@@ -23,11 +23,11 @@ conan remote add tereius https://conan.privatehive.de/artifactory/api/conan/publ
 如果 CMake 缺少一个依赖项（如果使用 conan 就不会出现这种情况），则必须手动设置变量（指向路径），例如 OpenSSL：
 
     cmake -G "Unix Makefiles" -DOpenSSL_cryptro_PATH="/usr/lib/x86_64-linux-gnu/libcrypto.so" -DOpenSSL_ssl_PATH="usr/lib/x86_64-linux-gnu/libssl.so" -DOpenSSL_include_DIR="/usr/include" <git_root_dir>
-   
+
 要更改 CMake 安装 lib/include 文件的路径，只需设置 CMAKE_INSTALL_PREFIX：
 
 cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="/install/here" <git_root_dir>
-   
+
 要打印您可能需要更改的所有相关变量，请使用
 
     cmake -LH
@@ -38,10 +38,10 @@ cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="/install/here" <git_root_dir>
     cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release <git_root_dir>
     cmake --build ./
     cmake --build ./ --target install
-    
-要交叉编译 Android 版 libONVIF，请使用 "buildProfiles "中与您的主机和目标版本相匹配的 conan 配置文件。
-例如 要在 Linux 主机上编译 Android Armv8 版本的 libONVIF，请在 git 根目录下运行以下命令：
 
-    conan create ./ -pr:h ./buildProfiles/androidArmv8LinuxHost.profile -pr:b default --build missing
+要交叉编译 Android 版 libONVIF，请使用 "hostProfiles "中与主机和架构版本相匹配的 conan 配置文件。
+例如，要编译 Android Armv7 版本的 libONVIF，请在 git 根目录下运行以下命令：
+
+    conan create ./ -pr:h ./hostProfiles/androidArmv7.profile -pr:b default --build missing
 
 lib/include 文件位于您的 conan 缓存中（~/.conan/data/libONVIF/<版本>/tereius/stable/package/<packageId>）。

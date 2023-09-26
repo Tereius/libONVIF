@@ -33,16 +33,6 @@ class ONVIFDISCOVERY_EXPORT DiscoveryMatch {
 	DiscoveryMatch();
 	virtual ~DiscoveryMatch();
 
-	/*!
-	 * \deprecated Use DiscoveryMatch::GetDeviceEndpoints instead
-	 */
-	Q_DECL_DEPRECATED
-	QUrl GetDeviceEndpoint() const;
-	/*!
-	 * \deprecated Use DiscoveryMatch::SetDeviceEndpoints instead
-	 */
-	Q_DECL_DEPRECATED
-	void SetDeviceEndpoint(const QUrl &rDeviceEndpoint);
 	QList<QUrl> GetDeviceEndpoints() const;
 	void SetDeviceEndpoints(const QList<QUrl> &rDeviceEndpoint);
 	QStringList GetTypes() const;

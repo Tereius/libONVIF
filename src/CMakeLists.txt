@@ -1,6 +1,5 @@
 include(GenerateExportHeader)
 include(CMakePackageConfigHelpers)
-find_package(CommonLibs QUIET)
 find_package(Qt6 COMPONENTS Core REQUIRED)
 find_library(OpenSSL_cryptro_PATH NAMES libeay libeay32 libcrypto libcrypto32 eay crypto PATH_SUFFIXES "lib")
 find_library(OpenSSL_ssl_PATH NAMES ssleay ssleay32 libssl libssl32 eay ssl PATH_SUFFIXES "lib")
@@ -16,16 +15,15 @@ if (ENABLE_CODESYNTHESIS)
     find_file(Gsoap_domcpp NAMES dom.cpp PATH_SUFFIXES "gsoap" REQUIRED)
 endif ()
 
-set(CMAKE_AUTOMOC ON)
 set(BUILD_SHARED_LIBS true CACHE BOOL "Build shared or static lib?")
 set(ENABLE_CODESYNTHESIS false CACHE BOOL "Run wsdl2h and soapcpp2?")
-set(CMAKE_DEBUG_POSTFIX d) # Append "d" if debug lib.
+set(ENABLE_SSL false CACHE BOOL "Enable ssl support?")
+
 set(HAS_OPENSSL OFF)
-if (OpenSSL_include_DIR AND OpenSSL_cryptro_PATH AND OpenSSL_ssl_PATH)
+if (ENABLE_SSL AND OpenSSL_include_DIR AND OpenSSL_cryptro_PATH AND OpenSSL_ssl_PATH)
     set(HAS_OPENSSL ON)
 endif ()
 
-#link_directories("${_qt6Core_install_prefix}/lib")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/generated" "${CMAKE_CURRENT_SOURCE_DIR}/gsoap")
 if (HAS_OPENSSL)
     include_directories("${OpenSSL_include_DIR}")
@@ -93,11 +91,11 @@ if (ENABLE_CODESYNTHESIS)
             http://www.onvif.org/onvif/ver10/device/wsdl/devicemgmt.wsdl
             http://www.onvif.org/onvif/ver20/analytics/wsdl/analytics.wsdl
             COMMAND ${Gsoap_soapcpp2_PATH} -Ed -Ec -c++11 -z4 -a -j -L -x -n -d ${CMAKE_CURRENT_SOURCE_DIR}/generated -I ${GSOAP_DIRS} generated.h
-            COMMAND $<TARGET_FILE:headerParser> generated.h
+            COMMAND $<TARGET_FILE:headerParserTool> generated.h
             COMMAND ${CMAKE_COMMAND} -E copy GsoapResolver.h ${CMAKE_CURRENT_SOURCE_DIR}/generated
             WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/wsdl VERBATIM)
 
-    add_dependencies(Synthesis headerParser)
+    add_dependencies(Synthesis headerParserTool)
 endif ()
 
 # -------------------------------Header parser-------------------------------
@@ -106,7 +104,7 @@ set(src_files
         headerParser/main.cpp
         )
 
-add_executable(headerParser ${src_files})
+add_executable(headerParserTool ${src_files})
 
 # -------------------------------ONVIF Common-------------------------------
 set(src_files
@@ -178,9 +176,6 @@ if (WIN32 AND NOT BUILD_SHARED_LIBS)
 endif ()
 target_compile_features(onvifcommon PUBLIC cxx_strong_enums cxx_auto_type cxx_nullptr cxx_long_long_type cxx_explicit_conversions)
 set_target_properties(onvifcommon PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifCommonExport.h")
-if (USE_PRECOMPILED_HEADERS)
-    cotire(onvifcommon)
-endif ()
 
 # -------------------------------ONVIF Analytics-------------------------------
 set(src_files
@@ -204,9 +199,6 @@ add_library(onvifanalytics ${src_files} ${private_header_files} ${public_header_
 generate_export_header(onvifanalytics EXPORT_FILE_NAME OnvifAnalyticsExport.h)
 target_link_libraries(onvifanalytics onvifcommon)
 set_target_properties(onvifanalytics PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifAnalyticsExport.h")
-if (USE_PRECOMPILED_HEADERS)
-    cotire(onvifanalytics)
-endif ()
 
 # -------------------------------ONVIF Device-------------------------------
 set(src_files
@@ -230,9 +222,6 @@ add_library(onvifdevice ${src_files} ${private_header_files} ${public_header_fil
 generate_export_header(onvifdevice EXPORT_FILE_NAME OnvifDeviceExport.h)
 target_link_libraries(onvifdevice onvifcommon)
 set_target_properties(onvifdevice PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifDeviceExport.h")
-if (USE_PRECOMPILED_HEADERS)
-    cotire(onvifdevice)
-endif ()
 
 # -------------------------------ONVIF Display-------------------------------
 set(src_files
@@ -256,9 +245,6 @@ add_library(onvifdisplay ${src_files} ${private_header_files} ${public_header_fi
 generate_export_header(onvifdisplay EXPORT_FILE_NAME OnvifDisplayExport.h)
 target_link_libraries(onvifdisplay onvifcommon)
 set_target_properties(onvifdisplay PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifDisplayExport.h")
-if (USE_PRECOMPILED_HEADERS)
-    cotire(onvifdisplay)
-endif ()
 
 # -------------------------------ONVIF Imaging-------------------------------
 set(src_files
@@ -282,9 +268,6 @@ add_library(onvifimaging ${src_files} ${private_header_files} ${public_header_fi
 generate_export_header(onvifimaging EXPORT_FILE_NAME OnvifImagingExport.h)
 target_link_libraries(onvifimaging onvifcommon)
 set_target_properties(onvifimaging PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifImagingExport.h")
-if (USE_PRECOMPILED_HEADERS)
-    cotire(onvifimaging)
-endif ()
 
 # -------------------------------ONVIF Media-------------------------------
 set(src_files
@@ -308,9 +291,6 @@ add_library(onvifmedia ${src_files} ${private_header_files} ${public_header_file
 generate_export_header(onvifmedia EXPORT_FILE_NAME OnvifMediaExport.h)
 target_link_libraries(onvifmedia onvifcommon)
 set_target_properties(onvifmedia PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifMediaExport.h")
-if (USE_PRECOMPILED_HEADERS)
-    cotire(onvifmedia)
-endif ()
 
 # -------------------------------ONVIF Media2-------------------------------
 set(src_files
@@ -334,9 +314,6 @@ add_library(onvifmedia2 ${src_files} ${private_header_files} ${public_header_fil
 generate_export_header(onvifmedia2 EXPORT_FILE_NAME OnvifMedia2Export.h)
 target_link_libraries(onvifmedia2 onvifcommon)
 set_target_properties(onvifmedia2 PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifMedia2Export.h")
-if (USE_PRECOMPILED_HEADERS)
-    cotire(onvifmedia2)
-endif ()
 
 # -------------------------------ONVIF PTZ-------------------------------
 set(src_files
@@ -360,9 +337,6 @@ add_library(onvifptz ${src_files} ${private_header_files} ${public_header_files}
 generate_export_header(onvifptz EXPORT_FILE_NAME OnvifPtzExport.h)
 target_link_libraries(onvifptz onvifcommon)
 set_target_properties(onvifptz PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifPtzExport.h")
-if (USE_PRECOMPILED_HEADERS)
-    cotire(onvifptz)
-endif ()
 
 # -------------------------------ONVIF Event-------------------------------
 set(src_files
@@ -392,9 +366,6 @@ add_library(onvifevent ${src_files} ${private_header_files} ${public_header_file
 generate_export_header(onvifevent EXPORT_FILE_NAME OnvifEventExport.h)
 target_link_libraries(onvifevent onvifcommon)
 set_target_properties(onvifevent PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifEventExport.h")
-if (USE_PRECOMPILED_HEADERS)
-    cotire(onvifevent)
-endif ()
 
 # -------------------------------ONVIF Receiver-------------------------------
 set(src_files
@@ -418,9 +389,6 @@ add_library(onvifreceiver ${src_files} ${private_header_files} ${public_header_f
 generate_export_header(onvifreceiver EXPORT_FILE_NAME OnvifReceiverExport.h)
 target_link_libraries(onvifreceiver onvifcommon)
 set_target_properties(onvifreceiver PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifReceiverExport.h")
-if (USE_PRECOMPILED_HEADERS)
-    cotire(onvifreceiver)
-endif ()
 
 # -------------------------------ONVIF Recording-------------------------------
 set(src_files
@@ -444,9 +412,6 @@ add_library(onvifrecording ${src_files} ${private_header_files} ${public_header_
 generate_export_header(onvifrecording EXPORT_FILE_NAME OnvifRecordingExport.h)
 target_link_libraries(onvifrecording onvifcommon)
 set_target_properties(onvifrecording PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifRecordingExport.h")
-if (USE_PRECOMPILED_HEADERS)
-    cotire(onvifrecording)
-endif ()
 
 # -------------------------------ONVIF Discovery-------------------------------
 set(src_files
@@ -482,9 +447,6 @@ add_library(onvifdiscovery ${src_files} ${private_header_files} ${public_header_
 generate_export_header(onvifdiscovery EXPORT_FILE_NAME OnvifDiscoveryExport.h)
 target_link_libraries(onvifdiscovery onvifcommon)
 set_target_properties(onvifdiscovery PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifDiscoveryExport.h")
-if (USE_PRECOMPILED_HEADERS)
-    cotire(onvifdiscovery)
-endif ()
 
 # -------------------------------ONVIF Replay-------------------------------
 set(src_files
@@ -508,9 +470,6 @@ add_library(onvifreplay ${src_files} ${private_header_files} ${public_header_fil
 generate_export_header(onvifreplay EXPORT_FILE_NAME OnvifReplayExport.h)
 target_link_libraries(onvifreplay onvifcommon)
 set_target_properties(onvifreplay PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifReplayExport.h")
-if (USE_PRECOMPILED_HEADERS)
-    cotire(onvifreplay)
-endif ()
 
 # -------------------------------Device Probe-------------------------------
 set(src_files
@@ -530,9 +489,6 @@ add_library(onvifprobe ${src_files} ${private_header_files} ${public_header_file
 generate_export_header(onvifprobe EXPORT_FILE_NAME OnvifProbeExport.h)
 target_link_libraries(onvifprobe onvifcommon onvifdevice)
 set_target_properties(onvifprobe PROPERTIES PUBLIC_HEADER "${public_header_files};${CMAKE_CURRENT_BINARY_DIR}/OnvifProbeExport.h")
-if (USE_PRECOMPILED_HEADERS)
-    cotire(onvifprobe)
-endif ()
 
 # -------------------------------------------------------------------------
 
@@ -551,9 +507,6 @@ set(private_header_files
 
 add_executable(onvifinfo ${src_files} ${private_header_files})
 target_link_libraries(onvifinfo onvifcommon onvifdevice onvifdiscovery onvifreplay onvifprobe onvifrecording onvifreceiver onvifptz onvifmedia onvifmedia2 onvifimaging onvifevent onvifdisplay onvifanalytics)
-if (USE_PRECOMPILED_HEADERS)
-    cotire(onvifinfo)
-endif ()
 
 if (MSVC)
     set_target_properties(onvifinfo onvifcommon onvifdevice onvifdiscovery onvifreplay onvifprobe onvifrecording onvifreceiver onvifptz onvifmedia onvifmedia2 onvifimaging onvifevent onvifdisplay onvifanalytics PROPERTIES COMPILE_FLAGS "/bigobj")

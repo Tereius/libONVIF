@@ -51,10 +51,10 @@ int main(int argc, char **argv) {
 			ctxBuilder.SetReceiveTimeout(1000);
 			auto discovery = new OnvifDiscoveryClient(QUrl("soap.udp://239.255.255.250:3702"), ctxBuilder.Build(), &app);
 			ProbeTypeRequest request;
-			request.Types = "tds:Device";
+			request.Types = (char *)"tds:Device";
 			auto uuidOne = QString("uuid:%1").arg(SoapHelper::GenerateUuid());
 			auto probeResponseTwo = discovery->Probe(request, uuidOne);
-			request.Types = "tdn:NetworkVideoTransmitter";
+			request.Types = (char *)"tdn:NetworkVideoTransmitter";
 			auto uuidTwo = QString("uuid:%1").arg(SoapHelper::GenerateUuid());
 			auto probeResponseOne = discovery->Probe(request, uuidTwo);
 			if(probeResponseOne && probeResponseTwo) {

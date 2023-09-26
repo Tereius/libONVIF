@@ -21,16 +21,6 @@ DiscoveryMatch::DiscoveryMatch() : mDeviceEndpoints(), mTypes(), mScopes(), mEnd
 
 DiscoveryMatch::~DiscoveryMatch() = default;
 
-QUrl DiscoveryMatch::GetDeviceEndpoint() const {
-
-	return !mDeviceEndpoints.isEmpty() ? mDeviceEndpoints.first() : QUrl();
-}
-
-void DiscoveryMatch::SetDeviceEndpoint(const QUrl &rDeviceEndpoint) {
-
-	mDeviceEndpoints = {rDeviceEndpoint};
-}
-
 QList<QUrl> DiscoveryMatch::GetDeviceEndpoints() const {
 
 	return mDeviceEndpoints;

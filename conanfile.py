@@ -26,11 +26,11 @@ class LibonvifConan(ConanFile):
     homepage = jsonInfo["homepage"]
     url = jsonInfo["repository"]
     # ---Requirements---
-    requires = ["qt/[~6.5]@%s/stable" % user, "qt_app_base/[~1]@%s/snapshot" % user]
-    tool_requires = ["cmake/3.21.7", "ninja/1.11.1"]
+    requires = ["qt/[~6.5]@%s/stable" % user]
+    tool_requires = ["cmake/3.21.7", "ninja/1.11.1", "qt_app_base/[~1]@%s/snapshot" % user]
     # ---Sources---
     exports = ["info.json", "LICENSE"]
-    exports_sources = ["info.json", "*.txt", "*", "doc/*", "CMake/*"]
+    exports_sources = ["info.json", "src/*", "doc/*", "CMake/*", "CMakeLists.txt"]
     # ---Binary model---
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False], "openssl": [True, False]}
@@ -42,24 +42,17 @@ class LibonvifConan(ConanFile):
     # ---Folders---
     no_copy_source = False
 
-    def generate(self):
-        ms = VirtualBuildEnv(self)
-        tc = CMakeToolchain(self, generator="Ninja")
-        qml_import_path = []
-        for require, dependency in self.dependencies.items():
-            path = dependency.runenv_info.vars(self, scope='run').get("QML_IMPORT_PATH")
-            if path is not None:
-                qml_import_path.append(path)
-        tc.variables["QT_QML_OUTPUT_DIRECTORY"] = "${CMAKE_CURRENT_LIST_DIR}"
-        qml_import_path.append("${QT_QML_OUTPUT_DIRECTORY}")
-        tc.variables["QML_IMPORT_PATH"] = ";".join(qml_import_path)
-        tc.generate()
-        ms.generate()
-
     def requirements(self):
         if self.options.openssl:
             self.requires("openssl/1.1.1l@tereius/stable")
             self.options["openssl"].shared = True
+
+    def generate(self):
+        ms = VirtualBuildEnv(self)
+        tc = CMakeToolchain(self, generator="Ninja")
+        tc.variables["ENABLE_SSL"] = self.options.openssl
+        tc.generate()
+        ms.generate()
 
     def build(self):
         cmake = CMake(self)

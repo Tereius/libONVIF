@@ -212,8 +212,9 @@ struct OnvifPullPointPrivate {
 	bool mActive;
 };
 
-OnvifPullPoint::OnvifPullPoint(const QUrl &rEndpoint, QObject *pParent /*= nullptr*/) :
- Client(rEndpoint, QSharedPointer<SoapCtx>::create(), pParent), mpD(new OnvifPullPointPrivate(this, rEndpoint)) {}
+OnvifPullPoint::OnvifPullPoint(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx /*= QSharedPointer<SoapCtx>::create()*/,
+                               QObject *pParent /*= nullptr*/) :
+ Client(rEndpoint, sharedCtx, pParent), mpD(new OnvifPullPointPrivate(this, rEndpoint)) {}
 
 OnvifPullPoint::~OnvifPullPoint() {
 

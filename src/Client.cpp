@@ -14,13 +14,13 @@
  * along with this program.If not, see < http://www.gnu.org/licenses/>.
  */
 #include "Client.h"
-#include "soapH.h"
 #include "SoapAuthHandler.h"
+#include "soapH.h"
+#include <QAtomicInt>
 #include <QDebug>
+#include <QMutex>
 #include <QObject>
 #include <utility>
-#include <QMutex>
-#include <QAtomicInt>
 
 
 struct ClientPrivate {
@@ -70,35 +70,6 @@ void Client::ReleaseCtx(soap *pCtx) {
 		soap_end(pCtx);
 		mpD->mCtx->Release();
 	}
-}
-
-void Client::DisableAuth() {
-
-	mpD->mCtx->DisableAuth();
-}
-
-void Client::SetAuth(const QString &rUserName, const QString &rPassword, AuthMode mode /* = AUTO */) {
-
-	auto authMode = AuthHandlerMode::AUTO;
-	switch(mode) {
-		case NO_AUTH:
-			authMode = AuthHandlerMode::NO_AUTH;
-			break;
-		case HTTP_DIGEST:
-			authMode = AuthHandlerMode::HTTP_DIGEST;
-			break;
-		case WS_USERNAME_TOKEN:
-			authMode = AuthHandlerMode::WS_USERNAME_TOKEN;
-			break;
-		case BOTH:
-			authMode = AuthHandlerMode::BOTH;
-			break;
-		case AUTO:
-		default:
-			authMode = AuthHandlerMode::AUTO;
-			break;
-	}
-	mpD->mCtx->SetAuth(rUserName, rPassword, authMode);
 }
 
 QString Client::GetFaultString() {

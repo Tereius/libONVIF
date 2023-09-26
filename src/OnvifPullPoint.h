@@ -73,7 +73,8 @@ class ONVIFEVENT_EXPORT OnvifPullPoint : public Client {
 	 * \param pParent A QObject parent
 	 *
 	 */
-	explicit OnvifPullPoint(const QUrl &rEndpoint, QObject *pParent = nullptr);
+	explicit OnvifPullPoint(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(),
+	                        QObject *pParent = nullptr);
 	~OnvifPullPoint() override;
 	//! Check if the pullpoint is active and we listen for events
 	bool Active();

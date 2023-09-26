@@ -37,7 +37,7 @@ class ONVIFCOMMON_EXPORT Client : public QObject {
 
 	Q_OBJECT
 
-public:
+ public:
 	/*!
 	 *
 	 * \brief Construct a new client
@@ -52,16 +52,6 @@ public:
 	 */
 	explicit Client(const QUrl &rEndpoint, QSharedPointer<SoapCtx> sharedCtx = QSharedPointer<SoapCtx>::create(), QObject *pParent = nullptr);
 	~Client() override;
-	/*!
-	 * \deprecated Use SoapCtx::SetAuth instead
-	 */
-	Q_DECL_DEPRECATED
-	virtual void SetAuth(const QString &rUserName, const QString &rPassword, AuthMode mode = AUTO);
-	/*!
-	 * \deprecated Use SoapCtx::DisableAuth instead
-	 */
-	Q_DECL_DEPRECATED
-	virtual void DisableAuth();
 	/*!
 	 *
 	 * \brief Get the soap context which is used by the client. The context can be shared between multiple clients
@@ -83,7 +73,7 @@ public:
 	//! If this client is currently doing a request it will be canceled immediately. Otherwise nothing happens.
 	void CancelRequest();
 
-protected:
+ protected:
 	//! Service implementations use this to acquire/init a raw soap context. releaseCtx must be called afterwards
 	soap *AcquireCtx();
 	//! Service implementations use this to acquire/init a raw soap context. releaseCtx must be called afterwards if successful.
@@ -95,7 +85,7 @@ protected:
 	//! (needed because of HTTP digest authentication)
 	int Retry(soap *pCtx) const;
 
-private:
+ private:
 	Q_DISABLE_COPY(Client);
 
 	ClientPrivate *mpD;
