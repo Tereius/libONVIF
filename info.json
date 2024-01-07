@@ -5,7 +5,7 @@
     "patch": 0,
     "snapshot": true
   },
-  "projectName": "lib_onvif",
+  "projectName": "libONVIF",
   "projectDescription": "A client side ONVIF library",
   "vendor": "Björn Stresing",
   "contact": "bjoern.stresing@gmx.de",
