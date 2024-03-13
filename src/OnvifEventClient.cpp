@@ -101,7 +101,7 @@ Response<_tev__CreatePullPointSubscriptionResponse> OnvifEventClient::CreatePull
 	auto pSoap = AcquireCtx();
 	do {
 		soap_wsa_request(pSoap, soap_wsa_rand_uuid(pSoap), qPrintable(GetEndpointString()), action);
-		auto ret = mpD->mProxy.CreatePullPointSubscription(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
+		ret = mpD->mProxy.CreatePullPointSubscription(qPrintable(GetEndpointString()), !rRequest.GetSoapAction().isNull() ? qPrintable(rRequest.GetSoapAction()) : nullptr, &rRequest, responseObject);
 	} while(Retry(pSoap));
 	auto response = Response<_tev__CreatePullPointSubscriptionResponse>::Builder();
 	response.From(GetCtx(), &responseObject);
